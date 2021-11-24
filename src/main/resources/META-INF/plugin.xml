@@ -1,18 +1,29 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.victorrentea.livecoding</id>
-    <name>live-coding</name>
+    <id>com.github.victorrentea.slf4jplugin</id>
+    <name>Live-Coding Toolkit</name>
     <vendor>victorrentea</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.victorrentea.livecoding.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.victorrentea.livecoding.services.MyProjectService"/>
+        <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jAnnotator"/>
+        <localInspection language="JAVA"
+                         displayName="Replace constructor with @RequiredArgsConstructor"
+                         groupName="Redundant definitions"
+                         groupPath="Java,Lombok"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceWithRequiredArgsConstructorInspection"/>
+        <localInspection language="JAVA"
+                         displayName="Add @RequiredArgsConstructor to set final fields"
+                         groupName="Redundant definitions"
+                         groupPath="Java,Lombok"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="com.github.victorrentea.livecoding.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>
 </idea-plugin>
