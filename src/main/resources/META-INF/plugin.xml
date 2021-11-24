@@ -24,6 +24,13 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection"/>
+        <localInspection language="JAVA"
+                         displayName="Detect calls to @VisibleForTesting (guava) from production code"
+                         groupName="Visibility"
+                         groupPath="Java"
+                         enabledByDefault="true"
+                         level="ERROR"
+                         implementationClass="com.github.victorrentea.livecoding.lombok.VisibleForTestingAbuseInspection"/>
     </extensions>
 
 </idea-plugin>

@@ -1,6 +1,6 @@
 package com.github.victorrentea.livecoding.lombok
 
-import com.github.victorrentea.livecoding.lombok.LombokUtil.lombokIsPresent
+import com.github.victorrentea.livecoding.lombok.FrameworkDetector.lombokIsPresent
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
@@ -8,7 +8,6 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 
 

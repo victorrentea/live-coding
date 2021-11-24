@@ -5,7 +5,6 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.lang.jvm.JvmModifier
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
@@ -14,7 +13,7 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class Slf4jAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (!LombokUtil.lombokIsPresent(element.project, element)) return
+        if (!FrameworkDetector.lombokIsPresent(element.project, element)) return
 
         if (element is PsiReferenceExpression &&
             element.text == "log" &&

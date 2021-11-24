@@ -1,7 +1,6 @@
 package com.github.victorrentea.livecoding.lombok
 
 import com.intellij.codeInspection.*
-import com.intellij.lang.jvm.JvmModifier
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
@@ -11,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        if (!LombokUtil.lombokIsPresent(holder.project, holder.file))
+        if (!FrameworkDetector.lombokIsPresent(holder.project, holder.file))
             return PsiElementVisitor.EMPTY_VISITOR
 
         return ReplaceWithRequiredArgsConstructorVisitor(holder)
