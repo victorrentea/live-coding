@@ -8,7 +8,6 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
 
-
     <extensions defaultExtensionNs="com.intellij">
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jAnnotator"/>
         <localInspection language="JAVA"

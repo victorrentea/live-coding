@@ -1,5 +1,5 @@
 # Live-Coding Toolkit
-
+<!-- Plugin description -->
 This plugin will help people write code faster for presentations, demos or discussions.
 
 Currently, various ways to refactor to Lombok are implemented:
@@ -8,3 +8,4 @@ Currently, various ways to refactor to Lombok are implemented:
 - If a "log" is used anywhere in code, it offers to annotate the class with @Slf4j
 
 More about me : https://www.victorrentea.ro
+<!-- Plugin description end -->

@@ -11,14 +11,14 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        if (!LombokUtil.lombokIsPresent(holder.project, holder.file))
+            return PsiElementVisitor.EMPTY_VISITOR
+
         return ReplaceWithRequiredArgsConstructorVisitor(holder)
     }
 }
 class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
     override fun visitElement(constructor: PsiElement) {
-        JavaPsiFacade.getInstance(holder.project)
-            .findClass("lombok.RequiredArgsConstructor", constructor.resolveScope) ?: return
-
         if (constructor !is PsiMethod || !constructor.isConstructor)
             return
         val body = constructor.body ?: return
@@ -29,8 +29,9 @@ class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHold
         }
         val assignments = PsiTreeUtil.collectElementsOfType(constructor, PsiAssignmentExpression::class.java)
 
-        val finalFields = constructor.containingClass!!.fields.filter {
-            it.hasModifier(JvmModifier.FINAL) && !it.hasModifier(JvmModifier.STATIC) }
+        val finalFields = constructor.containingClass!!.fields
+            .filter {it.hasModifierProperty(PsiModifier.FINAL) }
+            .filter {!it.hasModifierProperty(PsiModifier.STATIC)  }
             .map { it.name }
 
         val constructorParams = constructor.parameterList.parameters.map { it.name }
@@ -52,7 +53,9 @@ class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHold
             return
         }
 
-        holder.registerProblem(constructor, "Constructor can be replaced with @RequiredArgsConstructor",
+        holder.registerProblem(constructor,
+            "Constructor can be replaced with @RequiredArgsConstructor",
+            ProblemHighlightType.WEAK_WARNING,
             ReplaceWithRequiredArgsConstructorQuickFix(constructor))
     }
 

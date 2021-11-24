@@ -14,17 +14,16 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class Slf4jAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        JavaPsiFacade.getInstance(element.project)
-            .findClass("lombok.extern.slf4j.Slf4j", element.resolveScope) ?: return
+        if (!LombokUtil.lombokIsPresent(element.project, element)) return
 
         if (element is PsiReferenceExpression &&
             element.text == "log" &&
-            element.resolve() == null
+            element.resolve() == null // no 'log' is defined in the context
         ) {
+//            element.
             holder.newAnnotation(HighlightSeverity.ERROR, "Add @Slf4j to class (lombok)")
                 .range(element.textRange)
-                .tooltip("@Slf4j")
-                .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
+                .highlightType(ProblemHighlightType.ERROR)
                 .withFix(AddSlf4jAnnotationQuickFix(element))
                 .create()
         }
@@ -34,7 +33,7 @@ class Slf4jAnnotator : Annotator {
 data class AddSlf4jAnnotationQuickFix(val logExpression: PsiReferenceExpression) : BaseIntentionAction() {
     override fun getFamilyName() = "Live-Coding"
 
-    override fun getText() = "Add @Slf4j to class"
+    override fun getText() = "Add @Slf4j to class (lombok)"
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?) = true
 

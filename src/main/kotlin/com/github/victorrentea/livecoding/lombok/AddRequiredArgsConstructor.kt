@@ -1,35 +1,38 @@
 package com.github.victorrentea.livecoding.lombok
 
+import com.github.victorrentea.livecoding.lombok.LombokUtil.lombokIsPresent
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.lang.jvm.JvmModifier
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 
 
 class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
+        if (!lombokIsPresent(holder.project, holder.file))
+            return PsiElementVisitor.EMPTY_VISITOR
+
         return AddRequiredArgsConstructorVisitor(holder)
     }
 }
 
 class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
     override fun visitElement(field: PsiElement) {
-        JavaPsiFacade.getInstance(holder.project)
-            .findClass("lombok.RequiredArgsConstructor", field.resolveScope) ?: return
-
         if (field is PsiField &&
-            field.hasModifier(JvmModifier.FINAL) &&
-            field.containingClass!!.constructors.isEmpty()) {
+            field.hasModifierProperty(PsiModifier.FINAL) &&
+            !field.hasModifierProperty(PsiModifier.STATIC) &&
+            field.containingClass?.constructors?.isEmpty() == true) {
 
             holder.registerProblem(
-                field, "Final fields can be injected via @RequiredArgsConstructor",
-                ProblemHighlightType.ERROR,
+                field,
+                "Final field(s) can be injected via @RequiredArgsConstructor",
+                ProblemHighlightType.GENERIC_ERROR, // red underline
+                field.nameIdentifier.textRangeInParent.grown(1), // +1 so ALT-ENTER works even after ;
                 AddRequiredArgsConstructorQuickFix(field)
             )
         }
