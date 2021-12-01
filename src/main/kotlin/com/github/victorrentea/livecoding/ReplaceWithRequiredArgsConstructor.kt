@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding.lombok
+package com.github.victorrentea.livecoding
 
 import com.intellij.codeInspection.*
 import com.intellij.openapi.diagnostic.Logger
@@ -55,7 +55,8 @@ class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHold
         holder.registerProblem(constructor,
             "Constructor can be replaced with @RequiredArgsConstructor",
             ProblemHighlightType.WEAK_WARNING,
-            ReplaceWithRequiredArgsConstructorQuickFix(constructor))
+            ReplaceWithRequiredArgsConstructorQuickFix(constructor)
+        )
     }
 
     companion object {
@@ -69,7 +70,7 @@ class ReplaceWithRequiredArgsConstructorQuickFix(constructor: PsiMethod) : Local
     override fun getText() = "Replace with @RequiredArgsConstructor (lombok)"
 
     override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
-        val parentClass = PsiTreeUtil.getTopmostParentOfType(constructor, PsiClass::class.java) ?: return
+        val parentClass = PsiTreeUtil.getParentOfType(constructor, PsiClass::class.java) ?: return
         val modifiers = parentClass.modifierList ?: return
         val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
         JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)

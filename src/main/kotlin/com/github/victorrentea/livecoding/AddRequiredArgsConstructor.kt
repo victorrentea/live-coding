@@ -1,11 +1,12 @@
-package com.github.victorrentea.livecoding.lombok
+package com.github.victorrentea.livecoding
 
-import com.github.victorrentea.livecoding.lombok.FrameworkDetector.lombokIsPresent
+import com.github.victorrentea.livecoding.FrameworkDetector.lombokIsPresent
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
@@ -22,16 +23,22 @@ class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
 
 class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
     override fun visitElement(field: PsiElement) {
-        if (field is PsiField &&
-            field.hasModifierProperty(PsiModifier.FINAL) &&
+        if (field !is PsiField) return
+
+        if (field.hasModifierProperty(PsiModifier.FINAL) &&
             !field.hasModifierProperty(PsiModifier.STATIC) &&
+            !field.hasInitializer() &&
             field.containingClass?.constructors?.isEmpty() == true) {
+
+            println(field.nameIdentifier.textRangeInParent)
+
+            val textRange = TextRange(0, field.nameIdentifier.textRangeInParent.endOffset + 1)  // +1 so ALT-ENTER works even after ;
 
             holder.registerProblem(
                 field,
                 "Final field(s) can be injected via @RequiredArgsConstructor",
                 ProblemHighlightType.GENERIC_ERROR, // red underline
-                field.nameIdentifier.textRangeInParent.grown(1), // +1 so ALT-ENTER works even after ;
+                textRange,
                 AddRequiredArgsConstructorQuickFix(field)
             )
         }
@@ -46,7 +53,7 @@ class AddRequiredArgsConstructorQuickFix(field: PsiField) : LocalQuickFixOnPsiEl
     override fun getText() = "Add @RequiredArgsConstructor (lombok)"
 
     override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
-        val parentClass = PsiTreeUtil.getTopmostParentOfType(startElement, PsiClass::class.java) ?: return
+        val parentClass = PsiTreeUtil.getParentOfType(startElement, PsiClass::class.java) ?: return
         val modifiers = parentClass.modifierList ?: return
         val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
         JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)

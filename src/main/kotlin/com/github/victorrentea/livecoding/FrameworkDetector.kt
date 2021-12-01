@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding.lombok
+package com.github.victorrentea.livecoding
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.JavaPsiFacade

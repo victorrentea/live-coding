@@ -1,6 +1,6 @@
-package com.github.victorrentea.livecoding.lombok
+package com.github.victorrentea.livecoding
 
-import com.github.victorrentea.livecoding.lombok.FrameworkDetector.visibleForTestingIsPresent
+import com.github.victorrentea.livecoding.FrameworkDetector.visibleForTestingIsPresent
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder

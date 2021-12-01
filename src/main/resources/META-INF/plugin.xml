@@ -9,28 +9,29 @@
     <depends>com.intellij.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jAnnotator"/>
+
+        <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.Slf4jAnnotator"/>
         <localInspection language="JAVA"
                          displayName="Replace constructor with @RequiredArgsConstructor"
                          groupName="Redundant definitions"
                          groupPath="Java,Lombok"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceWithRequiredArgsConstructorInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.ReplaceWithRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
                          displayName="Add @RequiredArgsConstructor to set final fields"
                          groupName="Redundant definitions"
                          groupPath="Java,Lombok"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.AddRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
                          displayName="Detect calls to @VisibleForTesting (guava) from production code"
                          groupName="Visibility"
                          groupPath="Java"
                          enabledByDefault="true"
                          level="ERROR"
-                         implementationClass="com.github.victorrentea.livecoding.lombok.VisibleForTestingAbuseInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.VisibleForTestingAbuseInspection"/>
     </extensions>
 
 </idea-plugin>

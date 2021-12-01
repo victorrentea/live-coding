@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding.lombok
+package com.github.victorrentea.livecoding
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
 import com.intellij.codeInspection.ProblemHighlightType
@@ -37,8 +37,9 @@ data class AddSlf4jAnnotationQuickFix(val logExpression: PsiReferenceExpression)
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?) = true
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
-        val parentClass = PsiTreeUtil.getTopmostParentOfType(logExpression, PsiClass::class.java) ?: return
+        val parentClass = PsiTreeUtil.getParentOfType(logExpression, PsiClass::class.java) ?: return
         val modifiers = parentClass.modifierList ?: return
+        if (modifiers.hasAnnotation("lombok.extern.slf4j.Slf4j")) return  // no lombok plugin ?
         val annotation = modifiers.addAnnotation("lombok.extern.slf4j.Slf4j")
         JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
     }
