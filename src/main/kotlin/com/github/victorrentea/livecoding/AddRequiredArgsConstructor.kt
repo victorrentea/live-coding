@@ -30,8 +30,6 @@ class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : Ps
             !field.hasInitializer() &&
             field.containingClass?.constructors?.isEmpty() == true) {
 
-            println(field.nameIdentifier.textRangeInParent)
-
             val textRange = TextRange(0, field.nameIdentifier.textRangeInParent.endOffset + 1)  // +1 so ALT-ENTER works even after ;
 
             holder.registerProblem(
