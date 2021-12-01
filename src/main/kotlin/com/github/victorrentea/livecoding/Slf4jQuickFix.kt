@@ -19,7 +19,6 @@ class Slf4jAnnotator : Annotator {
             element.text == "log" &&
             element.resolve() == null // no 'log' is defined in the context
         ) {
-//            element.
             holder.newAnnotation(HighlightSeverity.ERROR, "Add @Slf4j to class (lombok)")
                 .range(element.textRange)
                 .highlightType(ProblemHighlightType.ERROR)
