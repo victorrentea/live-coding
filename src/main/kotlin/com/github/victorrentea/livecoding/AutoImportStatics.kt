@@ -15,7 +15,7 @@ class AutoImportStatics : AnAction() {
     }
 }
 object AutoImportConstants {
-    val qualifiedMethodNames = listOf(
+    val qualifiedMethodNames = parse(
         "org.assertj.core.api.Assertions#assertThat",
         "java.util.stream.Collectors#toSet",
         "java.util.stream.Collectors#toList",
@@ -23,6 +23,9 @@ object AutoImportConstants {
         "org.mockito.Mockito#when",
         "org.mockito.Mockito#verify",
     )
+    private fun parse(vararg qualifiedMethods :String) =
+        qualifiedMethods.toList()
+            .associate { it.substringAfter("#") to it.substringBefore("#") }
 }
 class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
 
@@ -30,22 +33,47 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
         super.visitElement(element)
 
         if (element !is PsiMethodCallExpression) return
-        if (element.methodExpression.qualifierExpression == null) return
-        val calledPsiMethod = element.methodExpression.resolve() ?: return
+
+        if (!qualifiedMethodNames.containsKey(element.methodExpression.referenceName)) return
+
+        if (element.methodExpression.qualifierExpression != null) {
+            replaceWithStaticImport(element)
+        } else {
+            addStaticImport(element)
+        }
+    }
+
+    private fun addStaticImport(methodCall: PsiMethodCallExpression) {
+        if (methodCall.methodExpression.resolve() != null) return
+        // unqualified method not resolved
+        val methodName = methodCall.methodExpression.referenceName ?: return
+        val desiredClassQName = qualifiedMethodNames[methodName] ?: return
+
+        ApplicationManager.getApplication().invokeLater {
+            WriteCommandAction.runWriteCommandAction(methodCall.project, "Auto-Import Statics", "Live-Coding", {
+                ImportUtils.addStaticImport(desiredClassQName, methodName, methodCall)
+            })
+        }
+    }
+
+    private fun replaceWithStaticImport(methodCall: PsiMethodCallExpression) {
+        val calledPsiMethod = methodCall.methodExpression.resolve() ?: return
         if (calledPsiMethod !is PsiMethod) return
         if (!calledPsiMethod.hasModifierProperty(PsiModifier.STATIC)) return
 
         val containingClass = calledPsiMethod.containingClass ?: return
-        val classFQName = containingClass.qualifiedName ?: return
-        val qualifiedMethodName = classFQName + "#" + calledPsiMethod.name
+        val actualClassQName = containingClass.qualifiedName ?: return
+//        val qualifiedMethodName = actualClassQName + "#" + calledPsiMethod.name
+
+        val desiredClassQName = qualifiedMethodNames[methodCall.methodExpression.referenceName]
 
         //println("Looking at " + qualifiedMethodName)
-        if (!qualifiedMethodNames.contains(qualifiedMethodName)) return
+        if (desiredClassQName != actualClassQName) return
 
         ApplicationManager.getApplication().invokeLater {
-            WriteCommandAction.runWriteCommandAction(element.project, "Auto-Import Statics", "Live-Coding", {
-                ImportUtils.addStaticImport(classFQName, calledPsiMethod.name, element)
-                val qualifierExpression = element.methodExpression.qualifierExpression
+            WriteCommandAction.runWriteCommandAction(methodCall.project, "Auto-Import Statics", "Live-Coding", {
+                ImportUtils.addStaticImport(actualClassQName, calledPsiMethod.name, methodCall)
+                val qualifierExpression = methodCall.methodExpression.qualifierExpression
                 qualifierExpression?.delete()
             })
         }

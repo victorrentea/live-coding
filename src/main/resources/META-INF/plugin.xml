@@ -8,11 +8,11 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <actions>
-        <action class="com.github.victorrentea.livecoding.AutoImportStatics" text="Auto-Import Statics"/>
+        <action class="com.github.victorrentea.livecoding.AutoImportStatics" text="Auto-Import Statics">
+            <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
+        </action>
     </actions>
     <extensions defaultExtensionNs="com.intellij">
-<!--        <projectConfigurable instance="com.github.victorrentea.livecoding.LiveCodingConfigurable" id="livecoding.settings" displayName="Live-Coding" nonDefaultProject="true"/>-->
-<!--        <projectConfigurable instance="com.github.victorrentea.livecoding.HaxeSettingsConfigurable" id="livecoding.settings" displayName="Live-Coding" nonDefaultProject="true"/>-->
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.Slf4jAnnotator"/>
         <localInspection language="JAVA"
                          displayName="Replace constructor with @RequiredArgsConstructor"

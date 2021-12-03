@@ -1,16 +1,16 @@
 # Live-Coding Toolkit
 <!-- Plugin description -->
-This plugin will help people write code faster for presentations, demos or discussions.
+This plugin helps people write code faster for presentations, demos or discussions accompanied by code.
 
 Currently, various ways to refactor to Lombok are implemented:
-- Detect and offer to replace a constructor for final fields with @RequiredArgsConstructor
-- When final fields are not set, offer to annotate the class with @RequiredArgsConstructor
-- If a "log" is used anywhere in code, it offers to annotate the class with @Slf4j
+- Offer to replace a constructor setting final fields with @RequiredArgsConstructor (lombok)
+- When final fields are not initialized (compilation error), offer to annotate the class with @RequiredArgsConstructor
+- If a "log" is used anywhere in code, it offers to annotate the class with @Slf4j instead
+- Action to silently auto-import Collectors.toList, Assertions.assertThat[assertJ], Mockito.mock/when/verify as static imports on open file / reformat
+- Detects places in production code where a method called with @VisibleForTesting is used
 
 More about me : https://www.victorrentea.ro
 
 Next features?
-- suggest replace private static final Logger log = LoggerFactory. with  @Slf4j
 - move all anonymous classes to separate files as public classes 
-- always silently auto-import toList(), assertEquals, assertThat as static imports on open file / reformat
 <!-- Plugin description end -->
