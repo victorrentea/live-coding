@@ -18,3 +18,4 @@
 - Suggest replace with @RAC only as WARNING from >= 2 args, only fix if 1 arg
 - Fixed a bug: add @RAC crashed if line was not completed with ;
 - Removed VisibleForTesting check as I found a standard inspection already doing that, 'Java | General | Test-only class or method call in production code'
+- Added quickfix unde "" in log.debug("")  -> for easier ALT ENTER

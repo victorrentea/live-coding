@@ -15,20 +15,31 @@ class Slf4jAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (!FrameworkDetector.lombokIsPresent(element.project, element)) return
 
+        if (element is PsiExpressionList) {
+            val callExpression = element.parent as? PsiMethodCallExpression ?: return
+            val reference = callExpression.methodExpression.qualifierExpression as? PsiReferenceExpression ?: return
+            if (reference.text == "log" && reference.resolve() == null) {
+                addAnnotation(holder, element)
+            }
+        }
+
         if (element is PsiReferenceExpression &&
             element.text == "log" &&
             element.resolve() == null // no 'log' is defined in the context
         ) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Add @Slf4j to class (lombok)")
-                .range(element.textRange)
-                .highlightType(ProblemHighlightType.ERROR)
-                .withFix(AddSlf4jAnnotationQuickFix(element))
-                .create()
+            addAnnotation(holder, element)
         }
+    }
+
+    private fun addAnnotation(holder: AnnotationHolder, element: PsiElement) {
+        holder.newAnnotation(HighlightSeverity.ERROR, "Add @Slf4j to class (lombok)")
+            .highlightType(ProblemHighlightType.GENERIC_ERROR)
+            .withFix(AddSlf4jAnnotationQuickFix(element))
+            .create()
     }
 }
 
-data class AddSlf4jAnnotationQuickFix(val logExpression: PsiReferenceExpression) : BaseIntentionAction() {
+data class AddSlf4jAnnotationQuickFix(val logExpression: PsiElement) : BaseIntentionAction() {
     override fun getFamilyName() = "Live-Coding"
 
     override fun getText() = "Add @Slf4j to class (lombok)"
