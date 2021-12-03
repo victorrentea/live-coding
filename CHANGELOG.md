@@ -16,3 +16,4 @@
 - Bugfixes
 ## 0.0.6
 - Suggest replace with @RAC only as WARNING from >= 2 args, only fix if 1 arg
+- Fixed a bug: add @RAC crashed if line was not completed with ;

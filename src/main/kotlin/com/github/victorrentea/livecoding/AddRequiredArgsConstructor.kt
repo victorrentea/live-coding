@@ -10,6 +10,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
+import kotlin.math.min
 
 
 class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
@@ -30,7 +31,10 @@ class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : Ps
             !field.hasInitializer() &&
             field.containingClass?.constructors?.isEmpty() == true) {
 
-            val textRange = TextRange(0, field.nameIdentifier.textRangeInParent.endOffset + 1)  // +1 so ALT-ENTER works even after ;
+            val textLength = min(
+                field.nameIdentifier.textRangeInParent.endOffset + 1,
+                field.nameIdentifier.parent.textRange.length)
+            val textRange = TextRange(0, textLength)  // +1 so ALT-ENTER works even after ;
 
             holder.registerProblem(
                 field,
