@@ -52,9 +52,12 @@ class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHold
             return
         }
 
+        val severity = if (constructor.parameterList.parametersCount >= 2)
+            ProblemHighlightType.WEAK_WARNING else ProblemHighlightType.INFORMATION
+
         holder.registerProblem(constructor,
             "Constructor can be replaced with @RequiredArgsConstructor",
-            ProblemHighlightType.WEAK_WARNING,
+            severity,
             ReplaceWithRequiredArgsConstructorQuickFix(constructor)
         )
     }

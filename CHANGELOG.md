@@ -14,3 +14,5 @@
 - Added Auto Import Statics action that replaces a list of commonly used static methods with import static
 - Added @VisibleForTesting abuse detector
 - Bugfixes
+## 0.0.6
+- Suggest replace with @RAC only as WARNING from >= 2 args, only fix if 1 arg
