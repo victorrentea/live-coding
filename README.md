@@ -13,4 +13,5 @@ More about me : https://www.victorrentea.ro
 
 Next features?
 - move all anonymous classes to separate files as public classes 
+- settings page to allow users to set more static methods to import
 <!-- Plugin description end -->
