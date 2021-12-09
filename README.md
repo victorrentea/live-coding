@@ -14,5 +14,5 @@ More about me : https://www.victorrentea.ro
 Next features?
 - move all anonymous classes to separate files as public classes 
 - settings page to allow users to set more static methods to import
-- Menu entry in GIt to copy to clipboard the current remote URL and Branch cname
+- Menu entry in GIt to copy to clipboard the current remote URL and Branch cname + timestamp sau commit ID
 <!-- Plugin description end -->
