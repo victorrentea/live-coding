@@ -12,8 +12,13 @@ Currently, various ways to refactor to Lombok are implemented:
 More about me : https://www.victorrentea.ro
 
 Next features:
+- static import System.currentTimeMillis(), org.mockito.ArgumentMatchers#anyInt   TimeUnit.MILLISECONDS
+  Duration.ofMillis Duration.ofSeconds
+  // make sure static import doesn't collide with existing static imports.
+- suggest alt-enter on field in error only for >= 2 args
 - quickfix undefined "log" token to define Slf4j logger (without Lombok)
 - move all anonymous classes to separate files as public classes 
 - settings page to allow users to set more static methods to import
 - Menu entry in GIt to copy to clipboard the current remote URL and Branch cname + timestamp sau commit ID
 <!-- Plugin description end -->
+

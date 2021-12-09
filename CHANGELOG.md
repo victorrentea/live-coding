@@ -20,3 +20,7 @@
 - Removed VisibleForTesting check as I found a standard inspection already doing that, 'Java | General | Test-only class or method call in production code'
 - Added quickfix inside "" in log.debug("")  -> for easier ALT ENTER
 - Added more functions to import statically (groupingBy,toMap, Predicate.not)
+## 0.0.7
+- Support auto-adding static imports to fields , not only methods
+- Add more static imports :  "java.lang.System#currentTimeMillis",  "org.mockito.ArgumentMatchers#anyInt",   "java.util.concurrent.TimeUnit#MILLISECONDS",  "java.time.Duration#ofSeconds",
+  "java.time.Duration#ofMillis"
