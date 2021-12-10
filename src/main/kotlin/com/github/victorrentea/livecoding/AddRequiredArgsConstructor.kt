@@ -15,7 +15,7 @@ import kotlin.math.min
 
 class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        if (!lombokIsPresent(holder.project, holder.file))
+        if (!lombokIsPresent(holder.file))
             return PsiElementVisitor.EMPTY_VISITOR
 
         return AddRequiredArgsConstructorVisitor(holder)

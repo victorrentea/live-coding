@@ -5,6 +5,8 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
@@ -13,8 +15,6 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class Slf4jAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (!FrameworkDetector.lombokIsPresent(element.project, element)) return
-
         if (element is PsiExpressionList) {
             val callExpression = element.parent as? PsiMethodCallExpression ?: return
             val reference = callExpression.methodExpression.qualifierExpression as? PsiReferenceExpression ?: return
@@ -32,10 +32,18 @@ class Slf4jAnnotator : Annotator {
     }
 
     private fun addAnnotation(holder: AnnotationHolder, element: PsiElement) {
-        holder.newAnnotation(HighlightSeverity.ERROR, "Add @Slf4j to class (lombok)")
-            .highlightType(ProblemHighlightType.GENERIC_ERROR)
-            .withFix(AddSlf4jAnnotationQuickFix(element))
-            .create()
+        if (FrameworkDetector.lombokIsPresent(element)) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Add Slf4j logger on class")
+                .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                .withFix(AddSlf4jAnnotationQuickFix(element))
+                .create()
+        }
+        if (FrameworkDetector.slf4jIsPresent(element)) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Add a Slf4j 'log' field on the class")
+                .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                .withFix(AddSlf4jFieldQuickFix(element))
+                .create()
+        }
     }
 }
 
@@ -52,6 +60,27 @@ data class AddSlf4jAnnotationQuickFix(val logExpression: PsiElement) : BaseInten
         if (modifiers.hasAnnotation("lombok.extern.slf4j.Slf4j")) return  // no lombok plugin ?
         val annotation = modifiers.addAnnotation("lombok.extern.slf4j.Slf4j")
         JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
+    }
+}
+
+data class AddSlf4jFieldQuickFix(val logExpression: PsiElement) : BaseIntentionAction() {
+    override fun getFamilyName() = "Live-Coding"
+
+    override fun getText() = "Add a Slf4j 'log' field on the class"
+
+    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?) = true
+
+    override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
+        val parentClass = PsiTreeUtil.getParentOfType(logExpression, PsiClass::class.java) ?: return
+        val factory = JavaPsiFacade.getInstance(project).elementFactory
+        val logField = factory.createFieldFromText("private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(${parentClass.name}.class);", parentClass);
+
+        ApplicationManager.getApplication().invokeLater {
+            WriteCommandAction.runWriteCommandAction(project, "Add Slf4j Logger on Class", "Live-Coding", {
+
+                JavaCodeStyleManager.getInstance(project).shortenClassReferences(parentClass.add(logField))
+            })
+        }
     }
 }
 

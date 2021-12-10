@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil
 
 class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        if (!FrameworkDetector.lombokIsPresent(holder.project, holder.file))
+        if (!FrameworkDetector.lombokIsPresent(holder.file))
             return PsiElementVisitor.EMPTY_VISITOR
 
         return ReplaceWithRequiredArgsConstructorVisitor(holder)

@@ -3,6 +3,7 @@ package playground;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ReplaceStaticImport {
+    
     @Test
     void aTest() throws InterruptedException, ExecutionException, TimeoutException {
         List<Integer> list = Stream.of(1).collect(Collectors.toList());
