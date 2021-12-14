@@ -11,7 +11,6 @@ Currently, various ways to refactor to Lombok are implemented:
 More about me : https://www.victorrentea.ro
 
 Next features:
-- settings page to allow users to set more static methods to import
 - Split Variable
   if (employees.size() != 0) {
     averageConsultantSalary /= employees.size();
