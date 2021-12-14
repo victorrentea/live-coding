@@ -1,13 +1,18 @@
 package com.github.victorrentea.livecoding
 
 import com.github.victorrentea.livecoding.AutoImportConstants.qualifiedMethodNames
+import com.intellij.ide.CopyPasteManagerEx
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.project.Project
 import com.intellij.psi.*
+import com.intellij.util.ui.TextTransferable
 import com.siyeh.ig.psiutils.ImportUtils
+import git4idea.branch.GitBranchUtil
+import org.jetbrains.annotations.NotNull
 
 class AutoImportStatics : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {

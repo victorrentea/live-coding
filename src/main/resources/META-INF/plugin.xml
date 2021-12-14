@@ -7,7 +7,13 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
+    <depends>Git4Idea</depends>
+
     <actions>
+        <action class="com.github.victorrentea.livecoding.CopyGitCoordinates" text="Copy Git Coordinates to Clipboard">
+            <!--<keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>-->
+            <add-to-group group-id="Git.MainMenu" anchor="last"/>
+        </action>
         <action class="com.github.victorrentea.livecoding.AutoImportStatics" text="Auto-Import Statics">
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
