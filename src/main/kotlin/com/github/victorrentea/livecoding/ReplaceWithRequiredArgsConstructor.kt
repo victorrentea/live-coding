@@ -55,7 +55,10 @@ class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHold
         val severity = if (constructor.parameterList.parametersCount >= 2)
             ProblemHighlightType.WEAK_WARNING else ProblemHighlightType.INFORMATION
 
-        holder.registerProblem(constructor,
+
+        val constructorName = PsiTreeUtil.findChildOfType(constructor, PsiIdentifier::class.java) ?: constructor
+
+        holder.registerProblem(constructorName,
             "Constructor can be replaced with @RequiredArgsConstructor",
             severity,
             ReplaceWithRequiredArgsConstructorQuickFix(constructor)

@@ -12,7 +12,9 @@
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
     </actions>
+
     <extensions defaultExtensionNs="com.intellij">
+
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.Slf4jAnnotator"/>
         <localInspection language="JAVA"
                          displayName="Replace constructor with @RequiredArgsConstructor"

@@ -11,10 +11,15 @@ Currently, various ways to refactor to Lombok are implemented:
 More about me : https://www.victorrentea.ro
 
 Next features:
-- make sure static import doesn't collide with existing static imports.
-- quickfix undefined "log" token to define Slf4j logger (without Lombok)
 - move all anonymous classes to separate files as public classes 
 - settings page to allow users to set more static methods to import
 - Menu entry in GIt to copy to clipboard the current remote URL and Branch cname + timestamp sau commit ID
+- Split Variable
+  if (employees.size() != 0) {
+    averageConsultantSalary /= employees.size();
+  }
+  for () v = v + 1;  NO
+  v = 73;
+  try {v += 44;}
 <!-- Plugin description end -->
 

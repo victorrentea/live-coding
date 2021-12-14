@@ -7,6 +7,5 @@ public class ReplaceRAC_TwoArg {
     public ReplaceRAC_TwoArg(int dummy, int dummy2) {
         this.dummy = dummy;
         this.dummy2 = dummy2;
-
     }
 }

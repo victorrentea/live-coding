@@ -25,3 +25,5 @@
 - Add more static imports :  "java.lang.System#currentTimeMillis",  "org.mockito.ArgumentMatchers#anyInt",   "java.util.concurrent.TimeUnit#MILLISECONDS",  "java.time.Duration#ofSeconds",
   "java.time.Duration#ofMillis"
 - Quickfix to define a Slf4J logger on the class (besides Lombok @Slf4j) on unresolved "log" token
+- Reduced the size of the warning about @RAC
+- make sure static import doesn't collide with existing static imports.

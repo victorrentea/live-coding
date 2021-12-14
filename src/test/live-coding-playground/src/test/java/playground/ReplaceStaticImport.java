@@ -11,6 +11,8 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static playground.Stupid.verify;
+
 public class ReplaceStaticImport {
     
     @Test
@@ -20,6 +22,7 @@ public class ReplaceStaticImport {
         Mockito.when(aMock.getInt()).thenReturn(-2);
         Assertions.assertThat(1).isEqualTo(1);
 
+        verify();
         Mockito.verify(aMock).getInt();
         Duration d = Duration.ofMillis(100);
         Future<Integer> future = CompletableFuture.completedFuture(1);
@@ -32,5 +35,11 @@ public class ReplaceStaticImport {
 class A {
     public int getInt() {
         return 1;
+    }
+}
+
+class Stupid {
+    public static void verify() {
+
     }
 }

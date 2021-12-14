@@ -66,7 +66,7 @@ data class AddSlf4jAnnotationQuickFix(val logExpression: PsiElement) : BaseInten
 data class AddSlf4jFieldQuickFix(val logExpression: PsiElement) : BaseIntentionAction() {
     override fun getFamilyName() = "Live-Coding"
 
-    override fun getText() = "Add a Slf4j 'log' field on the class"
+    override fun getText() = "Add a Slf4j 'Logger log' field on the class"
 
     override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?) = true
 

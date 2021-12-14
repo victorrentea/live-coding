@@ -78,15 +78,15 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
 
         val desiredClassQName = qualifiedMethodNames[staticReference.referenceName]
 
-//        val qualifiedMethodName = actualClassQName + "#" + calledPsiMethod.name
-//        println("Looking at " + qualifiedMethodName)
         if (desiredClassQName != actualClassQName) return
 
         ApplicationManager.getApplication().invokeLater {
             WriteCommandAction.runWriteCommandAction(staticReference.project, "Auto-Import Statics", "Live-Coding", {
-                ImportUtils.addStaticImport(actualClassQName, name, staticReference)
-                val qualifierExpression = staticReference.qualifierExpression
-                qualifierExpression?.delete()
+                val importAdded = ImportUtils.addStaticImport(actualClassQName, name, staticReference)
+                if (importAdded) {
+                    val qualifierExpression = staticReference.qualifierExpression
+                    qualifierExpression?.delete()
+                }
             })
         }
     }
