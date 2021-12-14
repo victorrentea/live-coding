@@ -28,3 +28,4 @@
 - Reduced the size of the warning about @RAC
 - make sure static import doesn't collide with existing static imports.
 - Added action "Copy Git Coordinates to Clipboard" + menu entry in Git>
+- Added settings page to configure what static tokens to auto-import

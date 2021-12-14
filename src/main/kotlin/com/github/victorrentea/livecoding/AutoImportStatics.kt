@@ -1,6 +1,6 @@
 package com.github.victorrentea.livecoding
 
-import com.github.victorrentea.livecoding.AutoImportConstants.qualifiedMethodNames
+import com.github.victorrentea.livecoding.settings.AppSettingsState
 import com.intellij.ide.CopyPasteManagerEx
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -19,38 +19,38 @@ class AutoImportStatics : AnAction() {
         e.getData(CommonDataKeys.PSI_FILE)?.accept(AutoImportStaticsVisitor())
     }
 }
-object AutoImportConstants {
-    val qualifiedMethodNames = parse(
-        "org.assertj.core.api.Assertions#assertThat",
-        "java.util.stream.Collectors#toSet",
-        "java.util.stream.Collectors#toList",
-        "java.util.stream.Collectors#toMap",
-        "java.util.stream.Collectors#groupingBy",
-        "java.util.function.Predicate#not",
-        "org.mockito.Mockito#mock",
-        "org.mockito.Mockito#when",
-        "org.mockito.Mockito#verify",
-        "java.lang.System#currentTimeMillis",
-        "org.mockito.ArgumentMatchers#anyInt",
-        "org.mockito.ArgumentMatchers#any",
-        "org.mockito.ArgumentMatchers#anyString",
-        "org.mockito.ArgumentMatchers#anyLong",
-        "java.util.concurrent.TimeUnit#MILLISECONDS",
-        "java.time.Duration#ofSeconds",
-        "java.time.Duration#ofMillis",
-        "java.util.concurrent.CompletableFuture#completedFuture"
-    )
-    private fun parse(vararg qualifiedMethods :String) =
-        qualifiedMethods.toList()
-            .associate { it.substringAfter("#") to it.substringBefore("#") }
-}
+//object AutoImportConstants {
+//    val qualifiedMethodNames = parse(
+//        "org.assertj.core.api.Assertions#assertThat",
+//        "java.util.stream.Collectors#toSet",
+//        "java.util.stream.Collectors#toList",
+//        "java.util.stream.Collectors#toMap",
+//        "java.util.stream.Collectors#groupingBy",
+//        "java.util.function.Predicate#not",
+//        "org.mockito.Mockito#mock",
+//        "org.mockito.Mockito#when",
+//        "org.mockito.Mockito#verify",
+//        "java.lang.System#currentTimeMillis",
+//        "org.mockito.ArgumentMatchers#anyInt",
+//        "org.mockito.ArgumentMatchers#any",
+//        "org.mockito.ArgumentMatchers#anyString",
+//        "org.mockito.ArgumentMatchers#anyLong",
+//        "java.util.concurrent.TimeUnit#MILLISECONDS",
+//        "java.time.Duration#ofSeconds",
+//        "java.time.Duration#ofMillis",
+//        "java.util.concurrent.CompletableFuture#completedFuture"
+//    )
+//    private fun parse(vararg qualifiedMethods :String) =
+//        qualifiedMethods.toList()
+//            .associate { it.substringAfter("#") to it.substringBefore("#") }
+//}
 class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
 
     override fun visitElement(element: PsiElement) {
         super.visitElement(element)
 
         if (element is PsiReferenceExpression) {
-            if (!qualifiedMethodNames.containsKey(element.referenceName)) return
+            if (!AppSettingsState.getInstance().staticImports.containsKey(element.referenceName)) return
             if (element.qualifierExpression != null) {
                 replaceWithStaticImport(element)
             } else {
@@ -63,7 +63,7 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
         if (unresolvedReference.resolve() != null) return
         // unqualified method not resolved
         val methodName = unresolvedReference.referenceName ?: return
-        val desiredClassQName = qualifiedMethodNames[methodName] ?: return
+        val desiredClassQName = AppSettingsState.getInstance().staticImports[methodName] ?: return
 
         ApplicationManager.getApplication().invokeLater {
             WriteCommandAction.runWriteCommandAction(unresolvedReference.project, "Auto-Import Statics", "Live-Coding", {
@@ -81,7 +81,7 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
         val containingClass = calledPsiMethod.containingClass ?: return
         val actualClassQName = containingClass.qualifiedName ?: return
 
-        val desiredClassQName = qualifiedMethodNames[staticReference.referenceName]
+        val desiredClassQName = AppSettingsState.getInstance().staticImports[staticReference.referenceName]
 
         if (desiredClassQName != actualClassQName) return
 

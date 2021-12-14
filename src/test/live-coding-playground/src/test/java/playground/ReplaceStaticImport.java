@@ -23,7 +23,7 @@ public class ReplaceStaticImport {
         Assertions.assertThat(1).isEqualTo(1);
 
         verify();
-        Mockito.verify(aMock).getInt();
+        Mockito.verify(aMock, Mockito.times(1)).getInt();
         Duration d = Duration.ofMillis(100);
         Future<Integer> future = CompletableFuture.completedFuture(1);
         future.get(1, TimeUnit.MILLISECONDS);
