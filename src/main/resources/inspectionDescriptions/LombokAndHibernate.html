@@ -1,0 +1,20 @@
+<html>
+<body>
+<p>Highlights places in which Lombok generates dangerous code for a JPA/Hibernate <code>@Entity</code></p>
+<p>Including all fields in a generated <code>toString</code> implementation can
+    trigger lazy-loading collections of children leading to runtime exceptions or (worse) degraded performance caused by
+    (sometime useless) network traffic and memory churn. @ToString.Exclude will be added to all collection fields, unless they were already marked with @ToString.Include</p>
+<p>Implementing <code>hashCode</code> and <code>equals</code> on <b>all</b> fields of an <code>@Entity</code> is
+    generally discouraged,
+    as the ORM assigns the @Id and other fields at .persist() time. This will cause the hashCode to return a different
+    value, which may lead to unexpected behavior when adding your instances of your Entities of a HashSet or as keys in
+    a HashMap.
+</p>
+<p>Lastly, from a design point of view, opening all fields to read/write from outside breaks encapsulation of your
+    Domain Entity, and promotes an <b>Anemic</b> Domain Model. In general, it is advisable to only provide
+    setters for those fields that can freely be changed from outside. In short, the decision to break encapsulation
+    should be made with greater care in most projects.</p>
+<!-- tooltip end -->
+<p>Text after this comment will only be shown in the settings of the inspection.</p>
+</body>
+</html>

@@ -1,7 +1,6 @@
 <html>
 <body>
-Detects constructors that are assigning final fields to parameters in the same order.
-If the constructor doesn't contain any extra code than the assignment,
-the inspection suggests replacing the constructor with @RequiredArgsConstructor from Lombok.
+If a constructor assigns all private final fields and it does't contain any extra code than the assignments,
+the inspection suggests replacing the constructor with <code>@RequiredArgsConstructor</code> from Lombok.
 </body>
 </html>

@@ -1,6 +1,8 @@
 <html>
 <body>
-Detects final fields not assign (not compiling) and offers to annotate the class with @RequiredArgsConstructor from Lombok, which will generate a constructor for every private final field.
-
+When <code>private final</code> instance fields are neither assigned in constructor,
+nor initialized at declaration (that is, the code does not compile),
+suggest adding the <code>@RequiredArgsConstructor</code> annotation (Lombok) to the class
+to generate the necessary constructor.
 </body>
 </html>

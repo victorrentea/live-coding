@@ -8,6 +8,8 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
+import com.intellij.psi.PsiModifier.FINAL
+import com.intellij.psi.PsiModifier.STATIC
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
 import kotlin.math.min
@@ -25,15 +27,15 @@ class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
 class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
     override fun visitElement(field: PsiElement) {
         if (field !is PsiField) return
-
-        if (field.hasModifierProperty(PsiModifier.FINAL) &&
-            !field.hasModifierProperty(PsiModifier.STATIC) &&
-            !field.hasInitializer() &&
-            field.containingClass?.constructors?.isEmpty() == true) {
+        if (field.hasModifierProperty(STATIC)) return
+        if (!field.hasModifierProperty(FINAL)) return
+        if (field.hasInitializer()) return // private final int x = 2
+        if (field.containingClass?.constructors?.isEmpty() == true) {
 
             val textLength = min(
                 field.nameIdentifier.textRangeInParent.endOffset + 1,
-                field.nameIdentifier.parent.textRange.length)
+                field.nameIdentifier.parent.textRange.length
+            )
             val textRange = TextRange(0, textLength)  // +1 so ALT-ENTER works even after ;
 
             holder.registerProblem(

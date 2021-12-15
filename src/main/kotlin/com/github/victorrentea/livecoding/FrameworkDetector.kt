@@ -12,4 +12,8 @@ object FrameworkDetector {
         JavaPsiFacade.getInstance(element.project)
             .findClass("org.slf4j.LoggerFactory", element.resolveScope) != null
 
+    fun jpaIsPresent(element: PsiElement) =
+        JavaPsiFacade.getInstance(element.project)
+            .findClass("javax.persistence.Entity", element.resolveScope) != null
+
 }

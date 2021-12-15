@@ -27,19 +27,25 @@
 
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.Slf4jAnnotator"/>
         <localInspection language="JAVA"
-                         displayName="Replace constructor with @RequiredArgsConstructor"
+                         displayName="Replace boilerplate constructor with @RequiredArgsConstructor"
                          groupName="Redundant definitions"
-                         groupPath="Java,Lombok"
+                         groupPath="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.ReplaceWithRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
                          displayName="Add @RequiredArgsConstructor to set final fields"
                          groupName="Redundant definitions"
-                         groupPath="Java,Lombok"
+                         groupPath="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.AddRequiredArgsConstructorInspection"/>
+        <localInspection language="JAVA"
+                         displayName="Avoid using @Data on @Entity"
+                         groupName="Lombok"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.LombokAndHibernateInspection"/>
     </extensions>
 
 </idea-plugin>
