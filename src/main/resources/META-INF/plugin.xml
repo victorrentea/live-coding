@@ -46,6 +46,12 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.LombokAndHibernateInspection"/>
+        <localInspection language="JAVA"
+                         displayName="Local variable can be split in separate declarations"
+                         groupName="JAVA"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.SplitVariableInspection"/>
     </extensions>
 
 </idea-plugin>

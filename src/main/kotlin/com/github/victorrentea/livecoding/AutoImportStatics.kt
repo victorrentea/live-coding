@@ -1,49 +1,19 @@
 package com.github.victorrentea.livecoding
 
 import com.github.victorrentea.livecoding.settings.AppSettingsState
-import com.intellij.ide.CopyPasteManagerEx
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.project.Project
 import com.intellij.psi.*
-import com.intellij.util.ui.TextTransferable
 import com.siyeh.ig.psiutils.ImportUtils
-import git4idea.branch.GitBranchUtil
-import org.jetbrains.annotations.NotNull
 
 class AutoImportStatics : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         e.getData(CommonDataKeys.PSI_FILE)?.accept(AutoImportStaticsVisitor())
     }
 }
-//object AutoImportConstants {
-//    val qualifiedMethodNames = parse(
-//        "org.assertj.core.api.Assertions#assertThat",
-//        "java.util.stream.Collectors#toSet",
-//        "java.util.stream.Collectors#toList",
-//        "java.util.stream.Collectors#toMap",
-//        "java.util.stream.Collectors#groupingBy",
-//        "java.util.function.Predicate#not",
-//        "org.mockito.Mockito#mock",
-//        "org.mockito.Mockito#when",
-//        "org.mockito.Mockito#verify",
-//        "java.lang.System#currentTimeMillis",
-//        "org.mockito.ArgumentMatchers#anyInt",
-//        "org.mockito.ArgumentMatchers#any",
-//        "org.mockito.ArgumentMatchers#anyString",
-//        "org.mockito.ArgumentMatchers#anyLong",
-//        "java.util.concurrent.TimeUnit#MILLISECONDS",
-//        "java.time.Duration#ofSeconds",
-//        "java.time.Duration#ofMillis",
-//        "java.util.concurrent.CompletableFuture#completedFuture"
-//    )
-//    private fun parse(vararg qualifiedMethods :String) =
-//        qualifiedMethods.toList()
-//            .associate { it.substringAfter("#") to it.substringBefore("#") }
-//}
 class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
 
     override fun visitElement(element: PsiElement) {

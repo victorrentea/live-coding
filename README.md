@@ -25,5 +25,7 @@ Next features:
   for () v = v + 1;  NO
   v = 73;
   try {v += 44;}
+- var fara init, folosita in blocuri disjuncte: = apoi ref. !! dupa sa nu existe ref
+- var cu init, folosita in blocuri disjuncte
 <!-- Plugin description end -->
 
