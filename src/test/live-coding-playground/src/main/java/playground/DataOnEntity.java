@@ -21,7 +21,7 @@ public class DataOnEntity {
 
     private String name;
 
-    @ToString.Include
+    @ToString.Exclude
     @ElementCollection
     private List<String> children;
 }

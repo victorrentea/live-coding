@@ -24,9 +24,10 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
         if (psiLocalVar !is PsiLocalVariable) return
         val declarationBlock = PsiTreeUtil.getParentOfType(psiLocalVar, PsiCodeBlock::class.java) ?: return
 
-        println("\n\n\n\nSTART with $declarationBlock")
+        println("\n\n\n\nSTART with ${declarationBlock.text}")
 
         val allReferences = PsiTreeUtil.findChildrenOfType(declarationBlock, PsiReferenceExpression::class.java)
+        allReferences.filter { it.resolve() == null }.forEach {println("UNRESOLVED: $it")}
         if (allReferences.any { it.resolve() == null }) return
 
         val referencesToMe = allReferences
@@ -55,10 +56,11 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
 
         if (topBlocks.size == 1) return
 
-        if (false) // WIP
+        println("FOUND inspection!")
+//        if (false) // WIP
         holder.registerProblem(
             psiLocalVar,
-            "Variable can be split in separate declarations",
+            Constants.SPLIT_VARIABLE_DESCRIPTION,
             ProblemHighlightType.WARNING,
             SplitVariableQuickFix(psiLocalVar)
         )

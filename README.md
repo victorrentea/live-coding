@@ -16,6 +16,8 @@ This plugin helps people write code faster for presentations, demos or discussio
 I created this plugin to optimize the live coding that I do during my training sessions and presentations. More about me : https://www.victorrentea.ro
 
 Next features:
+- lower the @RAC replace hint to only fix unless you are in a @Component, or another annotation annotated with @Component
+- [wow!] anonymize a method by replacing names with other names and creating the necessary stubbing. Maybe also detecting complex methods to select.
 - if some fields are already assigned in constructor, make sure AddRequiredArgsConstructor deletes the boilerplate ctor.
 - detect local calls of spring aspected annotations
 - Split Variable

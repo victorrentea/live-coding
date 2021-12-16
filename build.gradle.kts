@@ -114,9 +114,13 @@ tasks {
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
     }
+    test {
+        systemProperty("idea.home.path", "C:\\workspace\\intellij-community-master")
+    }
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.1.51")
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {

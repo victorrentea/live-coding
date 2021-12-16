@@ -65,7 +65,9 @@ class LombokAndHibernateVisitor(private val holder: ProblemsHolder) : PsiElement
     }
 
 }
-fun PsiModifierListOwner.addAnnotation(qualifiedName:String) {
+
+/** Adds the annotation if not already present */
+fun PsiModifierListOwner.setAnnotation(qualifiedName:String) {
     val modifiers = modifierList ?: return
     if (modifiers.hasAnnotation(qualifiedName)) return
     val annotation = modifiers.addAnnotation(qualifiedName)
@@ -89,9 +91,9 @@ class ReplaceDataOnEntityQuickFix(psiClass: PsiClass) : LocalQuickFixOnPsiElemen
     override fun invoke(project: Project, file: PsiFile, psiClass: PsiElement, endElement: PsiElement) {
         if (psiClass !is PsiClass) return;
         psiClass.removeAnnotation("lombok.Data")
-        psiClass.addAnnotation("lombok.Getter")
-        psiClass.addAnnotation("lombok.Setter")
-        psiClass.addAnnotation("lombok.ToString")
+        psiClass.setAnnotation("lombok.Getter")
+        psiClass.setAnnotation("lombok.Setter")
+        psiClass.setAnnotation("lombok.ToString")
         ExcludeCollectionsFromToStringQuickFix.excludeCollectionFields(psiClass)
     }
 }
@@ -110,7 +112,7 @@ class ExcludeCollectionsFromToStringQuickFix(psiClass: PsiClass) : LocalQuickFix
             // TODO what about fields from superclasses : Postpone as it's not likely to have a collection in supertype
             for (field in psiClass.fields) {
                 if (field.hasCollectionType() && !field.hasAnnotation("lombok.ToString.Include")) {
-                    field.addAnnotation("lombok.ToString.Exclude")
+                    field.setAnnotation("lombok.ToString.Exclude")
                 }
             }
         }
