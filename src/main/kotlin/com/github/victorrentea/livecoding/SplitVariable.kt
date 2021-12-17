@@ -17,29 +17,34 @@ class SplitVariableInspection : LocalInspectionTool() {
     }
 }
 
+fun PsiReferenceExpression.isAssigned() = (parent as? PsiAssignmentExpression)?.lExpression == this
+
+fun PsiElement.getLineNumber(): Int {
+    val containingFile: PsiFile = this.containingFile
+    val fileViewProvider = containingFile.viewProvider
+    val document = fileViewProvider.document
+    return document?.getLineNumber(this.textOffset)?.let { it + 1 } ?: -1
+}
+
 class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
     override fun visitElement(psiLocalVar: PsiElement) {
         super.visitElement(psiLocalVar)
-
+//        if (true) return // WIP
         if (psiLocalVar !is PsiLocalVariable) return
-        val declarationBlock = PsiTreeUtil.getParentOfType(psiLocalVar, PsiCodeBlock::class.java) ?: return
+        val declarationBlock = psiLocalVar.containingBlock ?: return
 
-        println("\n\n\n\nSTART with ${declarationBlock.text}")
+        println("\n\n\n\nSTART with declaration $psiLocalVar in ${declarationBlock.text} at line ${psiLocalVar.getLineNumber()}")
 
-        val allReferences = PsiTreeUtil.findChildrenOfType(declarationBlock, PsiReferenceExpression::class.java)
-        allReferences.filter { it.resolve() == null }.forEach {println("UNRESOLVED: $it")}
-        if (allReferences.any { it.resolve() == null }) return
+        val referencesToMe = psiLocalVar.referencesToMe
+        println("Found ${referencesToMe.size} references at lines " + referencesToMe.map { it.getLineNumber() })
 
-        val referencesToMe = allReferences
-            .filter { it.resolve() == psiLocalVar }
-        println("Found ${referencesToMe.size} references")
 
-        val assignments = referencesToMe.filter { (it.parent as? PsiAssignmentExpression)?.lExpression == it }
+        val assignments = referencesToMe.filter { it.isAssigned() }
         println("Assignments: " + assignments)
 
-        val blocks = referencesToMe.map { it.parentCodeBlock()!! }
-            .map { PsiTreeUtil.getTopmostParentOfType(it, PsiForStatement::class.java)?.parentCodeBlock() ?: it}
-            .map { if (it.isAncestor(declarationBlock)) declarationBlock else it}
+        val blocks = referencesToMe.map { it.containingBlock!! }
+            .map { PsiTreeUtil.getTopmostParentOfType(it, PsiForStatement::class.java)?.containingBlock ?: it }
+            .map { if (it.isAncestor(declarationBlock)) declarationBlock else it }
             .distinct()
         println("blocks: $blocks")
 
@@ -54,27 +59,84 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
 
         println("Top blocks: ${topBlocks.size}")
 
-        if (topBlocks.size == 1) return
+        if (topBlocks.size > 1) {
+            println("can break variable in exclusive blocks")
+            holder.registerProblem(
+                psiLocalVar,
+                Constants.SPLIT_VARIABLE_DESCRIPTION,
+                ProblemHighlightType.WARNING,
+                SplitVariableQuickFix(psiLocalVar)
+            )
+        } else {
+            fun PsiReferenceExpression.isWrite() = isAssigned()
+            fun PsiReferenceExpression.isRead() = !isAssigned()
 
-        println("FOUND inspection!")
-//        if (false) // WIP
-        holder.registerProblem(
-            psiLocalVar,
-            Constants.SPLIT_VARIABLE_DESCRIPTION,
-            ProblemHighlightType.WARNING,
-            SplitVariableQuickFix(psiLocalVar)
-        )
+            var i = 1;
+            while (i < referencesToMe.size) {
+                while (i < referencesToMe.size && referencesToMe[i].isRead()) i++ // skip
+                if (i == referencesToMe.size) break;
+                // i = write
+                while (i < referencesToMe.size && referencesToMe[i].isWrite()) i++ // skip to the last
+                i-- // i = last write after reads
+                if (i + 1 < referencesToMe.size) {
+                    // there are reads after me
+                    println("Trying to split at assignment on line " + referencesToMe[1].getLineNumber())
 
+                    // all later usages are in this or children blocks
+                    val laterUsages = referencesToMe.drop(i + 1)
+                    if (laterUsages.all { referencesToMe[i].containingBlock.isAncestor(it) }) {
+                        val assignToSplit = referencesToMe[i].parent as? PsiAssignmentExpression ?: return
+                        println("ADDED PROBLEM")
+                        holder.registerProblem(
+                            assignToSplit,
+                            Constants.SPLIT_VARIABLE_DESCRIPTION,
+                            ProblemHighlightType.WARNING,
+                            DefineNewVariable(psiLocalVar, assignToSplit)
+                        )
+                    } else {
+                        println("Some later usages are not in child blocks")
+                    }
+                    i++
+                }
 
+            }
+        }
     }
-
 }
 
+private val PsiElement.containingBlock get() = PsiTreeUtil.getParentOfType(this, PsiCodeBlock::class.java)
+private val PsiLocalVariable.referencesToMe
+    get() =
+        PsiTreeUtil.findChildrenOfType(containingBlock, PsiReferenceExpression::class.java)
+            .filter { it.resolve() == this }
 
-private fun PsiElement.parentCodeBlock() =
-    PsiTreeUtil.getParentOfType(this, PsiCodeBlock::class.java)
 
-//
+class DefineNewVariable(localVariable: PsiLocalVariable, reassignment: PsiAssignmentExpression) :
+    LocalQuickFixOnPsiElement(localVariable, reassignment) {
+
+    override fun getFamilyName() = "Live-Coding"
+
+    override fun getText() = "Split variable"
+
+    override fun invoke(project: Project, file: PsiFile, localVariable: PsiElement, reassignment: PsiElement) {
+        if (localVariable !is PsiLocalVariable) return
+        if (reassignment !is PsiAssignmentExpression) return
+
+        println(" ---------- act ${localVariable.name} ---------")
+        val usages = localVariable.referencesToMe
+        val usagesOfNewVariable = usages.drop(usages.indexOf(reassignment.lExpression) + 1)
+
+        WriteCommandAction.runWriteCommandAction(project, "Split Variable", "Live-Coding", {
+            replaceAssignmentWithDeclaration(reassignment, localVariable, localVariable.name + "_")
+            for (psiReferenceExpression in usagesOfNewVariable) {
+                val elementFactory = JavaPsiFacade.getElementFactory(project)
+                val ref = elementFactory.createExpressionFromText(localVariable.name + "_", psiReferenceExpression);
+                println("Replacing $psiReferenceExpression with $ref at line ${psiReferenceExpression.getLineNumber()}")
+                psiReferenceExpression.replace(ref)
+            }
+        })
+    }
+}
 
 //
 class SplitVariableQuickFix(psiLocalVariable: PsiLocalVariable) : LocalQuickFixOnPsiElement(psiLocalVariable) {
@@ -95,9 +157,6 @@ class SplitVariableQuickFix(psiLocalVariable: PsiLocalVariable) : LocalQuickFixO
             .filter { (it.parent as? PsiAssignmentExpression)?.lExpression == it }
             .map { it.parent as PsiAssignmentExpression }
 
-        val blocks = references.map { PsiTreeUtil.getParentOfType(it, PsiCodeBlock::class.java) }.distinct()
-
-
         val firstAssignmentsInBlock = assignments.groupBy { PsiTreeUtil.getParentOfType(it, PsiCodeBlock::class.java) }
             .mapValues { it.value[0] }
             .values
@@ -105,24 +164,24 @@ class SplitVariableQuickFix(psiLocalVariable: PsiLocalVariable) : LocalQuickFixO
         WriteCommandAction.runWriteCommandAction(project, "Split Variable", "Live-Coding", {
 
             for (firstAssignmentInBlock in firstAssignmentsInBlock) {
-                replaceAssignmentWithDeclaration(firstAssignmentInBlock, psiLocalVariable)
+                replaceAssignmentWithDeclaration(firstAssignmentInBlock, psiLocalVariable, psiLocalVariable.name)
             }
             (psiLocalVariable.parent as? PsiDeclarationStatement)?.delete()
 
         })
-
-
     }
 
-    private fun replaceAssignmentWithDeclaration(
-        firstAssignmentInBlock: PsiAssignmentExpression,
-        psiLocalVariable: PsiLocalVariable
-    ) {
-        val psiFactory = JavaPsiFacade.getElementFactory(firstAssignmentInBlock.project)
-        val newDeclaration = psiFactory.createVariableDeclarationStatement(
-                psiLocalVariable.name, psiLocalVariable.type, firstAssignmentInBlock.rExpression
-            )
-        firstAssignmentInBlock.parent.replace(newDeclaration)
-    }
 
+}
+
+private fun replaceAssignmentWithDeclaration(
+    psiAssignmentExpression: PsiAssignmentExpression,
+    psiLocalVariable: PsiLocalVariable,
+    variableName: String
+) {
+    val psiFactory = JavaPsiFacade.getElementFactory(psiAssignmentExpression.project)
+    val newDeclaration = psiFactory.createVariableDeclarationStatement(
+        variableName, psiLocalVariable.type, psiAssignmentExpression.rExpression
+    )
+    psiAssignmentExpression.parent.replace(newDeclaration)
 }
