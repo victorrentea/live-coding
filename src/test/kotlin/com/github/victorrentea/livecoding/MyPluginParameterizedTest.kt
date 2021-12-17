@@ -28,9 +28,9 @@ class MyPluginParameterizedTest(val fileName: String) : LightJavaCodeInsightFixt
             if (files.isEmpty()) throw IllegalArgumentException("No files found in ${folder.absolutePath}")
             val names = files.map { it.toRelativeString(javaSrcFolder) }
             for (inputFileName in names) {
-                val expectedFile = File(javaSrcFolder, getExpectedFile(inputFileName))
-                if (!expectedFile.isFile)
-                    throw IllegalArgumentException("Expected file not found at ${expectedFile.absolutePath}")
+//                val expectedFile = File(javaSrcFolder, getExpectedFile(inputFileName))
+//                if (!expectedFile.isFile)
+//                    throw IllegalArgumentException("Expected file not found at ${expectedFile.absolutePath}")
             }
             println("FOUND NAMES: $names")
             return names
@@ -46,38 +46,29 @@ class MyPluginParameterizedTest(val fileName: String) : LightJavaCodeInsightFixt
 
         myFixture.configureByFiles(fileName);
 
-        val expectedHighlightedLines: Map<Int, List<Int>> = File(JAVA_SRC_FOLDER, fileName).readLines()
-            .mapIndexedNotNull { lineNumber, line ->
-                if (line.contains("//"))
-                    lineNumber + 1 to line.substringAfter("//").trim().toInt()
-                else null
-            }
-            .groupBy({ (_, iteration) -> iteration }, { (lineNumber, _) -> lineNumber })
+
+        val expectedHighlightedLines = File(JAVA_SRC_FOLDER, fileName).readLines()
+            .mapIndexedNotNull { lineNumber, line -> if (line.contains("//")) lineNumber + 1 else null }
         println("EXPECTED HIGHLIGHTED LINES: " + expectedHighlightedLines)
 
-        for (iteration in expectedHighlightedLines.keys) {
+        val highlights = myFixture.doHighlighting()./*also { println("Highlights: " + it) }.*/filter { it.description == SPLIT_VARIABLE_DESCRIPTION }
 
-            val highlights = myFixture.doHighlighting().filter { it.description == SPLIT_VARIABLE_DESCRIPTION }
+        val actualHighlightedLines = highlights.map { it.getLineNumber() }
 
-            val actualHighlightedLines = highlights.map { it.getLineNumber() }
+        println("Actual highlighted lines: " + actualHighlightedLines + "vs" + expectedHighlightedLines)
+        assertEquals("Highlighted line numbers", actualHighlightedLines, expectedHighlightedLines)
 
-            println("Actual highlighted lines: " + expectedHighlightedLines[iteration] + "vs" + expectedHighlightedLines[iteration])
-            assertEquals("Highlighted line numbers", actualHighlightedLines, expectedHighlightedLines[iteration])
+        if (highlights.isNotEmpty()) {
+            val highlight = highlights[0]
 
+            myFixture.editor.caretModel.moveToOffset(highlight!!.startOffset)
 
+            val intention = myFixture.getAvailableIntention(SPLIT_VARIABLE_DESCRIPTION)!!
+            println("TEST: applying fix at line ${highlight.getLineNumber()}")
+            intention.invoke(project, editor, file)
 
-            for (highlight in highlights.reversed()) {
-                myFixture.editor.caretModel.moveToOffset(highlight!!.startOffset)
-
-                val intention = myFixture.getAvailableIntention(SPLIT_VARIABLE_DESCRIPTION)!!
-                println("TEST: applying fix at line ${highlight.getLineNumber()}")
-                intention.invoke(project, editor, file)
-            }
-
+            myFixture.checkResultByFile(getExpectedFile(fileName));
         }
-        myFixture.checkResultByFile(getExpectedFile(fileName));
-
-
     }
 
     private fun HighlightInfo.getLineNumber()=
