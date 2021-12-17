@@ -20,10 +20,13 @@ class SplitVariableInspection : LocalInspectionTool() {
 fun PsiReferenceExpression.isAssigned() = (parent as? PsiAssignmentExpression)?.lExpression == this
 
 fun PsiElement.getLineNumber(): Int {
-    val containingFile: PsiFile = this.containingFile
-    val fileViewProvider = containingFile.viewProvider
+    return getLineNumber(this.containingFile, this.textOffset)
+}
+
+fun getLineNumber(psiFile: PsiFile, offset:Int): Int {
+    val fileViewProvider = psiFile.viewProvider
     val document = fileViewProvider.document
-    return document?.getLineNumber(this.textOffset)?.let { it + 1 } ?: -1
+    return document?.getLineNumber(offset)?.let { it + 1 } ?: -1
 }
 
 class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
@@ -80,7 +83,7 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
                 i-- // i = last write after reads
                 if (i + 1 < referencesToMe.size) {
                     // there are reads after me
-                    println("Trying to split at assignment on line " + referencesToMe[1].getLineNumber())
+                    println("Trying to split at assignment on line " + referencesToMe[i].getLineNumber())
 
                     // all later usages are in this or children blocks
                     val laterUsages = referencesToMe.drop(i + 1)
@@ -131,7 +134,7 @@ class DefineNewVariable(localVariable: PsiLocalVariable, reassignment: PsiAssign
             for (psiReferenceExpression in usagesOfNewVariable) {
                 val elementFactory = JavaPsiFacade.getElementFactory(project)
                 val ref = elementFactory.createExpressionFromText(localVariable.name + "_", psiReferenceExpression);
-                println("Replacing $psiReferenceExpression with $ref at line ${psiReferenceExpression.getLineNumber()}")
+//                println("Replacing $psiReferenceExpression with $ref at line ${psiReferenceExpression.getLineNumber()}")
                 psiReferenceExpression.replace(ref)
             }
         })

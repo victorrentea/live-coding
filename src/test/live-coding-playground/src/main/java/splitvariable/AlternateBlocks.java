@@ -2,7 +2,7 @@ package splitvariable;
 
 public class AlternateBlocks {
     public void f(int p, int j) {
-        int x;
+        int x; // 1
         if (p == 1) {
             x = 2 + p;
             System.out.println(x);

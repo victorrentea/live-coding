@@ -8,7 +8,7 @@ public class LaterUsageInParentBlock {
             x = 5;
             System.out.println(x);
         }
-        x = 7;
+        x = 7; // 1
         System.out.println(x);
     }
 }
