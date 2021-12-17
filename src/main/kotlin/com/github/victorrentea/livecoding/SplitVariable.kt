@@ -91,7 +91,7 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
 
 
 
-                    if (laterUsages.isNotEmpty() && neverReadLaterInParentBlock(writeToDeclareAt, laterUsages)) {
+                    if (laterUsages.isNotE mpty() && neverReadLaterInParentBlock(writeToDeclareAt, laterUsages)) {
                         // values never "leak out of this block"
                         val assignToSplit = writeToDeclareAt.parent as? PsiAssignmentExpression ?: return
                         println("ADDED PROBLEM")
