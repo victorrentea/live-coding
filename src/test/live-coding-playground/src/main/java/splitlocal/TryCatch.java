@@ -1,4 +1,4 @@
-package splitvar;
+package splitlocal;
 
 public class TryCatch {
     public void f(int p, int j) {

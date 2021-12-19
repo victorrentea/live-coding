@@ -1,5 +1,7 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.Constants.DECLARE_NEW_LOCAL_FIX_NAME
+import com.github.victorrentea.livecoding.Constants.DECLARE_NEW_LOCAL_INSPECTION_NAME
 import com.github.victorrentea.livecoding.Constants.SPLIT_VARIABLE_DESCRIPTION
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInspection.LocalInspectionTool
@@ -17,9 +19,10 @@ class DeclareNewLocalTest(fileName: String) : InspectionParameterizedTestBase(fi
         fun parameters(): List<String> = getInputFilePaths("declarenewlocal")
     }
 
-    override fun quickfixName() = SPLIT_VARIABLE_DESCRIPTION
+    override fun inspectionName() = DECLARE_NEW_LOCAL_INSPECTION_NAME
+    override fun fixName() = DECLARE_NEW_LOCAL_FIX_NAME
 
-    override fun inspectionClass(): Class<out LocalInspectionTool> = SplitVariableInspection::class.java
+    override fun inspectionClass(): Class<out LocalInspectionTool> = DeclareNewLocalInspection::class.java
 
 
 }

@@ -16,7 +16,8 @@ abstract class InspectionParameterizedTestBase(val fileName: String) : LightJava
 
     protected fun HighlightInfo.getLineNumber() = getLineNumber(myFixture.file, actualStartOffset)
 
-    protected abstract fun quickfixName(): String
+    protected abstract fun inspectionName(): String
+    protected abstract fun fixName(): String
 
     protected abstract fun inspectionClass(): Class<out LocalInspectionTool>
 
@@ -32,7 +33,7 @@ abstract class InspectionParameterizedTestBase(val fileName: String) : LightJava
 
         val highlights = myFixture.doHighlighting()
             /*.also { println("Highlights: " + it) }.*/
-            .filter { it.description == quickfixName() }
+            .filter { it.description == inspectionName() }
 
         val actualHighlightedLines = highlights.map { it.getLineNumber() }
 
@@ -43,7 +44,7 @@ abstract class InspectionParameterizedTestBase(val fileName: String) : LightJava
 
             myFixture.editor.caretModel.moveToOffset(highlight!!.startOffset)
 
-            val intention = myFixture.getAvailableIntention(quickfixName())!!
+            val intention = myFixture.getAvailableIntention(fixName())!!
             println("TEST: applying fix at line ${highlight.getLineNumber()}")
             intention.invoke(project, editor, file)
 

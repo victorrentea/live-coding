@@ -1,12 +1,12 @@
-package declarenewlocal;
+package splitlocal;
 
 public class IfElse {
     public void f(int p, int j) {
-        int x = 0;
         if (p == 1) {
-            x = 5; //
+            int x = 5;
             System.out.println(x);
         } else {
+            int x = 0;
             System.out.println(x);
         }
     }

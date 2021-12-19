@@ -2,11 +2,11 @@ package declarenewlocal;
 
 public class IfElse {
     public void f(int p, int j) {
+        int x = 0;
         if (p == 1) {
-            int x = 5;
-            System.out.println(x);
+            int x_ = 5; //
+            System.out.println(x_);
         } else {
-            int x = 0;
             System.out.println(x);
         }
     }
