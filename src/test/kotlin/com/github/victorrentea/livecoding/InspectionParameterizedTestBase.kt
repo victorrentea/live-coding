@@ -37,7 +37,7 @@ abstract class InspectionParameterizedTestBase(val fileName: String) : LightJava
 
         val actualHighlightedLines = highlights.map { it.getLineNumber() }
 
-        assertEquals("Highlighted line numbers", actualHighlightedLines, expectedHighlightedLines)
+        assertEquals("Highlighted line numbers", expectedHighlightedLines, actualHighlightedLines)
 
         if (highlights.isNotEmpty()) {
             val highlight = highlights[0]

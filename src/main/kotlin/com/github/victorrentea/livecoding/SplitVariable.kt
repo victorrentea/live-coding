@@ -71,6 +71,7 @@ val PsiLocalVariable.referencesToMe get() =
         PsiTreeUtil.findChildrenOfType(containingBlock, PsiReferenceExpression::class.java)
             .filter { it.resolve() == this }
 
+
 class SplitVariableQuickFix(psiLocalVariable: PsiLocalVariable) : LocalQuickFixOnPsiElement(psiLocalVariable) {
     override fun getFamilyName() = "Live-Coding"
 

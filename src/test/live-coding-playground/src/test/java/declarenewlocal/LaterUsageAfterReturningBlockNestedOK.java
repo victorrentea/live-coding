@@ -1,11 +1,13 @@
 package declarenewlocal;
 
-public class LaterUsageAfterReturningBlock {
+public class LaterUsageAfterReturningBlockNestedOK {
     public void f(int p, int j) {
         int x = 2;
         if (p == 1) {
-            int x_ = 5; //
-            System.out.println(x_);
+            if (j == 2) {
+                int x_ = 5; //
+                System.out.println(x_);
+            }
             return;
         }
         System.out.println(x);

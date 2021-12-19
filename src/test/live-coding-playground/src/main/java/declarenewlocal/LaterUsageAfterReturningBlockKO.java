@@ -1,12 +1,13 @@
 package declarenewlocal;
 
-public class LoopAssignedNotUsedLater {
+public class LaterUsageAfterReturningBlockKO {
     public void f(int p, int j) {
         int x = 2;
-        System.out.println(x);
-        for (int i = 0; i < j; i++) {
+        if (p == 1) {
             x = 5;
             System.out.println(x);
+            if (j==0) return;
         }
+        System.out.println(x);
     }
 }

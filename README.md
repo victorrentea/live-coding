@@ -20,6 +20,7 @@ Next features:
 - [wow!] anonymize a method by replacing names with other names and creating the necessary stubbing. Maybe also detecting complex methods to select.
 - if some fields are already assigned in constructor, make sure AddRequiredArgsConstructor deletes the boilerplate ctor.
 - detect local calls of spring aspected annotations
+- TODO: declare new local for params
 - Split Variable
   if (employees.size() != 0) {
     averageConsultantSalary /= employees.size();
@@ -29,5 +30,6 @@ Next features:
   try {v += 44;}
 - var fara init, folosita in blocuri disjuncte: = apoi ref. !! dupa sa nu existe ref
 - var cu init, folosita in blocuri disjuncte
+- DREAM: "analyze parameter mutation"
 <!-- Plugin description end -->
 

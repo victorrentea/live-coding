@@ -7,7 +7,7 @@ public class IfElse {
             x = 5; //
             System.out.println(x);
         } else {
-            System.out.println(x);
+            System.out.println("A" + x);
         }
     }
 }

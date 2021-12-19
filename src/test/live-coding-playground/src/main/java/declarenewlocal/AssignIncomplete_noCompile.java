@@ -1,10 +1,10 @@
-package declarenewlocal.operators;
+package declarenewlocal;
 
-public class PlusPlus {
+public class AssignIncomplete_noCompile {
     public void f(int p, int j) {
         int x = 2;
         System.out.println(x);
-        x++;
+        x /= ;
         System.out.println(x);
     }
 }
