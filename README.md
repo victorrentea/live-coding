@@ -19,7 +19,9 @@ More about me : https://www.victorrentea.ro
 Purpose: many times in legacy code a variable is declared, assigned and used with a certain meaning, but later on it is reassigned to a different value. 
 IntelliJ already highlights reassigned variables by underlining them to hint it's a bad idea to reassign local variables. 
 Immutable local variables are a default in many other modern languages like Kotlin, Scala, Closure.
-This inspection attempts to promote using variables for a single purpose, by proposing a fix to declare a new variable (with another name) whenever that's possible.
+This inspection attempts to promote using variables for a single purpose, 
+by proposing a fix to declare a new variable (with another name) whenever that's possible. 
+In other words, enabling easier application of the **Split Variable** Refactoring from the classic refactoring moves.
 
 Some cases are trivial, like for example `LinearRedefinition.java`, others are very tricky like `LaterUsageAfterReturningBlockNestedKO` while for other syntax examples
 I honestly don't know yet how and IF I want to implement this refactoring.
