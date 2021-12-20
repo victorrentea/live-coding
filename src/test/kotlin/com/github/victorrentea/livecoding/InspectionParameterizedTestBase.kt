@@ -2,6 +2,7 @@ package com.github.victorrentea.livecoding
 
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.testFramework.PsiTestUtil
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,7 +25,7 @@ abstract class InspectionParameterizedTestBase(val fileName: String) : LightJava
     @Test
     fun test() {
         myFixture.enableInspections(inspectionClass())
-//        PsiTestUtil.addLibrary(, "C:\\Users\\victo\\.m2\\repository\\org\\projectlombok\\lombok\\1.18.22\\lombok-1.18.22.jar")
+        PsiTestUtil.addLibrary(myFixture.module, "C:\\Users\\victo\\.m2\\repository\\org\\projectlombok\\lombok\\1.18.22\\lombok-1.18.22.jar")
 
         myFixture.configureByFiles(fileName);
 

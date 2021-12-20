@@ -8,9 +8,11 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.psi.*
 import com.siyeh.ig.psiutils.ImportUtils
 import git4idea.util.GitUIUtil
+import java.awt.Color
 
 class AutoImportStatics : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {

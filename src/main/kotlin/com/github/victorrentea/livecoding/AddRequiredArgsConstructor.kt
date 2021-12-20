@@ -6,6 +6,7 @@ import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
@@ -67,8 +68,10 @@ class AddRequiredArgsConstructorFix(field: PsiField) : LocalQuickFixOnPsiElement
     override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
         val parentClass = PsiTreeUtil.getParentOfType(startElement, PsiClass::class.java) ?: return
         val modifiers = parentClass.modifierList ?: return
-        val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
-        JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
+        WriteCommandAction.runWriteCommandAction(project, FIX_NAME, "Live-Coding", {
+            val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
+            JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
+        })
     }
 
 }

@@ -2,6 +2,7 @@ package com.github.victorrentea.livecoding
 
 import com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.intellij.codeInspection.*
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
@@ -89,10 +90,13 @@ class ReplaceRequiredArgsConstructorFix(constructor: PsiMethod) : LocalQuickFixO
     override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
         val parentClass = PsiTreeUtil.getParentOfType(constructor, PsiClass::class.java) ?: return
         val modifiers = parentClass.modifierList ?: return
-        val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
-        JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
 
-        constructor.delete()
+        WriteCommandAction.runWriteCommandAction(project, FIX_NAME, "Live-Coding", {
+            val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
+            JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
+
+            constructor.delete()
+        })
     }
 
 }

@@ -1,7 +1,6 @@
 package lombok.replacerac;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class ReplaceRAC_TwoArg_Component {
