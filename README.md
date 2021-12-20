@@ -31,14 +31,17 @@ Please help me to identify more code examples for this refactoring.
 First check out the examples in the [src/test/live-coding-playground/src/main/java/declarenewlocal](https://github.com/victorrentea/live-coding/tree/main/src/test/live-coding-playground/src/main/java/declarenewlocal)
 The convention is that whenever you see a `//` on a line, the fix is suggested there.
 
-** Question is: did I miss any interesting case? **
+**Question is: did I miss any interesting case?**
+
 Please help.
 Thank you!
+
+PS: you could also install the "Live-coding Toolkit" plugin if you want to test the feature on your code.
 
 **Note**: After it stabilizes, I plan to contribute this quickfix to IntelliJ IDEA Community to make it available for all Java developers out there. 
 
 ## Next features:
-- **Split Variable** to push declaration down in exclusive branches 
+- **Split Declaration** to push declaration down in exclusive branches 
 - Detect "-> {" containing more than one return statement and suggest extracting a method
 - Detect consecutive IF on exclusive == , suggest adding an "else"
 - Suggest avoiding "default ->" in switch expressions on enums (to allow the compiler to check all branches)

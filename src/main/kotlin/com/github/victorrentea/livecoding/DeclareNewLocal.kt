@@ -65,7 +65,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                     holder.registerProblem(
                         assignToSplit,
                         DeclareNewLocalInspection.INSPECTION_NAME,
-                        ProblemHighlightType.WARNING,
+                        ProblemHighlightType.WEAK_WARNING,
                         DeclareNewLocalFix(psiLocalVar, assignToSplit)
                     )
                 } else {

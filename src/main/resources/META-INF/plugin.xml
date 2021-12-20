@@ -58,7 +58,7 @@
                          displayName="Define a new variable to avoid re-assignment"
                          groupName="JAVA"
                          enabledByDefault="true"
-                         level="WARNING"
+                         level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.DeclareNewLocalInspection"/>
         <localInspection language="JAVA"
                          displayName="Remove final keyword from parameters and locals"
