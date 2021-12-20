@@ -18,6 +18,7 @@ class SettingsConfigurable: Configurable {
         val settings: AppSettingsState = AppSettingsState.getInstance()
 //        if (mySettingsComponent!!.userNameText != settings.userId) return true
 //        if (mySettingsComponent!!.ideaUserStatus != settings.ideaStatus) return true
+        if (mySettingsComponent!!.hardCoreImageBackgroundPath != settings.hardCoreImageBackgroundPath) return true
         if (mySettingsComponent!!.staticImports != settings.staticImportsList) return true
         return false
     }
@@ -26,12 +27,11 @@ class SettingsConfigurable: Configurable {
         val settings: AppSettingsState = AppSettingsState.getInstance()
 //        settings.userId = mySettingsComponent!!.userNameText!!
 //        settings.ideaStatus = mySettingsComponent!!.ideaUserStatus
+        settings.hardCoreImageBackgroundPath = mySettingsComponent!!.hardCoreImageBackgroundPath
         settings.staticImportsList = mySettingsComponent!!.staticImports
     }
 
-    override fun getDisplayName(): String {
-        return "Live-Coding Settings"
-    }
+    override fun getDisplayName() = "Live-Coding"
 
     override fun disposeUIResources() {
         mySettingsComponent = null;
@@ -41,6 +41,7 @@ class SettingsConfigurable: Configurable {
 //        mySettingsComponent!!.userNameText = settings.userId
 //        mySettingsComponent!!.ideaUserStatus = settings.ideaStatus
         mySettingsComponent!!.staticImports = settings.staticImportsList
+        mySettingsComponent!!.hardCoreImageBackgroundPath = settings.hardCoreImageBackgroundPath
     }
     override fun getPreferredFocusedComponent(): JComponent {
         return mySettingsComponent!!.getPreferredFocusedComponent();

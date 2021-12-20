@@ -20,9 +20,10 @@ class AutoImportStatics : AnAction() {
         val psiFile = e.getData(CommonDataKeys.PSI_FILE)
         psiFile?.accept(visitor)
 
+        val editor = e.getData(CommonDataKeys.EDITOR)
         ApplicationManager.getApplication().invokeLater {
             visitor.report()?.let { reportString ->
-                e.getData(CommonDataKeys.EDITOR)?.let { editor ->
+                editor?.let { editor ->
                     HintManager.getInstance().showInformationHint(editor, reportString)
                 }
             }

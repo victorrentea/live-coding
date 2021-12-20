@@ -22,7 +22,10 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
         set(newList)  {
             staticImports = parseStaticImports(newList)
         }
+    var hardCoreImageBackgroundPath: String
     init {
+        hardCoreImageBackgroundPath = "C:\\workspace\\live-coding-plugin\\src\\main\\resources\\icons\\warning.png"
+
         staticImportsList = listOf(
             "org.assertj.core.api.Assertions.assertThat",
             "java.util.stream.Collectors.toSet",
@@ -44,6 +47,8 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "java.util.concurrent.CompletableFuture.completedFuture"
         )
     }
+
+
 
     private fun parseStaticImports(lines: List<String>) =
         lines

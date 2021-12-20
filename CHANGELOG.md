@@ -39,3 +39,4 @@
 - Added inspection to remove final from parameters and local variables (no highlight, only fix)
 - Added nice balloon after static import completes
 - Added coloring the test editors in green (beta)
+- Added "Hardcore Mode" action (default mapped to ctrl-alt-w)
