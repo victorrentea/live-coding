@@ -1,22 +1,35 @@
 package com.github.victorrentea.livecoding
 
 import com.github.victorrentea.livecoding.settings.AppSettingsState
-import com.intellij.ide.util.PropertiesComponent
+import com.intellij.codeInsight.hint.HintManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.wm.impl.IdeBackgroundUtil
+import com.intellij.openapi.editor.Editor
 import com.intellij.psi.*
 import com.siyeh.ig.psiutils.ImportUtils
+import git4idea.util.GitUIUtil
 
 class AutoImportStatics : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
-        e.getData(CommonDataKeys.PSI_FILE)?.accept(AutoImportStaticsVisitor())
+        val visitor = AutoImportStaticsVisitor()
+        e.getData(CommonDataKeys.PSI_FILE)?.accept(visitor)
+
+        ApplicationManager.getApplication().invokeLater {
+            visitor.report()?.let { reportString ->
+                e.getData(CommonDataKeys.EDITOR)?.let { editor ->
+                    HintManager.getInstance().showInformationHint(editor, reportString)
+                }
+            }
+        }
     }
 }
 class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
+    private var count = 0
+
+    fun report(): String? = if (count > 0) "$count common statics imported" else null
 
     override fun visitElement(element: PsiElement) {
         super.visitElement(element)
@@ -40,6 +53,7 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
         ApplicationManager.getApplication().invokeLater {
             WriteCommandAction.runWriteCommandAction(unresolvedReference.project, "Auto-Import Statics", "Live-Coding", {
                 ImportUtils.addStaticImport(desiredClassQName, methodName, unresolvedReference)
+                count ++
             })
         }
     }
@@ -63,6 +77,7 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
                 if (importAdded) {
                     val qualifierExpression = staticReference.qualifierExpression
                     qualifierExpression?.delete()
+                    count ++
                 }
             })
         }

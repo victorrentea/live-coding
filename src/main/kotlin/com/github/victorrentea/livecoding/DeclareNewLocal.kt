@@ -10,6 +10,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
+import com.intellij.psi.JavaTokenType.*
 import com.intellij.psi.util.*
 import com.intellij.refactoring.rename.RenameHandlerRegistry
 import com.intellij.refactoring.suggested.endOffset
@@ -60,6 +61,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                     // values never "leak out of this block"
                     val assignToSplit = writeToDeclareAt.parent as? PsiAssignmentExpression ?: return
                     if (assignToSplit.rExpression == null) return
+                    if (!supportedAssignmentTokens.contains(assignToSplit.operationSign.tokenType))  return
 
                     println("ADDED PROBLEM")
                     holder.registerProblem(
@@ -174,6 +176,8 @@ class DeclareNewLocalFix(localVariable: PsiLocalVariable, reassignment: PsiAssig
     }
 }
 
+// TODO unify with when below
+val supportedAssignmentTokens = listOf(PLUSEQ, MINUSEQ, ASTERISKEQ, DIVEQ, PERCEQ, EQ);
 fun replaceAssignmentWithDeclaration(
     assignment: PsiAssignmentExpression,
     psiLocalVariable: PsiLocalVariable,
@@ -181,12 +185,12 @@ fun replaceAssignmentWithDeclaration(
 ) {
     val psiFactory = JavaPsiFacade.getElementFactory(assignment.project)
     val declarationInit = when (assignment.operationSign.tokenType) {
-        JavaTokenType.PLUSEQ -> psiBinaryExpression(psiLocalVariable.name, "+", assignment.rExpression!!)
-        JavaTokenType.MINUSEQ -> psiBinaryExpression(psiLocalVariable.name, "-", assignment.rExpression!!)
-        JavaTokenType.ASTERISKEQ -> psiBinaryExpression(psiLocalVariable.name, "*", assignment.rExpression!!)
-        JavaTokenType.DIVEQ -> psiBinaryExpression(psiLocalVariable.name, "/", assignment.rExpression!!)
-        JavaTokenType.PERCEQ -> psiBinaryExpression(psiLocalVariable.name, "%", assignment.rExpression!!)
-        JavaTokenType.EQ -> assignment.rExpression
+        PLUSEQ -> psiBinaryExpression(psiLocalVariable.name, "+", assignment.rExpression!!)
+        MINUSEQ -> psiBinaryExpression(psiLocalVariable.name, "-", assignment.rExpression!!)
+        ASTERISKEQ -> psiBinaryExpression(psiLocalVariable.name, "*", assignment.rExpression!!)
+        DIVEQ -> psiBinaryExpression(psiLocalVariable.name, "/", assignment.rExpression!!)
+        PERCEQ -> psiBinaryExpression(psiLocalVariable.name, "%", assignment.rExpression!!)
+        EQ -> assignment.rExpression
         else -> throw IllegalArgumentException("Unsupported token in assignment: " + assignment.text)
     }
     val newDeclaration = psiFactory.createVariableDeclarationStatement(
