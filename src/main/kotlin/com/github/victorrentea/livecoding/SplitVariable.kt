@@ -9,6 +9,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.isAncestor
+import com.intellij.psi.util.parentOfType
+import com.intellij.psi.util.parentOfTypes
 
 
 class SplitVariableInspection : LocalInspectionTool() {
@@ -68,8 +70,8 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
 }
 
 val PsiElement.containingBlock get() = PsiTreeUtil.getParentOfType(this, PsiCodeBlock::class.java)
-val PsiLocalVariable.referencesToMe get() =
-        PsiTreeUtil.findChildrenOfType(containingBlock, PsiReferenceExpression::class.java)
+val PsiVariable.referencesToMe get() =
+        PsiTreeUtil.findChildrenOfType(parentOfTypes(PsiMethod::class), PsiReferenceExpression::class.java)
             .filter { it.resolve() == this }
 
 

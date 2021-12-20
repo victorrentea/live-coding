@@ -29,14 +29,14 @@ class DeclareNewLocalInspection : LocalInspectionTool() {
 }
 
 class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
-    override fun visitElement(psiLocalVar: PsiElement) {
-        if (PsiErrorElementUtil.hasErrors(psiLocalVar.project, psiLocalVar.containingFile.virtualFile)) return;
-
-        super.visitElement(psiLocalVar)
-        if (psiLocalVar !is PsiLocalVariable) return
+    override fun visitElement(element: PsiElement) {
+        super.visitElement(element)
+        if (element !is PsiLocalVariable && element !is PsiParameter) return
+        val psiLocalVar: PsiVariable = element as PsiVariable
 
         val referencesToMe = psiLocalVar.referencesToMe
-        println("\nEXAMINE DEFINE NEW LOCAL ${psiLocalVar.name} referenced on lines " + referencesToMe.map { ":" + it.getLineNumber() + "(" + (if (it.isRead()) "R" else "W") + ")" })
+        println("\nEXAMINE DEFINE NEW LOCAL ${psiLocalVar.name} referenced on lines " +
+                referencesToMe.map { ":" + it.getLineNumber() + "(" + (if (it.isRead()) "R" else "W") + ")" })
 
 
         var i = 0
@@ -135,7 +135,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
 fun PsiReferenceExpression.isAssigned() = (parent as? PsiAssignmentExpression)?.lExpression == this
 
 
-class DeclareNewLocalFix(localVariable: PsiLocalVariable, reassignment: PsiAssignmentExpression) :
+class DeclareNewLocalFix(localVariable: PsiVariable, reassignment: PsiAssignmentExpression) :
     LocalQuickFixOnPsiElement(localVariable, reassignment) {
 
     companion object {
@@ -147,7 +147,7 @@ class DeclareNewLocalFix(localVariable: PsiLocalVariable, reassignment: PsiAssig
     override fun getText() = FIX_NAME
 
     override fun invoke(project: Project, file: PsiFile, localVariable: PsiElement, reassignment: PsiElement) {
-        if (localVariable !is PsiLocalVariable) return
+        if (localVariable !is PsiVariable) return
         if (reassignment !is PsiAssignmentExpression) return
 
         println(" ---------- act ${localVariable.name} ---------")
@@ -180,16 +180,16 @@ class DeclareNewLocalFix(localVariable: PsiLocalVariable, reassignment: PsiAssig
 val supportedAssignmentTokens = listOf(PLUSEQ, MINUSEQ, ASTERISKEQ, DIVEQ, PERCEQ, EQ);
 fun replaceAssignmentWithDeclaration(
     assignment: PsiAssignmentExpression,
-    psiLocalVariable: PsiLocalVariable,
+    psiLocalVariable: PsiVariable,
     variableName: String
 ) {
     val psiFactory = JavaPsiFacade.getElementFactory(assignment.project)
     val declarationInit = when (assignment.operationSign.tokenType) {
-        PLUSEQ -> psiBinaryExpression(psiLocalVariable.name, "+", assignment.rExpression!!)
-        MINUSEQ -> psiBinaryExpression(psiLocalVariable.name, "-", assignment.rExpression!!)
-        ASTERISKEQ -> psiBinaryExpression(psiLocalVariable.name, "*", assignment.rExpression!!)
-        DIVEQ -> psiBinaryExpression(psiLocalVariable.name, "/", assignment.rExpression!!)
-        PERCEQ -> psiBinaryExpression(psiLocalVariable.name, "%", assignment.rExpression!!)
+        PLUSEQ -> psiBinaryExpression(psiLocalVariable.name!!, "+", assignment.rExpression!!)
+        MINUSEQ -> psiBinaryExpression(psiLocalVariable.name!!, "-", assignment.rExpression!!)
+        ASTERISKEQ -> psiBinaryExpression(psiLocalVariable.name!!, "*", assignment.rExpression!!)
+        DIVEQ -> psiBinaryExpression(psiLocalVariable.name!!, "/", assignment.rExpression!!)
+        PERCEQ -> psiBinaryExpression(psiLocalVariable.name!!, "%", assignment.rExpression!!)
         EQ -> assignment.rExpression
         else -> throw IllegalArgumentException("Unsupported token in assignment: " + assignment.text)
     }
