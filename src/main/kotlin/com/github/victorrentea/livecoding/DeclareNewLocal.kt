@@ -4,12 +4,17 @@ import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.ide.DataManager
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.util.*
+import com.intellij.refactoring.rename.RenameHandlerRegistry
+import com.intellij.refactoring.suggested.endOffset
 import com.intellij.util.PsiErrorElementUtil
-import java.lang.IllegalArgumentException
+import org.jetbrains.concurrency.asCompletableFuture
 
 
 class DeclareNewLocalInspection : LocalInspectionTool() {
@@ -50,7 +55,8 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                 if (laterUsages.isNotEmpty()
                     && neverReadLaterInParentBlock(writeToDeclareAt, laterUsages)
                     && !inALoop(writeToDeclareAt)
-                    && !inACase(writeToDeclareAt)) {
+                    && !inACase(writeToDeclareAt)
+                ) {
                     // values never "leak out of this block"
                     val assignToSplit = writeToDeclareAt.parent as? PsiAssignmentExpression ?: return
                     if (assignToSplit.rExpression == null) return
@@ -76,9 +82,9 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
 
     private fun inALoop(writeToDeclareAt: PsiReferenceExpression) = writeToDeclareAt.parents.any {
         it is PsiForStatement ||
-        it is PsiForeachStatement ||
-        it is PsiWhileStatement ||
-        it is PsiDoWhileStatement
+                it is PsiForeachStatement ||
+                it is PsiWhileStatement ||
+                it is PsiDoWhileStatement
     }
 
 
@@ -96,7 +102,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
             val usageUnderDeclarationBlock = writeToDeclareAt.containingBlock.isAncestor(laterUsage)
             if (usageUnderDeclarationBlock) continue
 
-            if (parentIfs.any{it.elseBranch.isAncestor( laterUsage)}) continue // usage on else branch
+            if (parentIfs.any { it.elseBranch.isAncestor(laterUsage) }) continue // usage on else branch
 
             if (parentBlockTerminatingMethod != null && !parentBlockTerminatingMethod.isAncestor(laterUsage)) {
                 return true
@@ -117,7 +123,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
 
     fun blockTerminatesFunction(block: PsiCodeBlock): Boolean =
         PsiTreeUtil.getChildOfAnyType(block, PsiReturnStatement::class.java) != null ||
-        PsiTreeUtil.getChildOfAnyType(block, PsiThrowStatement::class.java) != null
+                PsiTreeUtil.getChildOfAnyType(block, PsiThrowStatement::class.java) != null
 
 
     fun PsiReferenceExpression.isWrite() = isAssigned()
@@ -148,13 +154,22 @@ class DeclareNewLocalFix(localVariable: PsiLocalVariable, reassignment: PsiAssig
             .filter { reassignment.containingBlock.isAncestor(it) }
 
         WriteCommandAction.runWriteCommandAction(project, FIX_NAME, "Live-Coding", {
+            val textOffset = reassignment.lExpression.endOffset
+            val editor = FileEditorManager.getInstance(project).selectedEditor as TextEditor
+            editor.editor.caretModel.moveToOffset(textOffset)
+
             replaceAssignmentWithDeclaration(reassignment, localVariable, localVariable.name + "_")
             for (psiReferenceExpression in usagesOfNewVariable) {
                 val elementFactory = JavaPsiFacade.getElementFactory(project)
                 val ref = elementFactory.createExpressionFromText(localVariable.name + "_", psiReferenceExpression);
-//                println("Replacing $psiReferenceExpression with $ref at line ${psiReferenceExpression.getLineNumber()}")
                 psiReferenceExpression.replace(ref)
             }
+
+            DataManager.getInstance().dataContextFromFocusAsync.asCompletableFuture()
+                .thenAccept { dataContext ->
+                    val renameHandler = RenameHandlerRegistry.getInstance().getRenameHandler(dataContext)
+                    renameHandler?.invoke(project, editor.editor, file, dataContext)
+                }
         })
     }
 }
@@ -190,7 +205,10 @@ private fun psiBinaryExpression(
     secondOperand: PsiExpression
 ): PsiBinaryExpression {
     val elementFactory = JavaPsiFacade.getElementFactory(secondOperand.project)
-    val div = elementFactory.createExpressionFromText("$firstOperandString $operatorString 1", secondOperand) as PsiBinaryExpression
+    val div = elementFactory.createExpressionFromText(
+        "$firstOperandString $operatorString 1",
+        secondOperand
+    ) as PsiBinaryExpression
     div.rOperand!!.replace(secondOperand)
     return div
 }
