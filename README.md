@@ -28,7 +28,7 @@ I honestly don't know yet how and IF I want to implement this refactoring.
 
 #### Call for help
 Please help me to identify more code examples for this refactoring. 
-First check out the examples in the `src/test/live-coding-playground/src/main/java/declarenewlocal`
+First check out the examples in the [src/test/live-coding-playground/src/main/java/declarenewlocal](https://github.com/victorrentea/live-coding/tree/main/src/test/live-coding-playground/src/main/java/declarenewlocal)
 The convention is that whenever you see a `//` on a line, the fix is suggested there.
 
 ** Question is: did I miss any interesting case? **
