@@ -13,6 +13,10 @@ import java.lang.IllegalArgumentException
 
 
 class DeclareNewLocalInspection : LocalInspectionTool() {
+    companion object {
+        const val INSPECTION_NAME = "Local variable semantics might be confusing";
+    }
+
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return DeclareNewLocalVisitor(holder)
     }
@@ -54,7 +58,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                     println("ADDED PROBLEM")
                     holder.registerProblem(
                         assignToSplit,
-                        Constants.DECLARE_NEW_LOCAL_INSPECTION_NAME,
+                        DeclareNewLocalInspection.INSPECTION_NAME,
                         ProblemHighlightType.WARNING,
                         DeclareNewLocalFix(psiLocalVar, assignToSplit)
                     )
@@ -126,9 +130,13 @@ fun PsiReferenceExpression.isAssigned() = (parent as? PsiAssignmentExpression)?.
 class DeclareNewLocalFix(localVariable: PsiLocalVariable, reassignment: PsiAssignmentExpression) :
     LocalQuickFixOnPsiElement(localVariable, reassignment) {
 
+    companion object {
+        const val FIX_NAME = "Declare new variable here"
+    }
+
     override fun getFamilyName() = "Live-Coding"
 
-    override fun getText() = Constants.DECLARE_NEW_LOCAL_FIX_NAME
+    override fun getText() = FIX_NAME
 
     override fun invoke(project: Project, file: PsiFile, localVariable: PsiElement, reassignment: PsiElement) {
         if (localVariable !is PsiLocalVariable) return
@@ -139,7 +147,7 @@ class DeclareNewLocalFix(localVariable: PsiLocalVariable, reassignment: PsiAssig
         val usagesOfNewVariable = usages.drop(usages.indexOf(reassignment.lExpression) + 1)
             .filter { reassignment.containingBlock.isAncestor(it) }
 
-        WriteCommandAction.runWriteCommandAction(project, Constants.DECLARE_NEW_LOCAL_FIX_NAME, "Live-Coding", {
+        WriteCommandAction.runWriteCommandAction(project, FIX_NAME, "Live-Coding", {
             replaceAssignmentWithDeclaration(reassignment, localVariable, localVariable.name + "_")
             for (psiReferenceExpression in usagesOfNewVariable) {
                 val elementFactory = JavaPsiFacade.getElementFactory(project)

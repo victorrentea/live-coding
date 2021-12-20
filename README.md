@@ -16,7 +16,10 @@ This plugin helps people write code faster for presentations, demos or discussio
 I created this plugin to optimize the live coding that I do during my training sessions and presentations. More about me : https://www.victorrentea.ro
 
 Next features:
-- lower the @RAC replace hint to only fix unless you are in a @Component, or another annotation annotated with @Component
+- Fix to remove final from variables and params + fix all in file
+- Inspect to detect -> { containing more than one return statement and suggest extracting a method
+- detect consecutive IF on exclusive == , suggest adding an "else"
+- Suggestion to avoid default in switch expressions on enums
 - [wow!] anonymize a method by replacing names with other names and creating the necessary stubbing. Maybe also detecting complex methods to select.
 - if some fields are already assigned in constructor, make sure AddRequiredArgsConstructor deletes the boilerplate ctor.
 - detect local calls of spring aspected annotations
@@ -30,6 +33,7 @@ Next features:
   try {v += 44;}
 - var fara init, folosita in blocuri disjuncte: = apoi ref. !! dupa sa nu existe ref
 - var cu init, folosita in blocuri disjuncte
+- "Exception can be made Runtime" if no one catches the checked exception separately + moves through more than 2 layers
 - DREAM: "analyze parameter mutation"
 <!-- Plugin description end -->
 

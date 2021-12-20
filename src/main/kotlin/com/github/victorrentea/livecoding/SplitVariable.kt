@@ -30,6 +30,7 @@ fun getLineNumber(psiFile: PsiFile, offset:Int): Int {
 class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
     override fun visitElement(psiLocalVar: PsiElement) {
         super.visitElement(psiLocalVar)
+        if (true) return // WIP
         if (psiLocalVar !is PsiLocalVariable) return
         val declarationBlock = psiLocalVar.containingBlock ?: return
 

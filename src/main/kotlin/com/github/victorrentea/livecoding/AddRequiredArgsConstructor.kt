@@ -1,5 +1,6 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.AddRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.github.victorrentea.livecoding.FrameworkDetector.lombokIsPresent
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
@@ -16,6 +17,9 @@ import kotlin.math.min
 
 
 class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
+    companion object {
+        const val INSPECTION_NAME = "Final fields can be injected via @RequiredArgsConstructor"
+    }
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         if (!lombokIsPresent(holder.file))
             return PsiElementVisitor.EMPTY_VISITOR
@@ -26,6 +30,7 @@ class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
 
 class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
     override fun visitElement(field: PsiElement) {
+        super.visitElement(field)
         if (field !is PsiField) return
         if (field.hasModifierProperty(STATIC)) return
         if (!field.hasModifierProperty(FINAL)) return
@@ -40,10 +45,10 @@ class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : Ps
 
             holder.registerProblem(
                 field,
-                "Final field(s) can be injected via @RequiredArgsConstructor",
+                INSPECTION_NAME,
                 ProblemHighlightType.GENERIC_ERROR, // red underline
                 textRange,
-                AddRequiredArgsConstructorQuickFix(field)
+                AddRequiredArgsConstructorFix(field)
             )
         }
 
@@ -51,10 +56,13 @@ class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : Ps
 
 }
 
-class AddRequiredArgsConstructorQuickFix(field: PsiField) : LocalQuickFixOnPsiElement(field) {
+class AddRequiredArgsConstructorFix(field: PsiField) : LocalQuickFixOnPsiElement(field) {
+    companion object {
+        const val FIX_NAME = "Add @RequiredArgsConstructor (lombok)"
+    }
     override fun getFamilyName() = "Live-Coding"
 
-    override fun getText() = "Add @RequiredArgsConstructor (lombok)"
+    override fun getText() = FIX_NAME
 
     override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
         val parentClass = PsiTreeUtil.getParentOfType(startElement, PsiClass::class.java) ?: return

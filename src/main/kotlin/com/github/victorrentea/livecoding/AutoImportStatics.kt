@@ -1,11 +1,13 @@
 package com.github.victorrentea.livecoding
 
 import com.github.victorrentea.livecoding.settings.AppSettingsState
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.wm.impl.IdeBackgroundUtil
 import com.intellij.psi.*
 import com.siyeh.ig.psiutils.ImportUtils
 

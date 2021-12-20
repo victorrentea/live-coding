@@ -1,25 +1,24 @@
-package playground;
+package declarenewlocal;
 
 public class SplitVariableLoops {
 
 
     public void allReferencesInTheSameBlocksAsAssignments(int p, int j) {
-        int x =3;
+        int x = 3;
 
         for (int i = 0; i < 2; i++) {
-            x= 2 + p;
+            x = 2 + p;
             System.out.println(x);
         }
-        if (p==2){
-            if (j ==0) {
-                x= 3;
+        if (p == 2) {
+            if (j == 0) {
+                x = 3;
                 System.out.println(x);
             }
         } else {
             x = 2;
-             x++;
+            x++;
             System.out.println(x);
         }
-//        System.out.println(x);
     }
 }

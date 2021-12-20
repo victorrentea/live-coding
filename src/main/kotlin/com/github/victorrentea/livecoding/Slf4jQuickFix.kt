@@ -1,7 +1,9 @@
 package com.github.victorrentea.livecoding
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
+import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -12,6 +14,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
+
 
 class Slf4jAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {

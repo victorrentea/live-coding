@@ -1,30 +1,37 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.intellij.codeInspection.*
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
 
 
-class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
+class ReplaceRequiredArgsConstructorInspection : LocalInspectionTool() {
+    companion object {
+        const val INSPECTION_NAME = "Boilerplate constructor only injecting dependencies"
+    }
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        if (!FrameworkDetector.lombokIsPresent(holder.file))
+        if (!FrameworkDetector.lombokIsPresent(holder.file)) {
+//            println("NO LOMBOK")
             return PsiElementVisitor.EMPTY_VISITOR
+        }
 
-        return ReplaceWithRequiredArgsConstructorVisitor(holder)
+        return ReplaceRequiredArgsConstructorVisitor(holder)
     }
 }
-class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
+class ReplaceRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
+
     override fun visitElement(constructor: PsiElement) {
-        if (constructor !is PsiMethod || !constructor.isConstructor)
-            return
+        super.visitElement(constructor)
+        if (constructor !is PsiMethod) return
+        if (!constructor.isConstructor) return
         val body = constructor.body ?: return
 
         val statements = body.children.filterIsInstance<PsiExpressionStatement>()
         if (!statements.all { it.firstChild is PsiAssignmentExpression }) {
-            return // Found non assignments in constructor
+            return // non assignments in constructor
         }
         val assignments = PsiTreeUtil.collectElementsOfType(constructor, PsiAssignmentExpression::class.java)
 
@@ -34,7 +41,7 @@ class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHold
             .map { it.name }
 
         val constructorParams = constructor.parameterList.parameters.map { it.name }
-        log.debug("Constructor parameters: $constructorParams, final fields: $finalFields")
+//        println("Constructor parameters: $constructorParams, final fields: $finalFields")
 
         if (finalFields.size != constructorParams.size) return // not same number of final fields as params
 
@@ -45,35 +52,39 @@ class ReplaceWithRequiredArgsConstructorVisitor(private val holder: ProblemsHold
         }) return // Some assignments don't assign to fields
 
         val fieldToParam = assignments.map { (it.firstChild.lastChild.text to it.lastChild.text) }
-        log.debug("Field = param: $fieldToParam")
+//        println("Field = param: $fieldToParam")
 
         if (!fieldToParam.all { finalFields.indexOf(it.first) == constructorParams.indexOf(it.second) }) {
-            log.debug("Fields and Params are in different order")
+//            println("Fields and Params are in different order")
             return
         }
 
-        val severity = if (constructor.parameterList.parametersCount >= 2)
-            ProblemHighlightType.WEAK_WARNING else ProblemHighlightType.INFORMATION
-
+        val severity =
+            if (constructor.parameterList.parametersCount >= 2 && isSpringManaged(constructor))
+                ProblemHighlightType.WEAK_WARNING
+            else ProblemHighlightType.INFORMATION
 
         val constructorName = PsiTreeUtil.findChildOfType(constructor, PsiIdentifier::class.java) ?: constructor
 
         holder.registerProblem(constructorName,
-            "Constructor can be replaced with @RequiredArgsConstructor",
+            INSPECTION_NAME,
             severity,
-            ReplaceWithRequiredArgsConstructorQuickFix(constructor)
+            ReplaceRequiredArgsConstructorFix(constructor)
         )
     }
 
-    companion object {
-        val log = Logger.getInstance(ReplaceWithRequiredArgsConstructorVisitor::class.java)
-    }
+    private fun isSpringManaged(constructor: PsiMethod):Boolean =
+        constructor.containingClass?.annotations?.any { it.resolveAnnotationType()?.hasAnnotation("org.springframework.stereotype.Component")?:false } ?: false
+        || constructor.containingClass?.hasAnnotation("org.springframework.stereotype.Component") ?: false
 }
 
-class ReplaceWithRequiredArgsConstructorQuickFix(constructor: PsiMethod) : LocalQuickFixOnPsiElement(constructor) {
+class ReplaceRequiredArgsConstructorFix(constructor: PsiMethod) : LocalQuickFixOnPsiElement(constructor) {
+    companion object {
+        const val FIX_NAME = "Replace with @RequiredArgsConstructor (lombok)"
+    }
     override fun getFamilyName() = "Live-Coding"
 
-    override fun getText() = "Replace with @RequiredArgsConstructor (lombok)"
+    override fun getText() = FIX_NAME
 
     override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
         val parentClass = PsiTreeUtil.getParentOfType(constructor, PsiClass::class.java) ?: return

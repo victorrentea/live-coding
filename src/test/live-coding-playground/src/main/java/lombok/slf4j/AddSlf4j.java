@@ -1,15 +1,15 @@
-package playground;
+package lombok.slf4j;
 
 
 import lombok.extern.slf4j.Slf4j;
 
-public class TestSlf4j {
+public class AddSlf4j {
 
     private final String name;
 
     private String name3;
 
-    public TestSlf4j(String name) {
+    public AddSlf4j(String name) {
         this.name = name;
     }
 

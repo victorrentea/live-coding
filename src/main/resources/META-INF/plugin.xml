@@ -32,7 +32,7 @@
                          groupPath="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.ReplaceWithRequiredArgsConstructorInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
                          displayName="Add @RequiredArgsConstructor to set final fields"
                          groupName="Redundant definitions"

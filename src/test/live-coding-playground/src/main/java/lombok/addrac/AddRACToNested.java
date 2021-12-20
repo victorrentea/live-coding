@@ -1,4 +1,4 @@
-package playground;
+package lombok.addrac;
 
 public class AddRACToNested {
     static class X {
