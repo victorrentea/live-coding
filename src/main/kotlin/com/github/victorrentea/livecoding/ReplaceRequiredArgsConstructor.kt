@@ -60,7 +60,7 @@ class ReplaceRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) 
         }
 
         val severity =
-            if (constructor.parameterList.parametersCount >= 2 && isSpringManaged(constructor))
+            if (constructor.parameterList.parametersCount >= 2 && isSpringBean(constructor))
                 ProblemHighlightType.WEAK_WARNING
             else ProblemHighlightType.INFORMATION
 
@@ -73,7 +73,7 @@ class ReplaceRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) 
         )
     }
 
-    private fun isSpringManaged(constructor: PsiMethod):Boolean =
+    private fun isSpringBean(constructor: PsiMethod):Boolean =
         constructor.containingClass?.annotations?.any { it.resolveAnnotationType()?.hasAnnotation("org.springframework.stereotype.Component")?:false } ?: false
         || constructor.containingClass?.hasAnnotation("org.springframework.stereotype.Component") ?: false
 }

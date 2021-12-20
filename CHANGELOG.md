@@ -36,4 +36,4 @@
 ## 0.0.9
 - tech re-release
 ## 0.0.10
-- TD
+- Added inspection to remove final from parameters and local variables (no highlight, only fix)
