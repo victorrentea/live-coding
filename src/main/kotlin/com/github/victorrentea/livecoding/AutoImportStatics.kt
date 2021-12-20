@@ -17,7 +17,8 @@ import java.awt.Color
 class AutoImportStatics : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val visitor = AutoImportStaticsVisitor()
-        e.getData(CommonDataKeys.PSI_FILE)?.accept(visitor)
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+        psiFile?.accept(visitor)
 
         ApplicationManager.getApplication().invokeLater {
             visitor.report()?.let { reportString ->
