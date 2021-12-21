@@ -7,12 +7,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.psi.*
 import com.siyeh.ig.psiutils.ImportUtils
-import git4idea.util.GitUIUtil
-import java.awt.Color
 
 class AutoImportStatics : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -32,25 +28,25 @@ class AutoImportStatics : AnAction() {
 }
 class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
     private var count = 0
+    private val classes = mutableSetOf<String>()
 
-    fun report(): String? = if (count > 0) "$count common statics imported" else null
+    fun report(): String? = if (count == 0) null else "$count common statics imported from:\n" +
+            classes.sorted().joinToString("\n") { "- $it"}
 
     override fun visitElement(element: PsiElement) {
         super.visitElement(element)
 
-        if (element is PsiReferenceExpression) {
-            if (!AppSettingsState.getInstance().staticImports.containsKey(element.referenceName)) return
-            if (element.qualifierExpression != null) {
-                replaceWithStaticImport(element)
-            } else {
-                addStaticImport(element)
-            }
+        if (element !is PsiReferenceExpression) return
+        if (!AppSettingsState.getInstance().staticImports.containsKey(element.referenceName)) return
+        if (element.qualifierExpression != null) {
+            replaceWithStaticImport(element)
+        } else {
+            addStaticImportForUnresolvedReference(element)
         }
     }
 
-    private fun addStaticImport(unresolvedReference: PsiReferenceExpression) {
-        if (unresolvedReference.resolve() != null) return
-        // unqualified method not resolved
+    private fun addStaticImportForUnresolvedReference(unresolvedReference: PsiReferenceExpression) {
+        if (unresolvedReference.resolve() != null) return// unqualified method not resolved
         val methodName = unresolvedReference.referenceName ?: return
         val desiredClassQName = AppSettingsState.getInstance().staticImports[methodName] ?: return
 
@@ -58,6 +54,7 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
             WriteCommandAction.runWriteCommandAction(unresolvedReference.project, "Auto-Import Statics", "Live-Coding", {
                 ImportUtils.addStaticImport(desiredClassQName, methodName, unresolvedReference)
                 count ++
+                classes += desiredClassQName
             })
         }
     }
@@ -82,6 +79,7 @@ class AutoImportStaticsVisitor : PsiRecursiveElementWalkingVisitor() {
                     val qualifierExpression = staticReference.qualifierExpression
                     qualifierExpression?.delete()
                     count ++
+                    classes += desiredClassQName
                 }
             })
         }

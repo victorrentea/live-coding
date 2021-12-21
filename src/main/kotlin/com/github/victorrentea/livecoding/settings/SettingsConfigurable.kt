@@ -1,7 +1,5 @@
 package com.github.victorrentea.livecoding.settings
 
-import com.github.victorrentea.livecoding.settings.AppSettingsComponent
-import com.github.victorrentea.livecoding.settings.AppSettingsState
 import com.intellij.openapi.options.Configurable
 import javax.swing.JComponent
 
@@ -16,8 +14,6 @@ class SettingsConfigurable: Configurable {
 
     override fun isModified(): Boolean {
         val settings: AppSettingsState = AppSettingsState.getInstance()
-//        if (mySettingsComponent!!.userNameText != settings.userId) return true
-//        if (mySettingsComponent!!.ideaUserStatus != settings.ideaStatus) return true
         if (mySettingsComponent!!.hardCoreImageBackgroundPath != settings.hardCoreImageBackgroundPath) return true
         if (mySettingsComponent!!.staticImports != settings.staticImportsList) return true
         return false

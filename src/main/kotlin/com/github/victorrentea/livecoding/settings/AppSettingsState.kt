@@ -12,8 +12,6 @@ import java.lang.IllegalArgumentException
     storages = [Storage("LiveCodingPluginSettings.xml")]
 )
 class AppSettingsState : PersistentStateComponent<AppSettingsState> {
-//    var userId = "John Q. Public"
-//    var ideaStatus = false
     @Volatile
     var staticImports = mapOf<String, String>()
         get
@@ -29,6 +27,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     init {
         staticImportsList = listOf(
             "org.assertj.core.api.Assertions.assertThat",
+            "org.assertj.core.api.Assertions.assertThatThrownBy",
             "java.util.stream.Collectors.toSet",
             "java.util.stream.Collectors.toList",
             "java.util.stream.Collectors.toMap",
@@ -42,7 +41,13 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "org.mockito.ArgumentMatchers.any",
             "org.mockito.ArgumentMatchers.anyString",
             "org.mockito.ArgumentMatchers.anyLong",
+            "java.util.concurrent.TimeUnit.MINUTES",
+            "java.util.concurrent.TimeUnit.SECONDS",
+            "java.util.concurrent.TimeUnit.HOURS",
+            "java.util.concurrent.TimeUnit.DAYS",
             "java.util.concurrent.TimeUnit.MILLISECONDS",
+            "java.time.Duration.ofHours",
+            "java.time.Duration.ofMinutes",
             "java.time.Duration.ofSeconds",
             "java.time.Duration.ofMillis",
             "java.util.concurrent.CompletableFuture.completedFuture"

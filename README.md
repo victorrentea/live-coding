@@ -41,6 +41,7 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 **Note**: After it stabilizes, I plan to contribute this quickfix to IntelliJ IDEA Community to make it available for all Java developers out there. 
 
 ## Next features:
+- Add more moods (zen, boring, horror) : childplay image from code smells
 - **Split Declaration** to push declaration down in exclusive branches 
 - Detect "-> {" containing more than one return statement and suggest extracting a method
 - Detect consecutive IF on exclusive == , suggest adding an "else"
@@ -49,5 +50,9 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 - Detect local calls to methods annotated with proxying annotations, like Spring: @Transactional, @Cacheable, @PreAuthorized, ... 
 - [?] Report "Exception can be made Runtime": if no one in caller's stack catches the checked exception individually + checked exception traverses at least 2 methods
 - **Big Dreams: "analyze parameter mutation" inspection** to report what fields of parameters change at call site (analysis upon request)
+- PR to Presentation Asssitant : checkbox: only show refactoring shortcuts used.
 <!-- Plugin description end -->
 
+
+
+    Assertions.assertThatThrownBy
