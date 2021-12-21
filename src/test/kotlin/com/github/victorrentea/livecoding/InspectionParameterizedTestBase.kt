@@ -11,7 +11,7 @@ import java.io.File
 
 @RunWith(Parameterized::class)
 abstract class InspectionParameterizedTestBase(val fileName: String) : LightJavaCodeInsightFixtureTestCase() {
-    override fun getProjectDescriptor() = JAVA_8_ANNOTATED
+    override fun getProjectDescriptor() = JAVA_8
 
     override fun getTestDataPath() = JAVA_SRC_FOLDER
 

@@ -5,6 +5,10 @@ public class TryCatch {
         int x = 0;
         try {
             x = f();
+            if (p == 0) {
+                x = 4;
+                System.out.println(x);
+            }
             System.out.println(x);
         } catch (Exception e) {
             System.out.println(x);

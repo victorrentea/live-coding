@@ -8,17 +8,17 @@ public class SplitVariableTries {
         try {
             if (p == 2) {
                 if (j == 0) {
-                    int x_ = 3;
+                    int x_ = 3; //
                     System.out.println(x_);
                 }
             } else {
-                int x_ = 2;
-                x_++;
-                System.out.println(x_);
+                x = 2; //
+                x++;
+                System.out.println(x);
             }
         } catch (Exception e) {
-            int x_ = 2;
-            System.out.println(x_);
+            x = 2; //
+            System.out.println(x);
         }
     }
 }

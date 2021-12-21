@@ -1,17 +1,15 @@
 package com.github.victorrentea.livecoding
 
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.editor.colors.EditorColors
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.roots.ProjectFileIndex
-import com.intellij.openapi.wm.impl.IdeBackgroundUtil
 import com.intellij.util.ui.UIUtil
 import java.awt.Color
 
 
-class ColorTests : EditorFactoryListener {
+class ChangeColorOfTestFiles : EditorFactoryListener {
     override fun editorCreated(event: EditorFactoryEvent) {
         val virtualFile = FileDocumentManager.getInstance().getFile(event.editor.document)
         val fileIndex = ProjectFileIndex.SERVICE.getInstance(event.editor.project)

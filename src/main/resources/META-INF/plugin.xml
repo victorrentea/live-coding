@@ -30,7 +30,7 @@
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.settings.AppSettingsState"/>
 
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.Slf4jAnnotator"/>
-        <editorFactoryListener implementation="com.github.victorrentea.livecoding.ColorTests" />
+        <editorFactoryListener implementation="com.github.victorrentea.livecoding.ChangeColorOfTestFiles" />
         <localInspection language="JAVA"
                          displayName="Replace boilerplate constructor with @RequiredArgsConstructor"
                          groupName="Redundant definitions"

@@ -1,15 +1,12 @@
 package com.github.victorrentea.livecoding
 
 import com.github.victorrentea.livecoding.Constants.SPLIT_VARIABLE_DESCRIPTION
-import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.Ignore
 import org.junit.runners.Parameterized
-import java.io.File
 
 
+@Ignore
 class SplitVariableTest(fileName: String) : InspectionParameterizedTestBase(fileName) {
     companion object {
         @JvmStatic
