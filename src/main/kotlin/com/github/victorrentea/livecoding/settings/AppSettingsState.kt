@@ -22,10 +22,11 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
         set(newList)  {
             staticImports = parseStaticImports(newList)
         }
-    var hardCoreImageBackgroundPath: String
-    init {
-        hardCoreImageBackgroundPath = "C:\\workspace\\live-coding-plugin\\src\\main\\resources\\icons\\warning.png"
 
+    var hardCoreImageBackgroundPath: String? = null
+    var unzippedHorrorImagePath: String? = null
+
+    init {
         staticImportsList = listOf(
             "org.assertj.core.api.Assertions.assertThat",
             "java.util.stream.Collectors.toSet",

@@ -17,7 +17,7 @@ class AppSettingsComponent {
     private val staticImportsTextArea = JBTextArea(100, 10)
 //    private val myIdeaUserStatus = JBCheckBox("Do you use IntelliJ IDEA? ")
 
-    var hardCoreImageBackgroundPath: String
+    var hardCoreImageBackgroundPath: String?
         get() = hardCoreImageBackground.text
         set(newText) {
             hardCoreImageBackground.text = newText
