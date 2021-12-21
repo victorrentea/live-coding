@@ -40,3 +40,5 @@
 - Added nice balloon after static import completes
 - Added coloring the test editors in green (beta)
 - Added "Hardcore Mode" action (default mapped to ctrl-alt-w)
+## 0.0.11
+- 
