@@ -14,7 +14,7 @@ import java.nio.file.Files
 import kotlin.io.path.absolutePathString
 
 
-class ToggleHardcoreMode : AnAction() {
+class EmotionBackground : AnAction() {
     companion object {
         private var on = false
         private val autoHorrorBgPath = spawnBackgroundImage()
@@ -23,7 +23,7 @@ class ToggleHardcoreMode : AnAction() {
                 return AppSettingsState.getInstance().unzippedHorrorImagePath
             }
             val tempFilePath = Files.createTempFile("horror-bg", ".jpg").absolutePathString()
-            val internalUrl = ToggleHardcoreMode::class.java.classLoader.getResource("icons/horror.jpg")
+            val internalUrl = EmotionBackground::class.java.classLoader.getResource("icons/horror.jpg")
             if (internalUrl == null) {
                 println("Image not found in plugin jar!")
                 return null

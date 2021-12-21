@@ -34,8 +34,6 @@ class SettingsConfigurable: Configurable {
     }
     override fun reset() {
         val settings: AppSettingsState = AppSettingsState.getInstance()
-//        mySettingsComponent!!.userNameText = settings.userId
-//        mySettingsComponent!!.ideaUserStatus = settings.ideaStatus
         mySettingsComponent!!.staticImports = settings.staticImportsList
         mySettingsComponent!!.hardCoreImageBackgroundPath = settings.hardCoreImageBackgroundPath
     }

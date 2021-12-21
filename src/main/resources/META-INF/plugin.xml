@@ -17,7 +17,7 @@
         <action class="com.github.victorrentea.livecoding.AutoImportStatics" text="Auto-Import Statics">
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
-        <action class="com.github.victorrentea.livecoding.ToggleHardcoreMode" text="Toggle Hardcore Mode">
+        <action class="com.github.victorrentea.livecoding.EmotionBackground" text="Toggle Hardcore Mode">
             <keyboard-shortcut first-keystroke="control alt w" keymap="$default"/>
         </action>
     </actions>

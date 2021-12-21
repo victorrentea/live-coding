@@ -4,7 +4,7 @@ import com.intellij.codeInspection.LocalInspectionTool
 import org.junit.Ignore
 import org.junit.runners.Parameterized.Parameters
 
-//@Ignore // how to add lombok to virtual project ?
+@Ignore // how to add lombok to virtual project ?
 class LombokReplaceRacTest(fileName: String) : InspectionParameterizedTestBase(fileName) {
     companion object {
         @JvmStatic

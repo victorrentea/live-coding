@@ -25,7 +25,9 @@ abstract class InspectionParameterizedTestBase(val fileName: String) : LightJava
     @Test
     fun test() {
         myFixture.enableInspections(inspectionClass())
-        PsiTestUtil.addLibrary(myFixture.module, "C:\\Users\\victo\\.m2\\repository\\org\\projectlombok\\lombok\\1.18.22\\lombok-1.18.22.jar")
+//        PsiTestUtil.addLibrary(myFixture.module,
+//            """C:\Users\victo\.m2\repository\org\projectlombok\lombok\1.18.22\lombok-1.18.22.jar"""
+//        )
 
         myFixture.configureByFiles(fileName);
 
