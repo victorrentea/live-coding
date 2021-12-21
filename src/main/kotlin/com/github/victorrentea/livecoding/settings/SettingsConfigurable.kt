@@ -14,7 +14,7 @@ class SettingsConfigurable: Configurable {
 
     override fun isModified(): Boolean {
         val settings: AppSettingsState = AppSettingsState.getInstance()
-        if (mySettingsComponent!!.hardCoreImageBackgroundPath != settings.hardCoreImageBackgroundPath) return true
+//        if (mySettingsComponent!!.hardCoreImageBackgroundPath != settings.hardCoreImageBackgroundPath) return true
         if (mySettingsComponent!!.staticImports != settings.staticImportsList) return true
         return false
     }
@@ -23,7 +23,7 @@ class SettingsConfigurable: Configurable {
         val settings: AppSettingsState = AppSettingsState.getInstance()
 //        settings.userId = mySettingsComponent!!.userNameText!!
 //        settings.ideaStatus = mySettingsComponent!!.ideaUserStatus
-        settings.hardCoreImageBackgroundPath = mySettingsComponent!!.hardCoreImageBackgroundPath
+//        settings.hardCoreImageBackgroundPath = mySettingsComponent!!.hardCoreImageBackgroundPath
         settings.staticImportsList = mySettingsComponent!!.staticImports
     }
 
@@ -35,7 +35,7 @@ class SettingsConfigurable: Configurable {
     override fun reset() {
         val settings: AppSettingsState = AppSettingsState.getInstance()
         mySettingsComponent!!.staticImports = settings.staticImportsList
-        mySettingsComponent!!.hardCoreImageBackgroundPath = settings.hardCoreImageBackgroundPath
+//        mySettingsComponent!!.hardCoreImageBackgroundPath = settings.hardCoreImageBackgroundPath
     }
     override fun getPreferredFocusedComponent(): JComponent {
         return mySettingsComponent!!.getPreferredFocusedComponent();

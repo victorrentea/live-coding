@@ -13,26 +13,38 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import kotlin.io.path.absolutePathString
 
+enum class BackgroundType {
+    MOOD1,
+    MOOD2,
+    MOOD3,
+    NONE
+}
 
-class EmotionBackground : AnAction() {
+class BackgroundMoodUtil {
     companion object {
-        private var on = false
-        private val autoHorrorBgPath = spawnBackgroundImage()
-        fun spawnBackgroundImage(): String? {
-            if (AppSettingsState.getInstance().unzippedHorrorImagePath?.let{ File(it)}?.isFile == true) {
-                return AppSettingsState.getInstance().unzippedHorrorImagePath
-            }
-            val tempFilePath = Files.createTempFile("horror-bg", ".jpg").absolutePathString()
-            val internalUrl = EmotionBackground::class.java.classLoader.getResource("icons/horror.jpg")
-            if (internalUrl == null) {
-                println("Image not found in plugin jar!")
-                return null
-            }
-            internalUrl.openStream().copyTo(FileOutputStream(tempFilePath))
-            println("Successfully stored background image at $tempFilePath")
-            AppSettingsState.getInstance().unzippedHorrorImagePath = tempFilePath
-            return tempFilePath
+        var state = BackgroundType.NONE
+
+        val imgPaths = mapOf<BackgroundType, String>(
+            BackgroundType.MOOD1 to spawnBackgroundImage("horror", BackgroundType.MOOD1) + ",50",
+            BackgroundType.MOOD2 to spawnBackgroundImage("child", BackgroundType.MOOD2) + ",20",
+            BackgroundType.MOOD3 to spawnBackgroundImage("cool", BackgroundType.MOOD3) + ",30"
+        )
+
+        fun spawnBackgroundImage(imgName: String, mood: BackgroundType): String {
+            val savedPaths = AppSettingsState.getInstance().unzippedImagedPaths
+
+            savedPaths.entries.removeIf { (_, path) -> !File(path!!).isFile }
+            return savedPaths.computeIfAbsent(mood) {
+
+                val tempFilePath = Files.createTempFile("$imgName-background", ".jpg").absolutePathString()
+                val internalUrl = BackgroundMoodUtil::class.java.classLoader.getResource("icons/$imgName.jpg")
+                    ?: throw IllegalArgumentException("Image not found in plugin jar!")
+                internalUrl.openStream().copyTo(FileOutputStream(tempFilePath))
+                println("Successfully stored background image at $tempFilePath")
+                tempFilePath
+            }!!
         }
+
         init {
             ApplicationManager.getApplication().invokeLater {
                 val prop = PropertiesComponent.getInstance()
@@ -40,25 +52,33 @@ class EmotionBackground : AnAction() {
             }
         }
     }
+}
 
+open class BackgroundMoodBaseAction(val name: String, val mood: BackgroundType) : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
-        val editor = e.getData(CommonDataKeys.EDITOR)
         ApplicationManager.getApplication().invokeLater {
-            on = !on;
             val prop = PropertiesComponent.getInstance()
-            prop.setValue(IdeBackgroundUtil.FRAME_PROP, null);
+            prop.setValue(IdeBackgroundUtil.EDITOR_PROP, null)
+            if (BackgroundMoodUtil.state == mood) {
+                BackgroundMoodUtil.state = BackgroundType.NONE
+            } else {
+                BackgroundMoodUtil.state = mood
+                val imgPath = BackgroundMoodUtil.imgPaths[mood]
 
-            val bgImagePath = /*AppSettingsState.getInstance().hardCoreImageBackgroundPath?.let {  } ?:*/ autoHorrorBgPath;
-            val bgWithOpacity = bgImagePath?.let { "$it,50" }
-            println("BG: $bgWithOpacity")
-
-            prop.setValue(IdeBackgroundUtil.EDITOR_PROP, if (on) bgWithOpacity else null)
-            IdeBackgroundUtil.repaintAllWindows()
-            if (on) {
-                editor?.let { editor ->
-                    HintManager.getInstance().showErrorHint(editor, "Entering hard-core mode ...")
-                }
+                prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imgPath)
+                val editor = e.getData(CommonDataKeys.EDITOR)
+                editor?.let { HintManager.getInstance().showErrorHint(it, "Entering $name Mode ...") }
             }
         }
+        IdeBackgroundUtil.repaintAllWindows()
     }
+}
+
+class BackgroundMood1Action : BackgroundMoodBaseAction("Hard-core", BackgroundType.MOOD1) {
+}
+
+class BackgroundMood2Action : BackgroundMoodBaseAction("Relax", BackgroundType.MOOD2) {
+}
+
+class BackgroundMood3Action : BackgroundMoodBaseAction("Geek", BackgroundType.MOOD3) {
 }
