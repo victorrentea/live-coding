@@ -38,7 +38,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
         val psiLocalVar: PsiVariable = element as PsiVariable
 
         val referencesToMe = psiLocalVar.referencesToMe
-        log.debug("\nTry to de NEW LOCAL ${psiLocalVar.name} referenced on lines " +
+        log.debug("Try to define a NEW LOCAL ${psiLocalVar.name} referenced on lines " +
                 referencesToMe.map { ":" + it.getLineNumber() + "(" + (if (it.isRead()) "R" else "W") + ")" })
 
 

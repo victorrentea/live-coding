@@ -21,12 +21,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             staticImports = parseStaticImports(newList)
         }
 
-//    var hardCoreImageBackgroundPath: String? = null
-    var unzippedHorrorImagePath: String? = null
-    var unzippedChildImagePath: String? = null
-    var unzippedCoolImagePath: String? = null
-
-    val unzippedImagedPaths = mutableMapOf<BackgroundMood, String?>()
+    var unzippedImagedPaths = mutableMapOf<BackgroundMood, String?>()
 
     init {
         staticImportsList = listOf(
