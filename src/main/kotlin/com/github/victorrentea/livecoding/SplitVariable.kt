@@ -5,12 +5,15 @@ import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.isAncestor
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
+
+private val log = logger<SplitVariableInspection>()
 
 
 class SplitVariableInspection : LocalInspectionTool() {
@@ -36,16 +39,16 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
         if (psiLocalVar !is PsiLocalVariable) return
         val declarationBlock = psiLocalVar.containingBlock ?: return
 
-        println("\nEXAMINE SPLIT of $psiLocalVar at line ${psiLocalVar.getLineNumber()}")
+        log.debug("\nEXAMINE SPLIT of $psiLocalVar at line ${psiLocalVar.getLineNumber()}")
 
         val referencesToMe = psiLocalVar.referencesToMe
-        println("Found ${referencesToMe.size} references at lines " + referencesToMe.map { it.getLineNumber() })
+        log.debug("Found ${referencesToMe.size} references at lines " + referencesToMe.map { it.getLineNumber() })
 
         val blocks = referencesToMe.map { it.containingBlock!! }
             .map { PsiTreeUtil.getTopmostParentOfType(it, PsiForStatement::class.java)?.containingBlock ?: it }
             .map { if (it.isAncestor(declarationBlock)) declarationBlock else it }
             .distinct()
-        println("blocks: $blocks")
+        log.debug("blocks: $blocks")
 
         val topBlocks = mutableListOf<PsiCodeBlock>()
         for (block in blocks) {
@@ -55,10 +58,10 @@ class SplitVariableVisitor(private val holder: ProblemsHolder) : PsiElementVisit
             }
         }
 
-        println("Top blocks: ${topBlocks.size}")
+        log.debug("Top blocks: ${topBlocks.size}")
 
         if (topBlocks.size > 1) {
-            println("can break variable in exclusive blocks")
+            log.debug("can break variable in exclusive blocks")
             holder.registerProblem(
                 psiLocalVar,
                 Constants.SPLIT_VARIABLE_DESCRIPTION,

@@ -51,6 +51,9 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 - [?] Report "Exception can be made Runtime": if no one in caller's stack catches the checked exception individually + checked exception traverses at least 2 methods
 - **Big Dreams: "analyze parameter mutation" inspection** to report what fields of parameters change at call site (analysis upon request)
 - PR to Presentation Asssitant : checkbox: only show refactoring shortcuts used.
+- Inspect to detect overriding of @Before/@BeforeEach
+## Notes
+- To see debug when running plugin locally, in the 'guest' IJ go to Help>Diagnostic Tools>Debug Log Settings and enter `#com.github.victorrentea.livecoding` in there
 <!-- Plugin description end -->
 
 

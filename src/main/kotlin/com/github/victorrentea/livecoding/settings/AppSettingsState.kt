@@ -1,12 +1,11 @@
 package com.github.victorrentea.livecoding.settings
 
-import com.github.victorrentea.livecoding.BackgroundType
+import com.github.victorrentea.livecoding.BackgroundMood
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
-import java.lang.IllegalArgumentException
 
 @State(
     name = "com.github.victorrentea.livecoding.settings.AppSettingsState",
@@ -27,7 +26,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var unzippedChildImagePath: String? = null
     var unzippedCoolImagePath: String? = null
 
-    val unzippedImagedPaths = mutableMapOf<BackgroundType, String?>()
+    val unzippedImagedPaths = mutableMapOf<BackgroundMood, String?>()
 
     init {
         staticImportsList = listOf(

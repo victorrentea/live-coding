@@ -3,11 +3,13 @@ package com.github.victorrentea.livecoding
 import com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.intellij.codeInspection.*
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
 
+private val log = logger<ReplaceRequiredArgsConstructorInspection>()
 
 class ReplaceRequiredArgsConstructorInspection : LocalInspectionTool() {
     companion object {
@@ -15,7 +17,6 @@ class ReplaceRequiredArgsConstructorInspection : LocalInspectionTool() {
     }
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         if (!FrameworkDetector.lombokIsPresent(holder.file)) {
-//            println("NO LOMBOK")
             return PsiElementVisitor.EMPTY_VISITOR
         }
 
@@ -42,7 +43,7 @@ class ReplaceRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) 
             .map { it.name }
 
         val constructorParams = constructor.parameterList.parameters.map { it.name }
-//        println("Constructor parameters: $constructorParams, final fields: $finalFields")
+//        log.debug("Constructor parameters: $constructorParams, final fields: $finalFields")
 
         if (finalFields.size != constructorParams.size) return // not same number of final fields as params
 
@@ -53,10 +54,10 @@ class ReplaceRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) 
         }) return // Some assignments don't assign to fields
 
         val fieldToParam = assignments.map { (it.firstChild.lastChild.text to it.lastChild.text) }
-//        println("Field = param: $fieldToParam")
+//        log.debug("Field = param: $fieldToParam")
 
         if (!fieldToParam.all { finalFields.indexOf(it.first) == constructorParams.indexOf(it.second) }) {
-//            println("Fields and Params are in different order")
+//            log.debug("Fields and Params are in different order")
             return
         }
 

@@ -6,6 +6,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.ide.DataManager
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
@@ -16,6 +17,8 @@ import com.intellij.refactoring.rename.RenameHandlerRegistry
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.util.PsiErrorElementUtil
 import org.jetbrains.concurrency.asCompletableFuture
+
+private val log = logger<DeclareNewLocalInspection>()
 
 
 class DeclareNewLocalInspection : LocalInspectionTool() {
@@ -35,7 +38,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
         val psiLocalVar: PsiVariable = element as PsiVariable
 
         val referencesToMe = psiLocalVar.referencesToMe
-        println("\nEXAMINE DEFINE NEW LOCAL ${psiLocalVar.name} referenced on lines " +
+        log.debug("\nTry to de NEW LOCAL ${psiLocalVar.name} referenced on lines " +
                 referencesToMe.map { ":" + it.getLineNumber() + "(" + (if (it.isRead()) "R" else "W") + ")" })
 
 
@@ -49,7 +52,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
             if (i + 1 < referencesToMe.size) { // there are more references after (Reads)
                 val writeToDeclareAt = referencesToMe[i]
                 // there are reads after me
-                println("Trying to split at assignment on line " + writeToDeclareAt.getLineNumber())
+                log.debug("Trying to split at assignment on line " + writeToDeclareAt.getLineNumber())
 
                 val laterUsages = referencesToMe.drop(i + 1)
 
@@ -63,7 +66,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                     if (assignToSplit.rExpression == null) return
                     if (!supportedAssignmentTokens.contains(assignToSplit.operationSign.tokenType))  return
 
-                    println("ADDED PROBLEM")
+                    log.debug("ADDED PROBLEM")
                     holder.registerProblem(
                         assignToSplit,
                         DeclareNewLocalInspection.INSPECTION_NAME,
@@ -71,7 +74,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                         DeclareNewLocalFix(psiLocalVar, assignToSplit)
                     )
                 } else {
-                    println("Some later usages are not in child blocks")
+                    log.debug("Some later usages are not in child blocks")
                 }
                 i++
             }
@@ -111,15 +114,15 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
             }
 
             if (laterUsage.isWrite()) {
-                println("FOUND WRITE in parent")
+                log.debug("FOUND WRITE in parent")
                 return true
             }
             if (laterUsage.isRead()) {
-                println("FOUND READ in parent")
+                log.debug("FOUND READ in parent")
                 return false
             }
         }
-        println("FINISHED never read")
+        log.debug("FINISHED never read")
         return true
     }
 
@@ -150,7 +153,7 @@ class DeclareNewLocalFix(localVariable: PsiVariable, reassignment: PsiAssignment
         if (localVariable !is PsiVariable) return
         if (reassignment !is PsiAssignmentExpression) return
 
-        println(" ---------- act ${localVariable.name} ---------")
+        log.debug(" ---------- act ${localVariable.name} ---------")
         val usages = localVariable.referencesToMe
         val usagesOfNewVariable = usages.drop(usages.indexOf(reassignment.lExpression) + 1)
             .filter { reassignment.containingBlock.isAncestor(it) }
