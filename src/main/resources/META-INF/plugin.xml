@@ -75,6 +75,12 @@
                          enabledByDefault="true"
                          level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.RemoveFinalFromLocalInspection"/>
+        <localInspection language="JAVA"
+                         displayName="Remove final keyword from parameters and locals"
+                         groupName="JAVA"
+                         enabledByDefault="true"
+                         level="INFO"
+                         implementationClass="com.github.victorrentea.livecoding.RemoveFinalFromLocalInspection"/>
     </extensions>
 
 </idea-plugin>

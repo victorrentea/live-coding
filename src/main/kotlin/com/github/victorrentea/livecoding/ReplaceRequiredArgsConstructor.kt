@@ -23,43 +23,52 @@ class ReplaceRequiredArgsConstructorInspection : LocalInspectionTool() {
         return ReplaceRequiredArgsConstructorVisitor(holder)
     }
 }
+public fun constructorOnlyCopiesParamsToFields(constructor: PsiMethod): Boolean {
+    val body = constructor.body ?: return false
+
+    val statements = body.children.filterIsInstance<PsiExpressionStatement>()
+    if (!statements.all { it.firstChild is PsiAssignmentExpression }) {
+        return false // non assignments statements in constructor
+    }
+    val assignments = PsiTreeUtil.collectElementsOfType(constructor, PsiAssignmentExpression::class.java)
+
+    val finalFields = constructor.containingClass!!.fields
+        .filter {it.hasModifierProperty(PsiModifier.FINAL) }
+        .filter {!it.hasModifierProperty(PsiModifier.STATIC)  }
+        .map { it.name }
+
+    val constructorParams = constructor.parameterList.parameters.map { it.name }
+//        log.debug("Constructor parameters: $constructorParams, final fields: $finalFields")
+
+//        if (finalFields.size != constructorParams.size) return // not same number of final fields as params
+
+
+    if (!assignments.all {
+            it.firstChild is PsiReferenceExpression &&
+                    it.firstChild.firstChild is PsiThisExpression
+        }) {
+        log.debug("Some assignments don't assign to fields")
+        return false
+    }
+
+    val fieldToParam = assignments.map { (it.firstChild.lastChild.text to it.lastChild.text) }
+//        log.debug("Field = param: $fieldToParam")
+
+    if (!fieldToParam.all { finalFields.indexOf(it.first) == constructorParams.indexOf(it.second) }) {
+        log.debug("Fields and Params are in different order")
+        return false
+    }
+    return true
+}
+
 class ReplaceRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
 
     override fun visitElement(constructor: PsiElement) {
         super.visitElement(constructor)
         if (constructor !is PsiMethod) return
         if (!constructor.isConstructor) return
-        val body = constructor.body ?: return
 
-        val statements = body.children.filterIsInstance<PsiExpressionStatement>()
-        if (!statements.all { it.firstChild is PsiAssignmentExpression }) {
-            return // non assignments in constructor
-        }
-        val assignments = PsiTreeUtil.collectElementsOfType(constructor, PsiAssignmentExpression::class.java)
-
-        val finalFields = constructor.containingClass!!.fields
-            .filter {it.hasModifierProperty(PsiModifier.FINAL) }
-            .filter {!it.hasModifierProperty(PsiModifier.STATIC)  }
-            .map { it.name }
-
-        val constructorParams = constructor.parameterList.parameters.map { it.name }
-//        log.debug("Constructor parameters: $constructorParams, final fields: $finalFields")
-
-        if (finalFields.size != constructorParams.size) return // not same number of final fields as params
-
-
-        if (!assignments.all {
-            it.firstChild is PsiReferenceExpression &&
-            it.firstChild.firstChild is PsiThisExpression
-        }) return // Some assignments don't assign to fields
-
-        val fieldToParam = assignments.map { (it.firstChild.lastChild.text to it.lastChild.text) }
-//        log.debug("Field = param: $fieldToParam")
-
-        if (!fieldToParam.all { finalFields.indexOf(it.first) == constructorParams.indexOf(it.second) }) {
-//            log.debug("Fields and Params are in different order")
-            return
-        }
+        if (!constructorOnlyCopiesParamsToFields(constructor)) return
 
         val severity =
             if (constructor.parameterList.parametersCount >= 2 && isSpringBean(constructor))

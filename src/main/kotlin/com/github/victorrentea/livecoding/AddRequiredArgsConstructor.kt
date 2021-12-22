@@ -36,28 +36,38 @@ class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : Ps
         if (field.hasModifierProperty(STATIC)) return
         if (!field.hasModifierProperty(FINAL)) return
         if (field.hasInitializer()) return // private final int x = 2
-        if (field.containingClass?.constructors?.isEmpty() == true) {
 
-            val textLength = min(
-                field.nameIdentifier.textRangeInParent.endOffset + 1,
-                field.nameIdentifier.parent.textRange.length
-            )
-            val textRange = TextRange(0, textLength)  // +1 so ALT-ENTER works even after ;
+        val noOfConstructors = field.containingClass?.constructors?.size ?: return
+        if (noOfConstructors >= 2) return
 
-            holder.registerProblem(
-                field,
-                INSPECTION_NAME,
-                ProblemHighlightType.GENERIC_ERROR, // red underline
-                textRange,
-                AddRequiredArgsConstructorFix(field)
-            )
-        }
+        val existingConstructor = if (noOfConstructors == 1) field.containingClass?.constructors!![0]!! else null
+        if (existingConstructor != null && !constructorOnlyCopiesParamsToFields(existingConstructor)) return
 
+        val textLength = min(
+            field.nameIdentifier.textRangeInParent.endOffset + 1,
+            field.nameIdentifier.parent.textRange.length
+        )
+        val textRange = TextRange(0, textLength)  // +1 so ALT-ENTER works even after ;
+
+        if (!shouldRegisterError(field, existingConstructor)) return
+
+        holder.registerProblem(
+            field,
+            INSPECTION_NAME,
+            ProblemHighlightType.GENERIC_ERROR, // red underline
+            textRange,
+            AddRequiredArgsConstructorFix(field, existingConstructor)
+        )
     }
 
+    private fun shouldRegisterError(field: PsiField, constructor: PsiMethod?): Boolean {
+        if (constructor == null) return true
+        if (!constructor.parameterList.parameters.map { it.name }.contains(field.name)) return true;
+        return false
+    }
 }
 
-class AddRequiredArgsConstructorFix(field: PsiField) : LocalQuickFixOnPsiElement(field) {
+class AddRequiredArgsConstructorFix(field: PsiField, constructor: PsiMethod?) : LocalQuickFixOnPsiElement(field, constructor) {
     companion object {
         const val FIX_NAME = "Add @RequiredArgsConstructor (lombok)"
     }
@@ -65,12 +75,13 @@ class AddRequiredArgsConstructorFix(field: PsiField) : LocalQuickFixOnPsiElement
 
     override fun getText() = FIX_NAME
 
-    override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
+    override fun invoke(project: Project, file: PsiFile, field: PsiElement, constructor: PsiElement) {
         val parentClass = PsiTreeUtil.getParentOfType(startElement, PsiClass::class.java) ?: return
         val modifiers = parentClass.modifierList ?: return
         WriteCommandAction.runWriteCommandAction(project, FIX_NAME, "Live-Coding", {
             val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
             JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
+            constructor.delete()
         })
     }
 
