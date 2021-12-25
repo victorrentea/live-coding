@@ -18,12 +18,15 @@
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
         <action  class="com.github.victorrentea.livecoding.BackgroundMood1Action" text="Toggle Hardcore Background">
-            <keyboard-shortcut first-keystroke="control alt 8" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="control alt 7" keymap="$default"/>
         </action>
         <action  class="com.github.victorrentea.livecoding.BackgroundMood2Action" text="Toggle Child Background">
-            <keyboard-shortcut first-keystroke="control alt 9" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="control alt 8" keymap="$default"/>
         </action>
         <action  class="com.github.victorrentea.livecoding.BackgroundMood3Action" text="Toggle Cool Background">
+            <keyboard-shortcut first-keystroke="control alt 9" keymap="$default"/>
+        </action>
+        <action  class="com.github.victorrentea.livecoding.BackgroundMoodResetAction" text="Clear Background">
             <keyboard-shortcut first-keystroke="control alt 0" keymap="$default"/>
         </action>
     </actions>
@@ -76,11 +79,12 @@
                          level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.RemoveFinalFromLocalInspection"/>
         <localInspection language="JAVA"
-                         displayName="Remove final keyword from parameters and locals"
+                         displayName="Avoid overriding @Before/@BeforeEach in tests"
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.RemoveFinalFromLocalInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.DontOverrideBeforeInspection"/>
+
     </extensions>
 
 </idea-plugin>

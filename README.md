@@ -14,6 +14,8 @@ More about me : https://www.victorrentea.ro
 - Menu entry under Git> to quickly copy the git coordinates (remote + branch to clipboard)
 - Inspection to remove `final` from variables and params (for those not liking them)
 - **Declare new variable here** inspection and fix for local variables ~recycled~ reused in the same method
+- Enables quick change of IJ background via actions (Mappable to keys). The moods supported: zen, boring, horror. eg "Toggle Hardcore Background" action
+- Inspection to detect overriding of @Before/@BeforeEach, without calling super() - usually a bug
 
 ## Declare new variable here
 Purpose: many times in legacy code a variable is declared, assigned and used with a certain meaning, but later on it is reassigned to a different value. 
@@ -41,17 +43,13 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 **Note**: After it stabilizes, I plan to contribute this quickfix to IntelliJ IDEA Community to make it available for all Java developers out there. 
 
 ## Next features:
-- Add more moods (zen, boring, horror) : childplay image from code smells
-- **Split Declaration** to push declaration down in exclusive branches 
-- Detect "-> {" containing more than one return statement and suggest extracting a method
-- Detect consecutive IF on exclusive == , suggest adding an "else"
+- Detect "-> {" containing more than a single return statement and suggest extracting a method
 - Suggest avoiding "default ->" in switch expressions on enums (to allow the compiler to check all branches)
-- [wow!] anonymize a method by replacing names with other names and creating the necessary stubbing. Maybe also detecting complex methods to select.
+- Detect consecutive IF on exclusive == , suggest adding an "else"
 - Detect local calls to methods annotated with proxying annotations, like Spring: @Transactional, @Cacheable, @PreAuthorized, ... 
-- [?] Report "Exception can be made Runtime": if no one in caller's stack catches the checked exception individually + checked exception traverses at least 2 methods
+- **Big Dreams: Auto-suggest code blocks to extract as methods** based on Cognitive- or Cyclomatic- Complexity, if (1) they have a single return value, (2) no inner "return", (3) doesn't strip the host function of ALL of its complexity  
 - **Big Dreams: "analyze parameter mutation" inspection** to report what fields of parameters change at call site (analysis upon request)
-- PR to Presentation Asssitant : checkbox: only show refactoring shortcuts used.
-- Inspect to detect overriding of @Before/@BeforeEach
+- [?] Report "Exception can be made Runtime": if no one in caller's stack catches the checked exception individually + checked exception traverses at least 2 methods
 ## Notes
 - To see debug when running plugin locally, in the 'guest' IJ go to Help>Diagnostic Tools>Debug Log Settings and enter `#com.github.victorrentea.livecoding` in there
 <!-- Plugin description end -->

@@ -8,8 +8,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.StartupActivity
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil
 import java.io.File
 import java.io.FileOutputStream
@@ -50,7 +48,7 @@ private fun copyToTemp(imgNameInResources: String): String {
     return tempFilePath
 }
 
-open class BackgroundMoodAction(val name: String, val mood: BackgroundMood) : AnAction() {
+open class BackgroundMoodAction(val moodName: String?, val mood: BackgroundMood) : AnAction() {
     companion object {
         init {
             ApplicationManager.getApplication().invokeLater {
@@ -74,8 +72,8 @@ open class BackgroundMoodAction(val name: String, val mood: BackgroundMood) : An
 
             log.debug("Path " + imgPath)
 
-            if (state != BackgroundMood.NONE) {
-                editor?.let { HintManager.getInstance().showErrorHint(it, "Entering $name Mode ...") }
+            if (state != BackgroundMood.NONE && moodName != null) {
+                editor?.let { HintManager.getInstance().showErrorHint(it, "Entering $moodName Mode ...") }
             }
             IdeBackgroundUtil.repaintAllWindows()
         }
@@ -90,3 +88,5 @@ class BackgroundMood2Action : BackgroundMoodAction("Relax", BackgroundMood.MOOD2
 
 class BackgroundMood3Action : BackgroundMoodAction("Geek", BackgroundMood.MOOD3) {
 }
+
+class BackgroundMoodResetAction : BackgroundMoodAction(null, BackgroundMood.NONE)
