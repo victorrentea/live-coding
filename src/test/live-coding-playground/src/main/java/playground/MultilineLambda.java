@@ -8,8 +8,11 @@ public class MultilineLambda {
 
     public void met(List<Integer> list) {
         list.forEach(e -> {
-            System.out.println(e + list);
+            System.out.println(e + e);
             System.out.println(e);
         });
+        list.forEach(e ->
+            System.out.println(e)
+        );
     }
 }

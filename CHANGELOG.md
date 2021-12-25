@@ -41,4 +41,5 @@
 - Added coloring the test editors in green (beta)
 - Added "Hardcore Mode" action (default mapped to ctrl-alt-w)
 ## 0.0.11
-- 
+- Added override before inspection
+- Added extract complex lambda inspection
