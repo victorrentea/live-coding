@@ -17,6 +17,11 @@
         <action class="com.github.victorrentea.livecoding.AutoImportStatics" text="Auto-Import Statics">
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
+<!--
+        <action class="com.github.victorrentea.livecoding.AnalyzeCognitiveComplexityAction" text="Analyze Cognitive Complexity">
+            <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
+        </action>
+-->
         <action  class="com.github.victorrentea.livecoding.BackgroundMood1Action" text="Toggle Hardcore Background">
             <keyboard-shortcut first-keystroke="control alt 7" keymap="$default"/>
         </action>
@@ -90,6 +95,12 @@
                          enabledByDefault="true"
                          level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.ExtractComplexLambdaInspection"/>
+        <localInspection language="JAVA"
+                         displayName="TODO"
+                         groupName="JAVA"
+                         enabledByDefault="true"
+                         level="INFO"
+                         implementationClass="com.github.victorrentea.livecoding.CCInspection"/>
     </extensions>
 
 </idea-plugin>

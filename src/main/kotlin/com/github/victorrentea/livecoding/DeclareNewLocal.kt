@@ -43,6 +43,8 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
 
 
         var i = 0
+        while (i < referencesToMe.size && referencesToMe[i].containingBlock == psiLocalVar.containingBlock && referencesToMe[i].isWrite()) i++ // skip redundant initializers
+
         while (i < referencesToMe.size) {
             while (i < referencesToMe.size && referencesToMe[i].isRead()) i++ // skip
             if (i == referencesToMe.size) break;
@@ -131,11 +133,8 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                 PsiTreeUtil.getChildOfAnyType(block, PsiThrowStatement::class.java) != null
 
 
-    fun PsiReferenceExpression.isWrite() = isAssigned()
-    fun PsiReferenceExpression.isRead() = !isAssigned()
 }
 
-fun PsiReferenceExpression.isAssigned() = (parent as? PsiAssignmentExpression)?.lExpression == this
 
 
 class DeclareNewLocalFix(localVariable: PsiVariable, reassignment: PsiAssignmentExpression) :

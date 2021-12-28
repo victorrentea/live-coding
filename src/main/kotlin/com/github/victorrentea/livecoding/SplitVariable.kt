@@ -12,6 +12,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.isAncestor
 import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 
 private val log = logger<SplitVariableInspection>()
 
@@ -24,6 +26,12 @@ class SplitVariableInspection : LocalInspectionTool() {
 
 fun PsiElement.getLineNumber(): Int {
     return getLineNumber(this.containingFile, this.textOffset)
+}
+fun PsiElement.startLineNumber(): Int {
+    return getLineNumber(this.containingFile, this.startOffset)
+}
+fun PsiElement.endLineNumber(): Int {
+    return getLineNumber(this.containingFile, this.endOffset)
 }
 
 fun getLineNumber(psiFile: PsiFile, offset:Int): Int {
