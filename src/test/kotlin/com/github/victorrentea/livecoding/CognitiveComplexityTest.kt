@@ -1,17 +1,13 @@
 package com.github.victorrentea.livecoding
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfo
-import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.testFramework.PsiTestUtil
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import junit.framework.TestCase
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import java.io.File
 
 @RunWith(Parameterized::class)
 class CognitiveComplexityTest(private val fileName: String) : LightJavaCodeInsightFixtureTestCase() {
@@ -41,8 +37,8 @@ class CognitiveComplexityTest(private val fileName: String) : LightJavaCodeInsig
             val expectedComplexity = comment.text.substringAfter("//").trim().toInt()
 
             val visitor = CognitiveComplexityVisitor()
-            visitor.visitElement(method)
-            TestCase.assertEquals("Complexity of '${method.name}'", expectedComplexity, visitor.complexity)
+            val complexity = visitor.visitElement(method, 0)
+            TestCase.assertEquals("Complexity of '${method.name}'", expectedComplexity, complexity.total())
         }
     }
 }

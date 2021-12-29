@@ -10,6 +10,7 @@ fun PsiModifierList.hasAnyAnnotation(vararg annotationFqns: String) =
 fun PsiReferenceExpression.isWrite() =
     (parent as? PsiAssignmentExpression)?.lExpression == this
         || (parent as? PsiLocalVariable)?.hasInitializer() == true
+        || (parent is PsiPostfixExpression)
 
 fun PsiReferenceExpression.isRead(): Boolean {
     val parent = this.parent

@@ -55,9 +55,9 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
         super.visitElement(element)
         val method = element as? PsiMethod ?: return
 
-        val visitor = CognitiveComplexityVisitor()
-        visitor.visitElement(method)
-        println("Method complexity : " + visitor.complexity)
+        val complexityVisitor = CognitiveComplexityVisitor()
+        val totalComplexity = complexityVisitor.visitElement(method, 0).total()
+        println("Method complexity : $totalComplexity")
 
         val parameters = method.parameterList.parameters.toList()
         val variables = PsiTreeUtil.findChildrenOfType(method, PsiLocalVariable::class.java)
@@ -65,16 +65,9 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
         log.debug("Vars: $variables")
 
         val usages = (variables + parameters)
-            .flatMap { variable ->
-                variable.referencesToMe.map {
-                    LocalUsage(
-                        it.getLineNumber(),
-                        variable,
-                        if (it.isRead()) LocalAccess.READ else LocalAccess.WRITE
-                    )
-                }
-            } + variables.filter { it.hasInitializer() }
-            .map { LocalUsage(it.getLineNumber(), it, LocalAccess.WRITE) }
+            .flatMap { variable -> variable.referencesToMe.flatMap {createUsages(it, variable)}} +
+            variables.filter { it.hasInitializer() }
+                .map { LocalUsage(it.getLineNumber(), it, LocalAccess.WRITE) }
 
         val usagesMap = usages.groupBy { it.lineNumber }
             .toSortedMap()
@@ -86,37 +79,95 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
         println("Syntax sections: " + allExtractableSyntaxSections)
 
         println("Usages: $usagesMap")
+        val extractOptions = mutableListOf<ExtractOption>()
 
-//        for (i in usagesMap.keys.indices)
-//            for (j in i + 1 until usagesMap.keys.size) {
         for (section in allExtractableSyntaxSections) {
-                val startLine = section.first
-                val endLine = section.second
-//                val lines = (startLine..endLine).map { usagesMap.keys.toList()[it] }
-                val usagesInside = (startLine..endLine).flatMap { usagesMap[it] ?: emptyList() }
-                val firstUsage = usagesInside.groupBy { it.variable }
-                    .mapValues { (_, usage) -> usage.minByOrNull { it.lineNumber }!! }
-                val inputVariables = firstUsage.filter { (_, usage) -> usage.access == LocalAccess.READ }
+            val startLine = section.first().startLineNumber()
+            val endLine = section.last().endLineNumber()
+            val usagesInside = (startLine..endLine).flatMap { usagesMap[it] ?: emptyList() }
+            val firstUsage = usagesInside.groupBy { it.variable }
+                .mapValues { (_, usage) -> usage.minByOrNull { it.lineNumber }!! }
+            val inputVariables = firstUsage.filter { (_, usage) -> usage.access == LocalAccess.READ }
 
-                val assignedVars = usagesInside.filter { it.access == LocalAccess.WRITE }
-                    .map { it.variable }
+            val assignedVars = usagesInside.filter { it.access == LocalAccess.WRITE }
+                .map { it.variable }
 
-                val varsReadAfter = (endLine + 1 until method.endLineNumber())
-                    .flatMap { usagesMap[it] ?: emptyList() }
-                    .filter { it.access == LocalAccess.READ }
-                    .map { it.variable }
+            val varsReadAfter = (endLine + 1 until method.endLineNumber())
+                .flatMap { usagesMap[it] ?: emptyList() }
+                .filter { it.access == LocalAccess.READ }
+                .map { it.variable }
 
-                val returnedVars = assignedVars.intersect(varsReadAfter.toSet())
+            val returnedVars = assignedVars.intersect(varsReadAfter.toSet())
 
-                if (returnedVars.size >= 2) {
-                    log.debug("Impossible to extract $section as it returns more than 1 variable: " + inputVariables.values.map { it.variable.name })
-                    continue
-                }
-
-
-                println("Extracting $section takes: ${inputVariables.values.map { it.variable.name }} and returns ${returnedVars.map { it.name }}")
+            if (returnedVars.size >= 2) {
+                log.debug("Extracting $startLine..$endLine - IMPOSSIBLE, as it returns more than 1 variable: " + returnedVars.map { it.name })
+                continue
             }
 
+//            println(section)
+            val complexity = section.mapNotNull{complexityVisitor.complexityMap[it]}
+                .fold(CognitiveComplexityInContext.ZERO) {acc, cc -> acc + cc}
 
+            val hostMethodComplexityAfter = totalComplexity - complexity.costInContext
+            if (hostMethodComplexityAfter <= 1) {
+                log.debug("Extracting $startLine..$endLine - TOO BIG, as it leaves the host method to only $hostMethodComplexityAfter (by extracting a method of complexity ${complexity.costIfExtracted}")
+                continue
+            }
+
+            if (complexity.costInContext == 0) {
+                log.debug("Extracting $startLine..$endLine - TOO BOILERPLATE, of complexity: ${complexity.costInContext}")
+                continue
+            }
+
+            println("Extracting $startLine..$endLine takes: ${inputVariables.values.map { it.variable.name }} " +
+                    "and returns ${returnedVars.map { it.name }}, " +
+                    "cost=${complexity.costInContext} / if extracted=${complexity.costIfExtracted}")
+
+            extractOptions += ExtractOption(startLine to endLine,section, inputVariables.size, complexity)
+        }
+
+        println("======advanced filtering=======")
+        // R1: remove section if smaller than another one AND complexity == AND takes MORE parameters
+        val smallerButWithMoreParams = extractOptions.filter { toRemove ->
+            extractOptions.any {
+                it != toRemove &&
+                it.section.containsAll(toRemove.section) &&
+                it.parameterCount < toRemove.parameterCount &&
+                it.complexity.costInContext == toRemove.complexity.costInContext } }
+        println("REMOVING ${smallerButWithMoreParams.size} overlapping with more params:")
+        smallerButWithMoreParams.forEach { println(it) }
+        extractOptions -= smallerButWithMoreParams
+
+
+        // R2: remove section if another one overlapping AND same complexity AND param count BUT larger size > aim for higher 'complexity density'
+        val largerButNotMoreComplex = extractOptions.filter { toRemove ->
+            extractOptions.any {
+                it != toRemove &&
+                toRemove.section.containsAll(it.section) &&
+                toRemove.parameterCount == it.parameterCount &&
+                toRemove.complexity.costInContext == it.complexity.costInContext
+            }
+        }
+        println("REMOVING ${largerButNotMoreComplex.size} larger but not more complex:")
+        largerButNotMoreComplex.forEach { println(it) }
+        extractOptions -= largerButNotMoreComplex
+
+        extractOptions.sortByDescending { it.complexity.costInContext }
+        println("=== final results ===")
+
+        extractOptions.forEach { println(it) }
+    }
+
+    private fun createUsages(
+        expression: PsiReferenceExpression,
+        variable: PsiVariable
+    ):List<LocalUsage> {
+        val result = mutableListOf<LocalUsage>()
+        if (expression.isRead()) result += LocalUsage(expression.getLineNumber(), variable, LocalAccess.READ)
+        if (expression.isWrite()) result += LocalUsage(expression.getLineNumber(), variable, LocalAccess.WRITE)
+        return result
     }
 }
+
+
+data class ExtractOption(val lines: Pair<Int,Int>, val section: List<PsiStatement>, val parameterCount:Int, val complexity:CognitiveComplexityInContext)

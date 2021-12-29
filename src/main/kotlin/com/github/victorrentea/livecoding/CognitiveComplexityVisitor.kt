@@ -5,6 +5,22 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.uast.util.classSetOf
 import org.jetbrains.uast.util.isInstanceOf
 
+data class CognitiveComplexity(val nestingCost:Int, val nestingCount:Int, val ownCost:Int) {
+    companion object {
+        val ZERO = CognitiveComplexity(0,0,0)
+    }
+    operator fun plus(other:CognitiveComplexity) = CognitiveComplexity(nestingCost + other.nestingCost,nestingCount  + other.nestingCount, ownCost + other.ownCost)
+    fun total() = nestingCost + ownCost
+}
+
+data class CognitiveComplexityInContext(val costInContext:Int, val costIfExtracted:Int) {
+    companion object {
+        val ZERO = CognitiveComplexityInContext(0,0)
+    }
+    operator fun plus(other:CognitiveComplexityInContext) = CognitiveComplexityInContext(
+        costInContext + other.costInContext,costIfExtracted  + other.costIfExtracted)
+}
+
 class CognitiveComplexityVisitor {
     companion object {
         // B1: There is an increment for each of the following:
@@ -28,8 +44,7 @@ class CognitiveComplexityVisitor {
             PsiCatchSection::class.java,
         )
 
-        // B2. Nesting level
-        //The following structures increment the nesting level:
+        // B2. Nesting level: The following structures increment the nesting level:
         //● if, else if, else, ternary operator
         //● switch
         //● for, foreach
@@ -48,15 +63,15 @@ class CognitiveComplexityVisitor {
             PsiLambdaExpression::class.java
         )
 
-        //B3. Nesting increments
-        //The following structures receive a nesting increment commensurate with their nested depth
-        //inside B2 structures:
+        //B3. Nesting increments:
+        // The following structures receive a nesting increment commensurate with their nested depth
+        // inside B2 structures:
         //● if, ternary operator
         //● switch
         //● for, foreach
         //● while, do while
         //● catch
-        val nestingIncrements = classSetOf(
+        val incrementWhenNestedType = classSetOf(
             PsiIfStatement::class.java,
             PsiConditionalExpression::class.java,
             PsiSwitchStatement::class.java,
@@ -68,37 +83,42 @@ class CognitiveComplexityVisitor {
         )
     }
 
-    var nestingLevel: Int = 0
-    var complexity: Int = 0
+    val complexityMap = mutableMapOf<PsiElement, CognitiveComplexityInContext>()
 
-    fun visitElement(element: PsiElement) {
-        // increments B1
-        val increment = when (element) {
+    fun visitElement(element: PsiElement, nestingLevel: Int): CognitiveComplexity {
+        // fundamental increment (B1)
+        val ownCost = when (element) {
             is PsiMethodCallExpression -> if (isRecursiveCall(element)) 1 else 0
-            is PsiBinaryExpression -> {
-                if (element.parent is PsiBinaryExpression) 0
-                else complexityOfBooleanExpression(element)
-            }
+            is PsiBinaryExpression -> if (element.parent is PsiBinaryExpression) 0 else complexityOfBooleanExpression(element)
             else -> if (element.isInstanceOf(incrementElementTypes)) 1 else 0
         }
 
-        // nested increment B3
-        val nestingIncrement = if (element.isInstanceOf(nestingIncrements)) nestingLevel else 0
+        // increment nesting (B3)
+        val addNestingCost = element.isInstanceOf(incrementWhenNestedType)
+        val nestingCost = if (addNestingCost) nestingLevel else 0
 
 //        println("Visit $element")
-        if (increment + nestingIncrement > 0)
-            println("Add $increment + $nestingIncrement(nesting) for $element at line " + element.getLineNumber())
 
-        complexity += increment + nestingIncrement
+        if (ownCost + nestingCost > 0) {
+            println("Add $ownCost + $nestingCost(nesting) for $element at line " + element.getLineNumber())
+        }
 
-        // nesting B2
-        val nesting = element.isInstanceOf(nestingElementsTypes)
+        val ownComplexity = CognitiveComplexity(nestingCost, if (addNestingCost) 1 else 0, ownCost)
 
-        if (nesting) nestingLevel++
+        // nested increment (B2)
+        val increasesNesting = element.isInstanceOf(nestingElementsTypes)
 
-        element.children.forEach { visitElement(it) }
+        val newNestingLevel = nestingLevel + if (increasesNesting) 1 else 0
 
-        if (nesting) nestingLevel--
+        val childrenCosts = element.children.map { visitElement(it, newNestingLevel) }
+
+
+        val retainedCost = childrenCosts.fold(ownComplexity) { acc, cc -> acc + cc}
+
+        val contextOverheadCost = retainedCost.nestingCount * nestingLevel
+
+        complexityMap[element] = CognitiveComplexityInContext(retainedCost.total(), retainedCost.total() - contextOverheadCost)
+        return retainedCost
     }
 
     private fun isRecursiveCall(element: PsiMethodCallExpression) =
