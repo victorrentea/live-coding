@@ -35,7 +35,6 @@
             <keyboard-shortcut first-keystroke="control alt 0" keymap="$default"/>
         </action>
     </actions>
-
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable parentId="tools" instance="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
                                  id="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
@@ -100,7 +99,7 @@
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.CCInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.ExtractAssistantInspection"/>
     </extensions>
 
 </idea-plugin>

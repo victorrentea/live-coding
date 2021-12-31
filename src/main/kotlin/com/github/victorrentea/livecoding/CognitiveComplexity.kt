@@ -1,13 +1,24 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.extracthints.ComplexMethodRenderer
+import com.github.victorrentea.livecoding.extracthints.ExtractSuggestionRenderer
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.editor.markup.HighlighterLayer
+import com.intellij.openapi.editor.markup.HighlighterTargetArea
+import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.psi.*
+import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.refactoring.suggested.endOffset
+import com.intellij.refactoring.suggested.startOffset
 
 private val log = logger<SuggestMethodsToExtractVisitor>()
 
+const val LAYER = HighlighterLayer.LAST - 1
 
 //class AnalyzeCognitiveComplexityAction : AnAction() {
 //    override fun actionPerformed(e: AnActionEvent) {
@@ -29,9 +40,20 @@ private val log = logger<SuggestMethodsToExtractVisitor>()
 ////        }
 //    }
 //}
-class CCInspection : LocalInspectionTool() {
+class ExtractAssistantInspection : LocalInspectionTool() {
     companion object {
         const val INSPECTION_NAME = "X"
+    }
+
+    override fun inspectionStarted(session: LocalInspectionToolSession, isOnTheFly: Boolean) {
+        ApplicationManager.getApplication().invokeLater {
+            PsiEditorUtil.findEditor(session.file)?.let { editor ->
+                println("Cleanup old markup")
+                editor.markupModel.allHighlighters
+                    .filter { it.layer == LAYER }
+                    .forEach { editor.markupModel.removeHighlighter(it) }
+            }
+        }
     }
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
@@ -50,14 +72,29 @@ data class LocalUsage(val lineNumber: Int, val variable: PsiVariable, val access
 }
 
 class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
-
     override fun visitElement(element: PsiElement) {
         super.visitElement(element)
         val method = element as? PsiMethod ?: return
+        val methodBody = method.body ?: return
+
 
         val complexityVisitor = CognitiveComplexityVisitor()
         val totalComplexity = complexityVisitor.visitElement(method, 0).total()
         println("Method complexity : $totalComplexity")
+
+        ApplicationManager.getApplication().invokeLater {
+            PsiEditorUtil.findEditor(element)?.markupModel?.let { markupModel ->
+                val h: RangeHighlighter = markupModel.addRangeHighlighter(
+                    null,
+                    method.startOffset,
+                    methodBody.startOffset + 1,
+                    HighlighterLayer.LAST -1,
+                    HighlighterTargetArea.LINES_IN_RANGE
+                )
+
+                h.customRenderer = ComplexMethodRenderer(totalComplexity)
+            }
+        }
 
         val parameters = method.parameterList.parameters.toList()
         val variables = PsiTreeUtil.findChildrenOfType(method, PsiLocalVariable::class.java)
@@ -65,9 +102,9 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
         log.debug("Vars: $variables")
 
         val usages = (variables + parameters)
-            .flatMap { variable -> variable.referencesToMe.flatMap {createUsages(it, variable)}} +
-            variables.filter { it.hasInitializer() }
-                .map { LocalUsage(it.getLineNumber(), it, LocalAccess.WRITE) }
+            .flatMap { variable -> variable.referencesToMe.flatMap { createUsages(it, variable) } } +
+                variables.filter { it.hasInitializer() }
+                    .map { LocalUsage(it.getLineNumber(), it, LocalAccess.WRITE) }
 
         val usagesMap = usages.groupBy { it.lineNumber }
             .toSortedMap()
@@ -105,8 +142,8 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
             }
 
 //            println(section)
-            val complexity = section.mapNotNull{complexityVisitor.complexityMap[it]}
-                .fold(CognitiveComplexityInContext.ZERO) {acc, cc -> acc + cc}
+            val complexity = section.mapNotNull { complexityVisitor.complexityMap[it] }
+                .fold(CognitiveComplexityInContext.ZERO) { acc, cc -> acc + cc }
 
             val hostMethodComplexityAfter = totalComplexity - complexity.costInContext
             if (hostMethodComplexityAfter <= 1) {
@@ -119,11 +156,15 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
                 continue
             }
 
-            println("Extracting $startLine..$endLine takes: ${inputVariables.values.map { it.variable.name }} " +
-                    "and returns ${returnedVars.map { it.name }}, " +
-                    "cost=${complexity.costInContext} / if extracted=${complexity.costIfExtracted}")
+            println(
+                "Extracting $startLine..$endLine takes: ${inputVariables.values.map { it.variable.name }} " +
+                        "and returns ${returnedVars.map { it.name }}, " +
+                        "cost=${complexity.costInContext} / if extracted=${complexity.costIfExtracted}"
+            )
 
-            extractOptions += ExtractOption(startLine to endLine,section, inputVariables.size, complexity)
+            val depth = PsiTreeUtil.getDepth(section.first(), method)
+
+            extractOptions += ExtractOption(startLine to endLine, section, inputVariables.size, complexity, depth)
         }
 
         println("======advanced filtering=======")
@@ -131,9 +172,11 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
         val smallerButWithMoreParams = extractOptions.filter { toRemove ->
             extractOptions.any {
                 it != toRemove &&
-                it.section.containsAll(toRemove.section) &&
-                it.parameterCount < toRemove.parameterCount &&
-                it.complexity.costInContext == toRemove.complexity.costInContext } }
+                        it.section.containsAll(toRemove.section) &&
+                        it.parameterCount < toRemove.parameterCount &&
+                        it.complexity.costInContext == toRemove.complexity.costInContext
+            }
+        }
         println("REMOVING ${smallerButWithMoreParams.size} overlapping with more params:")
         smallerButWithMoreParams.forEach { println(it) }
         extractOptions -= smallerButWithMoreParams
@@ -143,25 +186,68 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
         val largerButNotMoreComplex = extractOptions.filter { toRemove ->
             extractOptions.any {
                 it != toRemove &&
-                toRemove.section.containsAll(it.section) &&
-                toRemove.parameterCount == it.parameterCount &&
-                toRemove.complexity.costInContext == it.complexity.costInContext
+                        toRemove.section.containsAll(it.section) &&
+                        toRemove.parameterCount == it.parameterCount &&
+                        toRemove.complexity.costInContext == it.complexity.costInContext
             }
         }
         println("REMOVING ${largerButNotMoreComplex.size} larger but not more complex:")
         largerButNotMoreComplex.forEach { println(it) }
         extractOptions -= largerButNotMoreComplex
 
+        assignDisplayDepth(extractOptions)
+
         extractOptions.sortByDescending { it.complexity.costInContext }
+
         println("=== final results ===")
 
-        extractOptions.forEach { println(it) }
+        ApplicationManager.getApplication().invokeLater {
+            extractOptions.forEach { extract ->
+                println(extract)
+                PsiEditorUtil.findEditor(element)?.markupModel?.let { markupModel ->
+                    val h: RangeHighlighter = markupModel.addRangeHighlighter(
+                        null,
+                        extract.section.first().startOffset,
+                        extract.section.last().endOffset,
+                        LAYER,
+                        HighlighterTargetArea.LINES_IN_RANGE
+                    )
+
+                    h.customRenderer = ExtractSuggestionRenderer(extract.displayHanging)
+                }
+            }
+        }
+    }
+
+    private fun assignDisplayDepth(extractOptions: MutableList<ExtractOption>) {
+        println("Start assign depth to " + extractOptions.map { it.lines })
+        var found = true
+        while (found) {
+            found = false
+            // TODO test caused infinite loop once: Start assign depth to [(60, 75), (64, 65), (65, 65), (79, 80), (80, 80)]
+            for (extract in extractOptions) {
+                extractOptions.filter {
+                    it != extract &&
+                    it.depth == extract.depth &&
+//                    (it.containedWithin(extract) // enclosing is more to the left
+                    extract.displayHanging < it.displayHanging + 1 &&
+                     it.intersects(extract) &&
+                    (it.startLine > extract.startLine // first to start is more to right
+                        || extract.lineCount > it.lineCount)  // larger is on the left
+                }.forEach {
+                    println("INC depth of "+extract.lines + " to " + (it.displayHanging + 1) + " because of " + it.lines)
+                    extract.displayHanging = it.displayHanging + 1
+                    found = true
+                }
+            }
+        }
+        println("Done assign depts: " + extractOptions.map { it.lines to it.displayHanging })
     }
 
     private fun createUsages(
         expression: PsiReferenceExpression,
         variable: PsiVariable
-    ):List<LocalUsage> {
+    ): List<LocalUsage> {
         val result = mutableListOf<LocalUsage>()
         if (expression.isRead()) result += LocalUsage(expression.getLineNumber(), variable, LocalAccess.READ)
         if (expression.isWrite()) result += LocalUsage(expression.getLineNumber(), variable, LocalAccess.WRITE)
@@ -170,4 +256,21 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
 }
 
 
-data class ExtractOption(val lines: Pair<Int,Int>, val section: List<PsiStatement>, val parameterCount:Int, val complexity:CognitiveComplexityInContext)
+data class ExtractOption(
+    val lines: Pair<Int, Int>,
+    val section: List<PsiStatement>,
+    val parameterCount: Int,
+    val complexity: CognitiveComplexityInContext,
+    val depth: Int,
+    var displayHanging: Int = 0
+) {
+    fun containedWithin(other: ExtractOption): Boolean =
+        startLine >= other.startLine && endLine <= other.endLine
+
+    fun intersects(other: ExtractOption): Boolean =
+        startLine <= other.endLine && other.startLine <= endLine
+
+    val lineCount get() = endLine - startLine + 1
+    val startLine get() = lines.first
+    val endLine get() = lines.second
+}

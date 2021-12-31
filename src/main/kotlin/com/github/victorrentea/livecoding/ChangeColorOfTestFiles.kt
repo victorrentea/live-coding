@@ -1,8 +1,11 @@
 package com.github.victorrentea.livecoding
 
 import com.intellij.openapi.editor.colors.EditorColors
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
+import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.util.ui.UIUtil
@@ -18,5 +21,6 @@ class ChangeColorOfTestFiles : EditorFactoryListener {
             val color = if (UIUtil.isUnderDarcula()) Color(73, 84, 74) else Color(239, 250, 231)
             event.editor.colorsScheme.setColor(EditorColors.GUTTER_BACKGROUND, color)
         }
+
     }
 }
