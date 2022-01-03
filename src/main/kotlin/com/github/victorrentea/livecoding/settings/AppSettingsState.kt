@@ -1,6 +1,6 @@
 package com.github.victorrentea.livecoding.settings
 
-import com.github.victorrentea.livecoding.BackgroundMood
+import com.github.victorrentea.livecoding.ux.BackgroundMood
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State

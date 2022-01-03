@@ -1,6 +1,6 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.lombok
 
-import com.github.victorrentea.livecoding.AddRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
+import com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.github.victorrentea.livecoding.FrameworkDetector.lombokIsPresent
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement

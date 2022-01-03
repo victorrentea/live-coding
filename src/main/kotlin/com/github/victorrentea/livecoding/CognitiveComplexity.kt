@@ -1,7 +1,8 @@
 package com.github.victorrentea.livecoding
 
-import com.github.victorrentea.livecoding.extracthints.ComplexMethodRenderer
+import com.github.victorrentea.livecoding.extracthints.MethodRenderer
 import com.github.victorrentea.livecoding.extracthints.ExtractSuggestionRenderer
+import com.github.victorrentea.livecoding.extracthints.SyntaxExtractableSectionsVisitor
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalInspectionToolSession
 import com.intellij.codeInspection.ProblemsHolder
@@ -15,31 +16,12 @@ import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
+import com.intellij.util.PsiErrorElementUtil
 
 private val log = logger<SuggestMethodsToExtractVisitor>()
 
 const val LAYER = HighlighterLayer.LAST - 1
 
-//class AnalyzeCognitiveComplexityAction : AnAction() {
-//    override fun actionPerformed(e: AnActionEvent) {
-////        val psiFile = e.getData(CommonDataKeys.PSI_ELEMENT)?.containingFile
-//        val psiFile = e.getData(CommonDataKeys.PSI_ELEMENT)
-//            ?.let { PsiTreeUtil.getParentOfType(it, PsiMethod::class.java) }
-////        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
-//        println("File:  $psiFile")
-//        val visitor = CognitiveComplexityVisitor()
-//        psiFile?.accept(visitor)
-//
-////        val editor = e.getData(CommonDataKeys.EDITOR)
-////        ApplicationManager.getApplication().invokeLater {
-////            visitor.report()?.let { reportString ->
-////                editor?.let { editor ->
-////                    HintManager.getInstance().showInformationHint(editor, reportString)
-////                }
-////            }
-////        }
-//    }
-//}
 class ExtractAssistantInspection : LocalInspectionTool() {
     companion object {
         const val INSPECTION_NAME = "X"
@@ -75,6 +57,9 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
     override fun visitElement(element: PsiElement) {
         super.visitElement(element)
         val method = element as? PsiMethod ?: return
+        if (PsiErrorElementUtil.hasErrors(element.project, element.containingFile.virtualFile)) {
+            return
+        }
         val methodBody = method.body ?: return
 
 
@@ -92,7 +77,7 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
                     HighlighterTargetArea.LINES_IN_RANGE
                 )
 
-                h.customRenderer = ComplexMethodRenderer(totalComplexity)
+                h.customRenderer = MethodRenderer(totalComplexity)
             }
         }
 
@@ -221,15 +206,13 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
 
     private fun assignDisplayDepth(extractOptions: MutableList<ExtractOption>) {
         println("Start assign depth to " + extractOptions.map { it.lines })
-        var found = true
-        while (found) {
-            found = false
+        var found = false
+        for (i in 1 .. 30) {
             // TODO test caused infinite loop once: Start assign depth to [(60, 75), (64, 65), (65, 65), (79, 80), (80, 80)]
             for (extract in extractOptions) {
                 extractOptions.filter {
                     it != extract &&
                     it.depth == extract.depth &&
-//                    (it.containedWithin(extract) // enclosing is more to the left
                     extract.displayHanging < it.displayHanging + 1 &&
                      it.intersects(extract) &&
                     (it.startLine > extract.startLine // first to start is more to right
@@ -240,6 +223,7 @@ class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
                     found = true
                 }
             }
+            if (!found) break
         }
         println("Done assign depts: " + extractOptions.map { it.lines to it.displayHanging })
     }

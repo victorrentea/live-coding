@@ -10,7 +10,7 @@
     <depends>Git4Idea</depends>
 
     <actions>
-        <action class="com.github.victorrentea.livecoding.CopyGitCoordinates" text="Copy Git Coordinates to Clipboard">
+        <action class="com.github.victorrentea.livecoding.ux.CopyGitCoordinates" text="Copy Git Coordinates to Clipboard">
             <!--<keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>-->
             <add-to-group group-id="Git.MainMenu" anchor="last"/>
         </action>
@@ -22,16 +22,16 @@
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
         </action>
 -->
-        <action  class="com.github.victorrentea.livecoding.BackgroundMood1Action" text="Toggle Hardcore Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood1Action" text="Toggle Hardcore Background">
             <keyboard-shortcut first-keystroke="control alt 7" keymap="$default"/>
         </action>
-        <action  class="com.github.victorrentea.livecoding.BackgroundMood2Action" text="Toggle Child Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood2Action" text="Toggle Child Background">
             <keyboard-shortcut first-keystroke="control alt 8" keymap="$default"/>
         </action>
-        <action  class="com.github.victorrentea.livecoding.BackgroundMood3Action" text="Toggle Cool Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood3Action" text="Toggle Cool Background">
             <keyboard-shortcut first-keystroke="control alt 9" keymap="$default"/>
         </action>
-        <action  class="com.github.victorrentea.livecoding.BackgroundMoodResetAction" text="Clear Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMoodResetAction" text="Clear Background">
             <keyboard-shortcut first-keystroke="control alt 0" keymap="$default"/>
         </action>
     </actions>
@@ -42,28 +42,28 @@
 
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.settings.AppSettingsState"/>
 
-        <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.Slf4jAnnotator"/>
-        <editorFactoryListener implementation="com.github.victorrentea.livecoding.ChangeColorOfTestFiles" />
+        <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jAnnotator"/>
+        <editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.ChangeColorOfTestFiles" />
         <localInspection language="JAVA"
                          displayName="Replace boilerplate constructor with @RequiredArgsConstructor"
                          groupName="Redundant definitions"
                          groupPath="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
                          displayName="Add @RequiredArgsConstructor to set final fields"
                          groupName="Redundant definitions"
                          groupPath="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.AddRequiredArgsConstructorInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
                          displayName="Avoid using @Data on @Entity"
                          groupName="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.LombokAndHibernateInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.lombok.LombokAndHibernateInspection"/>
         <localInspection language="JAVA"
                          displayName="Local variable can be split in separate declarations"
                          groupName="JAVA"
@@ -75,31 +75,37 @@
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.DeclareNewLocalInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.declarenewlocal.DeclareNewLocalInspection"/>
         <localInspection language="JAVA"
                          displayName="Remove final keyword from parameters and locals"
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.RemoveFinalFromLocalInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.varie.RemoveFinalFromLocalInspection"/>
         <localInspection language="JAVA"
                          displayName="Avoid overriding @Before/@BeforeEach in tests"
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.DontOverrideBeforeInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.varie.DontOverrideBeforeInspection"/>
         <localInspection language="JAVA"
                          displayName="Extract complex lambdas to methods"
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.ExtractComplexLambdaInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.varie.ExtractComplexLambdaInspection"/>
         <localInspection language="JAVA"
                          displayName="TODO"
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.ExtractAssistantInspection"/>
+        <localInspection language="JAVA"
+                         displayName="Introduce guard to simplify if"
+                         groupName="JAVA"
+                         enabledByDefault="true"
+                         level="WEAK_WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.varie.IntroduceGuardInspection"/>
     </extensions>
 
 </idea-plugin>

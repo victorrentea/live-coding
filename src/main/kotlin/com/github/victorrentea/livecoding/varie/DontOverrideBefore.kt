@@ -1,13 +1,10 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.varie
 
-import com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
+import com.github.victorrentea.livecoding.hasAnyAnnotation
 import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.openapi.project.Project
 import com.intellij.psi.*
-import com.intellij.psi.search.searches.OverridingMethodsSearch
 
 
 class DontOverrideBeforeInspection : LocalInspectionTool() {
@@ -18,6 +15,7 @@ class DontOverrideBeforeInspection : LocalInspectionTool() {
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return DontOverrideBeforeVisitor(holder)
     }
+
 }
 
 class DontOverrideBeforeVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {

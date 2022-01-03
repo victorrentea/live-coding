@@ -1,6 +1,7 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.lombok
 
-import com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
+import com.github.victorrentea.livecoding.FrameworkDetector
+import com.github.victorrentea.livecoding.lombok.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.intellij.codeInspection.*
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger

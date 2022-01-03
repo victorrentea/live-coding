@@ -1,6 +1,6 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.varie
 
-import com.github.victorrentea.livecoding.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
+import com.github.victorrentea.livecoding.lombok.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType

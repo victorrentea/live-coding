@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.lombok
 
 import com.github.victorrentea.livecoding.FrameworkDetector.jpaIsPresent
 import com.github.victorrentea.livecoding.FrameworkDetector.lombokIsPresent

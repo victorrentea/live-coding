@@ -1,11 +1,8 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.ux
 
 import com.intellij.openapi.editor.colors.EditorColors
-import com.intellij.openapi.editor.event.DocumentEvent
-import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
-import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.util.ui.UIUtil

@@ -19,21 +19,21 @@ class ExtractSuggestionRenderer(private val depth: Int) : CustomHighlighterRende
 
         val hanging = depth * scale(5)
 
-        val LEFT_MARGIN_FROM_TEXT = scale(2)
+        val marginFromText = scale(2)
 
-        g.drawLine(sectionTextStartPoint.x - LEFT_MARGIN_FROM_TEXT - hanging,
+        g.drawLine(sectionTextStartPoint.x - marginFromText - hanging,
             sectionTextStartPoint.y + scale(1),
-            sectionTextStartPoint.x - LEFT_MARGIN_FROM_TEXT - hanging,
+            sectionTextStartPoint.x - marginFromText - hanging,
             sectionTextEndPoint.y + editor.lineHeight - scale(2))
 
-        g.drawLine(sectionTextStartPoint.x - LEFT_MARGIN_FROM_TEXT - hanging,
+        g.drawLine(sectionTextStartPoint.x - marginFromText - hanging,
             sectionTextStartPoint.y + scale(1),
-            sectionTextStartPoint.x - LEFT_MARGIN_FROM_TEXT - hanging + scale(2),
+            sectionTextStartPoint.x - marginFromText - hanging + scale(2),
             sectionTextStartPoint.y + scale(1))
 
-        g.drawLine(sectionTextStartPoint.x - LEFT_MARGIN_FROM_TEXT - hanging,
+        g.drawLine(sectionTextStartPoint.x - marginFromText - hanging,
             sectionTextEndPoint.y + editor.lineHeight - scale(2),
-            sectionTextStartPoint.x - LEFT_MARGIN_FROM_TEXT - hanging + scale(2),
+            sectionTextStartPoint.x - marginFromText - hanging + scale(2),
             sectionTextEndPoint.y + editor.lineHeight - scale(2))
 
         // line
@@ -65,13 +65,13 @@ class ExtractSuggestionRenderer(private val depth: Int) : CustomHighlighterRende
 //            topTrianglePoint1.newTranslated(0, (-4))
 //        )
     }
+    private fun Point.newTranslated(dx: Int, dy: Int) = Point(x + dx, y + dy)
+
+    private fun Graphics.fillPolygon(vararg points:Point) =
+        fillPolygon(
+            points.map { it.x }.toIntArray(),
+            points.map { it.y }.toIntArray(),
+            points.size
+        )
 }
 
-private fun Point.newTranslated(dx: Int, dy: Int) = Point(x + dx, y + dy)
-
-private fun Graphics.fillPolygon(vararg points:Point) =
-    fillPolygon(
-        points.map { it.x }.toIntArray(),
-        points.map { it.y }.toIntArray(),
-        points.size
-    )

@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.ux
 
 import com.intellij.ide.CopyPasteManagerEx
 import com.intellij.notification.Notification

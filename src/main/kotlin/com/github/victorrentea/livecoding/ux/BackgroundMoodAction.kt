@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.ux
 
 import com.github.victorrentea.livecoding.settings.AppSettingsState
 import com.intellij.codeInsight.hint.HintManager
@@ -14,11 +14,11 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import kotlin.io.path.absolutePathString
 
-enum class BackgroundMood {
-    MOOD1,
-    MOOD2,
-    MOOD3,
-    NONE
+enum class BackgroundMood(val label: String?) {
+    MOOD1("Hard-core"),
+    MOOD2("Relax"),
+    MOOD3("Geek"),
+    NONE(null)
 }
 
 private val log = logger<BackgroundMoodAction>()
@@ -48,7 +48,7 @@ private fun copyToTemp(imgNameInResources: String): String {
     return tempFilePath
 }
 
-open class BackgroundMoodAction(val moodName: String?, val mood: BackgroundMood) : AnAction() {
+open class BackgroundMoodAction(private val mood: BackgroundMood) : AnAction() {
     companion object {
         init {
             ApplicationManager.getApplication().invokeLater {
@@ -72,21 +72,22 @@ open class BackgroundMoodAction(val moodName: String?, val mood: BackgroundMood)
 
             log.debug("Path " + imgPath)
 
-            if (state != BackgroundMood.NONE && moodName != null) {
-                editor?.let { HintManager.getInstance().showErrorHint(it, "Entering $moodName Mode ...") }
+            val moodLabel = mood.label
+            if (moodLabel != null) {
+                editor?.let { HintManager.getInstance().showErrorHint(it, "Entering $moodLabel Mode ...") }
             }
             IdeBackgroundUtil.repaintAllWindows()
         }
     }
 }
 
-class BackgroundMood1Action : BackgroundMoodAction("Hard-core", BackgroundMood.MOOD1) {
+class BackgroundMood1Action : BackgroundMoodAction(BackgroundMood.MOOD1) {
 }
 
-class BackgroundMood2Action : BackgroundMoodAction("Relax", BackgroundMood.MOOD2) {
+class BackgroundMood2Action : BackgroundMoodAction(BackgroundMood.MOOD2) {
 }
 
-class BackgroundMood3Action : BackgroundMoodAction("Geek", BackgroundMood.MOOD3) {
+class BackgroundMood3Action : BackgroundMoodAction(BackgroundMood.MOOD3) {
 }
 
-class BackgroundMoodResetAction : BackgroundMoodAction(null, BackgroundMood.NONE)
+class BackgroundMoodResetAction : BackgroundMoodAction(BackgroundMood.NONE)

@@ -1,8 +1,9 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorFix
+import com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection
 import com.intellij.codeInspection.LocalInspectionTool
 import org.junit.Ignore
-import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
 
 @Ignore // how to add lombok to virtual project ?

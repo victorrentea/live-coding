@@ -1,7 +1,8 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.varie.RemoveFinalFromLocalInspection
+import com.github.victorrentea.livecoding.varie.RemoveFinalFromLocalsFix
 import com.intellij.codeInspection.LocalInspectionTool
-import org.junit.Ignore
 import org.junit.runners.Parameterized.Parameters
 
 class RemoveFinalTest(fileName: String) : InspectionParameterizedTestBase(fileName) {

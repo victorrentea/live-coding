@@ -1,7 +1,6 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.varie
 
 import com.intellij.codeInspection.*
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil

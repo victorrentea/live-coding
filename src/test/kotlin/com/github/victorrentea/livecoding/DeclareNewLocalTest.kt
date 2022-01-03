@@ -1,5 +1,7 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.declarenewlocal.DeclareNewLocalFix
+import com.github.victorrentea.livecoding.declarenewlocal.DeclareNewLocalInspection
 import com.intellij.codeInspection.LocalInspectionTool
 import org.junit.runners.Parameterized
 

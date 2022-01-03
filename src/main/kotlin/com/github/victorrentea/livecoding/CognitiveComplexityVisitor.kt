@@ -2,6 +2,7 @@ package com.github.victorrentea.livecoding
 
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.util.PsiErrorElementUtil
 import org.jetbrains.uast.util.classSetOf
 import org.jetbrains.uast.util.isInstanceOf
 
@@ -86,6 +87,7 @@ class CognitiveComplexityVisitor {
     val complexityMap = mutableMapOf<PsiElement, CognitiveComplexityInContext>()
 
     fun visitElement(element: PsiElement, nestingLevel: Int): CognitiveComplexity {
+        if (PsiErrorElementUtil.hasErrors(element.project, element.containingFile.virtualFile)) return CognitiveComplexity.ZERO
         // fundamental increment (B1)
         val ownCost = when (element) {
             is PsiMethodCallExpression -> if (isRecursiveCall(element)) 1 else 0

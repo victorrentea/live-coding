@@ -1,12 +1,15 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.extracthints
 
+import com.github.victorrentea.livecoding.startLineNumber
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.refactoring.suggested.startOffset
-private val log = logger<SyntaxExtractableSectionsVisitor>()
 
 class SyntaxExtractableSectionsVisitor {
+    companion object {
+        private val log = logger<SyntaxExtractableSectionsVisitor>()
+    }
     private val sections = mutableSetOf<List<PsiStatement>>()
 
     fun getSections() = sections.toList().sortedWith(compareBy({it.first().startOffset}, {it.last().startOffset}))

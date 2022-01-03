@@ -4,13 +4,11 @@ import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.isAncestor
-import com.intellij.psi.util.parentOfType
 import com.intellij.psi.util.parentOfTypes
 import com.intellij.refactoring.suggested.endOffset
 import com.intellij.refactoring.suggested.startOffset
@@ -108,14 +106,14 @@ class SplitVariableQuickFix(psiLocalVariable: PsiLocalVariable) : LocalQuickFixO
             .mapValues { it.value[0] }
             .values
 
-        WriteCommandAction.runWriteCommandAction(project, Constants.SPLIT_VARIABLE_DESCRIPTION, "Live-Coding", {
-
-            for (firstAssignmentInBlock in firstAssignmentsInBlock) {
-                replaceAssignmentWithDeclaration(firstAssignmentInBlock, psiLocalVariable, psiLocalVariable.name)
-            }
-            (psiLocalVariable.parent as? PsiDeclarationStatement)?.delete()
-
-        })
+//        WriteCommandAction.runWriteCommandAction(project, Constants.SPLIT_VARIABLE_DESCRIPTION, "Live-Coding", {
+//
+//            for (firstAssignmentInBlock in firstAssignmentsInBlock) {
+//                replaceAssignmentWithDeclaration(firstAssignmentInBlock, psiLocalVariable, psiLocalVariable.name)
+//            }
+//            (psiLocalVariable.parent as? PsiDeclarationStatement)?.delete()
+//
+//        })
     }
 
 

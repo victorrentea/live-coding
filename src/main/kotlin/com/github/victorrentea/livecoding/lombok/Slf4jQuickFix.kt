@@ -1,9 +1,8 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.lombok
 
+import com.github.victorrentea.livecoding.FrameworkDetector
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction
-import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
