@@ -14,9 +14,15 @@
             <!--<keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>-->
             <add-to-group group-id="Git.MainMenu" anchor="last"/>
         </action>
-        <action class="com.github.victorrentea.livecoding.AutoImportStatics" text="Auto-Import Statics">
+
+        <action class="com.github.victorrentea.livecoding.ImportStaticsAction" text="Auto-Import Statics">
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
+
+        <action class="com.github.victorrentea.livecoding.ux.CaptureExperimentAction" text="Experiment">
+            <keyboard-shortcut first-keystroke="control alt shift M" keymap="$default"/>
+        </action>
+
 <!--
         <action class="com.github.victorrentea.livecoding.AnalyzeCognitiveComplexityAction" text="Analyze Cognitive Complexity">
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
@@ -45,14 +51,19 @@
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jAnnotator"/>
 
         <editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.ChangeColorOfTestFiles" />
-
+<!--
+<intentionAction>
+    <category>Java</category>
+    <className>com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorIntention</className>
+</intentionAction>
+-->
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Lombok"
                          displayName="Replace boilerplate constructor with @RequiredArgsConstructor"
                          enabledByDefault="true"
                          level="WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceRequiredArgsConstructorInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceWithRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Lombok"

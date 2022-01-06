@@ -36,19 +36,15 @@ class SyntaxExtractableSectionsVisitor {
 
     private fun hasOrphanBreakContinueChildren(statement: PsiStatement): Boolean {
         // a break or continue must all have a parent for/while/dowhile that is a child of statement
-        val breakContinue = PsiTreeUtil.findChildrenOfAnyType(
+        val blockInterruptions = PsiTreeUtil.findChildrenOfAnyType(
             statement,
             PsiContinueStatement::class.java,
             PsiBreakStatement::class.java
         )
-        for(breakFlow in breakContinue) {
-            val loopParents =
-                PsiTreeUtil.collectParents(breakFlow, PsiForeachStatement::class.java, false) {it != statement}.size +
-                PsiTreeUtil.collectParents(breakFlow, PsiForStatement::class.java, false) {it != statement}.size +
-                PsiTreeUtil.collectParents(breakFlow, PsiWhileStatement::class.java, false) {it != statement}.size +
-                PsiTreeUtil.collectParents(breakFlow, PsiDoWhileStatement::class.java, false) {it != statement}.size;
+        for(interruption in blockInterruptions) {
+            val loopParents = PsiTreeUtil.collectParents(interruption, PsiLoopStatement::class.java, false) {it != statement}.size
             if (loopParents == 0) {
-                log.trace("Found an orphan break/continue at line " + breakFlow.startLineNumber())
+                log.trace("Found an orphan break/continue at line " + interruption.startLineNumber())
                 return true
             }
         }

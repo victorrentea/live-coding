@@ -1,7 +1,7 @@
 package com.github.victorrentea.livecoding.lombok
 
 import com.github.victorrentea.livecoding.FrameworkDetector
-import com.github.victorrentea.livecoding.lombok.ReplaceRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
+import com.github.victorrentea.livecoding.lombok.ReplaceWithRequiredArgsConstructorInspection.Companion.INSPECTION_NAME
 import com.intellij.codeInspection.*
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger
@@ -10,9 +10,9 @@ import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
 
-private val log = logger<ReplaceRequiredArgsConstructorInspection>()
+private val log = logger<ReplaceWithRequiredArgsConstructorInspection>()
 
-class ReplaceRequiredArgsConstructorInspection : LocalInspectionTool() {
+class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
     companion object {
         const val INSPECTION_NAME = "Boilerplate constructor only injecting dependencies"
     }
