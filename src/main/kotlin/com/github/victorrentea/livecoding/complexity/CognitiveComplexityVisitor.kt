@@ -1,26 +1,11 @@
-package com.github.victorrentea.livecoding
+package com.github.victorrentea.livecoding.complexity
 
+import com.github.victorrentea.livecoding.getLineNumber
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.PsiErrorElementUtil
 import org.jetbrains.uast.util.classSetOf
 import org.jetbrains.uast.util.isInstanceOf
-
-data class CognitiveComplexity(val nestingCost:Int, val nestingCount:Int, val ownCost:Int) {
-    companion object {
-        val ZERO = CognitiveComplexity(0,0,0)
-    }
-    operator fun plus(other:CognitiveComplexity) = CognitiveComplexity(nestingCost + other.nestingCost,nestingCount  + other.nestingCount, ownCost + other.ownCost)
-    fun total() = nestingCost + ownCost
-}
-
-data class CognitiveComplexityInContext(val costInContext:Int, val costIfExtracted:Int) {
-    companion object {
-        val ZERO = CognitiveComplexityInContext(0,0)
-    }
-    operator fun plus(other:CognitiveComplexityInContext) = CognitiveComplexityInContext(
-        costInContext + other.costInContext,costIfExtracted  + other.costIfExtracted)
-}
 
 class CognitiveComplexityVisitor {
     companion object {

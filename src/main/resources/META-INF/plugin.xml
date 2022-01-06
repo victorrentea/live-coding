@@ -43,69 +43,71 @@
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.settings.AppSettingsState"/>
 
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jAnnotator"/>
+
         <editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.ChangeColorOfTestFiles" />
+
         <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Lombok"
                          displayName="Replace boilerplate constructor with @RequiredArgsConstructor"
-                         groupName="Redundant definitions"
-                         groupPath="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Lombok"
                          displayName="Add @RequiredArgsConstructor to set final fields"
-                         groupName="Redundant definitions"
-                         groupPath="Lombok"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection"/>
         <localInspection language="JAVA"
-                         displayName="Avoid using @Data on @Entity"
+                         groupPath="Java"
                          groupName="Lombok"
+                         displayName="Avoid using @Data on @Entity"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.lombok.LombokAndHibernateInspection"/>
-        <localInspection language="JAVA"
+
+        <!--<localInspection language="JAVA"
                          displayName="Local variable can be split in separate declarations"
                          groupName="JAVA"
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.SplitVariableInspection"/>
+        -->
+
         <localInspection language="JAVA"
-                         displayName="Define a new variable to avoid re-assignment"
-                         groupName="JAVA"
+                         groupPath="Java"
+                         groupName="Data flow"
+                         displayName="Reuse of local variable - with fix"
                          enabledByDefault="true"
-                         level="INFO"
+                         level="WEAK WARNING"
                          implementationClass="com.github.victorrentea.livecoding.declarenewlocal.DeclareNewLocalInspection"/>
+
+
         <localInspection language="JAVA"
-                         displayName="Remove final keyword from parameters and locals"
-                         groupName="JAVA"
-                         enabledByDefault="true"
-                         level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.varie.RemoveFinalFromLocalInspection"/>
-        <localInspection language="JAVA"
-                         displayName="Avoid overriding @Before/@BeforeEach in tests"
-                         groupName="JAVA"
-                         enabledByDefault="true"
-                         level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.varie.DontOverrideBeforeInspection"/>
-        <localInspection language="JAVA"
-                         displayName="Extract complex lambdas to methods"
-                         groupName="JAVA"
-                         enabledByDefault="true"
-                         level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.varie.ExtractComplexLambdaInspection"/>
-        <localInspection language="JAVA"
-                         displayName="TODO"
-                         groupName="JAVA"
-                         enabledByDefault="true"
-                         level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.ExtractAssistantInspection"/>
-        <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Data flow"
                          displayName="Introduce guard to simplify if"
-                         groupName="JAVA"
                          enabledByDefault="true"
-                         level="WEAK_WARNING"
+                         level="WEAK WARNING"
                          implementationClass="com.github.victorrentea.livecoding.varie.IntroduceGuardInspection"/>
+
+        <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Method metrics"
+                         displayName="Provide visual clues about what sections can be extracted"
+                         enabledByDefault="false"
+                         level="INFO"
+                         implementationClass="com.github.victorrentea.livecoding.extracthints.ExtractAssistantInspection"/>
+
+        <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Test frameworks"
+                         displayName="Overriding @Before/@BeforeEach in tests"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.varie.DontOverrideBeforeInspection"/>
     </extensions>
 
 </idea-plugin>

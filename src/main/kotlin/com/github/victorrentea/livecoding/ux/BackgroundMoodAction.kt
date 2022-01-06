@@ -26,7 +26,7 @@ private var state = BackgroundMood.NONE
 
 private val DEFAULT_IMAGE_PATHS = mapOf(
     BackgroundMood.MOOD1 to pathFromTemp("horror", BackgroundMood.MOOD1) + ",50",
-    BackgroundMood.MOOD2 to pathFromTemp("child", BackgroundMood.MOOD2) + ",20",
+    BackgroundMood.MOOD2 to pathFromTemp("child", BackgroundMood.MOOD2) + ",15",
     BackgroundMood.MOOD3 to pathFromTemp("cool", BackgroundMood.MOOD3) + ",30"
 )
 

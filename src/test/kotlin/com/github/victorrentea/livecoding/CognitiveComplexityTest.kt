@@ -1,5 +1,6 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.complexity.CognitiveComplexityVisitor
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.util.PsiTreeUtil

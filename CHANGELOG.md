@@ -38,8 +38,11 @@
 ## 0.0.10
 - Added inspection to remove final from parameters and local variables (no highlight, only fix)
 - Added nice balloon after static import completes
-- Added coloring the test editors in green (beta)
+- Added coloring the test editors gutter in green (beta)
 - Added "Hardcore Mode" action (default mapped to ctrl-alt-w)
 ## 0.0.11
-- Added override before inspection
-- Added extract complex lambda inspection
+- Added override @before inspection for junit 4+5
+- Removed inspection about final variables and params - found an exising standard one
+- Added 3 different mood options for background image : hard core, children and relax + clear option, all via actions
+- Added Cognitive Complexity measuring of methods + extraction visual hints : returning a single value (or none), complex enough and syntactically correct
+- 
