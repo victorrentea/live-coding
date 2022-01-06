@@ -45,4 +45,5 @@
 - Removed inspection about final variables and params - found an exising standard one
 - Added 3 different mood options for background image : hard core, children and relax + clear option, all via actions
 - Added Cognitive Complexity measuring of methods + extraction visual hints : returning a single value (or none), complex enough and syntactically correct
+## 0.0.12
 - 
