@@ -46,4 +46,5 @@
 - Added 3 different mood options for background image : hard core, children and relax + clear option, all via actions
 - Added Cognitive Complexity measuring of methods + extraction visual hints : returning a single value (or none), complex enough and syntactically correct
 ## 0.0.12
-- 
+- Added draft UI effects : to shake current screen (F7) or broken glass (F8)
+- cleaned up Import statics

@@ -19,8 +19,11 @@
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
 
-        <action class="com.github.victorrentea.livecoding.ux.CaptureAnimationAction" text="Experiment">
-            <keyboard-shortcut first-keystroke="control alt shift M" keymap="$default"/>
+        <action class="com.github.victorrentea.livecoding.ux.ShakeEffectAction" text="Shake Effect">
+            <keyboard-shortcut first-keystroke="F7" keymap="$default"/>
+        </action>
+        <action class="com.github.victorrentea.livecoding.ux.BrokenGlassEffectAction" text="Broken Glass Effect">
+            <keyboard-shortcut first-keystroke="F8" keymap="$default"/>
         </action>
 
 <!--

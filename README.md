@@ -16,7 +16,7 @@ More about me : https://www.victorrentea.ro
 - Enables quick change of IJ background via actions (Mappable to keys). The moods supported: zen, boring, horror. eg "Toggle Hardcore Background" action
 - Inspection to detect overriding of @Before/@BeforeEach, without calling super() - usually a bug
 - **Suggest extractable code sections** based on Cognitive Complexity, if (1) they have a single return value, (2) no inner "return", (3) doesn't strip the host function of ALL of its complexity
-
+- Screen Effects to shake current screen (F7) or broken glass (F8)
 
 ## Declare new variable here
 Purpose: many times in legacy code a variable is declared, assigned and used with a certain meaning, but later on it is reassigned to a different value. 
