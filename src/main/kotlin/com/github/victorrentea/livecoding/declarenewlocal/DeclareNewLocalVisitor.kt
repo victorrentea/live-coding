@@ -69,13 +69,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
     private fun inACase(writeToDeclareAt: PsiReferenceExpression): Boolean =
         writeToDeclareAt.containingBlock?.parent is PsiSwitchStatement
 
-    private fun inALoop(writeToDeclareAt: PsiReferenceExpression) = writeToDeclareAt.parents.any {
-        it is PsiForStatement ||
-                it is PsiForeachStatement ||
-                it is PsiWhileStatement ||
-                it is PsiDoWhileStatement
-    }
-
+    private fun inALoop(writeToDeclareAt: PsiReferenceExpression) = writeToDeclareAt.parentsOfType(PsiLoopStatement::class.java).count() > 0
 
     private fun neverReadLaterInParentBlock(
         writeToDeclareAt: PsiReferenceExpression,
