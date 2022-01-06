@@ -19,7 +19,7 @@
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
 
-        <action class="com.github.victorrentea.livecoding.ux.CaptureExperimentAction" text="Experiment">
+        <action class="com.github.victorrentea.livecoding.ux.CaptureAnimationAction" text="Experiment">
             <keyboard-shortcut first-keystroke="control alt shift M" keymap="$default"/>
         </action>
 
