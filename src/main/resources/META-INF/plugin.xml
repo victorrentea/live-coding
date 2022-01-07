@@ -51,15 +51,15 @@
 
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.settings.AppSettingsState"/>
 
-        <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jAnnotator"/>
+        <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jQuickFixAnnotator"/>
 
         <editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.ChangeColorOfTestFiles" />
-<!--
-<intentionAction>
+<!--<intentionAction>
     <category>Java</category>
-    <className>com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorIntention</className>
-</intentionAction>
--->
+    <category>Lombok</category>
+    <className>com.github.victorrentea.livecoding.lombok.Slf4jIntention</className>
+</intentionAction>-->
+
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Lombok"

@@ -25,6 +25,9 @@ abstract class CaptureAnimationAction : AnAction() {
         val editor = e.getData(CommonDataKeys.HOST_EDITOR)
         val gc = editor?.component?.graphicsConfiguration ?: return
 
+
+//        gc.device.
+
         val screenRect = Rectangle(Toolkit.getDefaultToolkit().getScreenSize())
 //        log.debug("Capturing $screenRect")
 
@@ -47,6 +50,7 @@ abstract class CaptureAnimationAction : AnAction() {
         g.drawImage(nativeResImage, 0, 0, null)
         g.dispose()
 
+         // TODO make sure this frame is opened on the same monitor as the Editor
         val frame = JFrame("Overlay", gc)
 
         gc.device.displayMode.let {

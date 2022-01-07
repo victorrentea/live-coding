@@ -7,6 +7,8 @@ public class AlternateBlocks {
             x = 2 + p;
             System.out.println(x);
         } else if (p == 2) {
+
+
             if (j == 0) {
                 x = 3;
                 System.out.println(x);
