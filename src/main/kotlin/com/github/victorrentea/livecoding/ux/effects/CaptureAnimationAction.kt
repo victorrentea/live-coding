@@ -1,10 +1,9 @@
-package com.github.victorrentea.livecoding.ux
+package com.github.victorrentea.livecoding.ux.effects
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.diagnostic.logger
-import com.intellij.util.ui.UIUtil
 import java.awt.*
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
@@ -92,11 +91,11 @@ abstract class AnimationPanel : JPanel(), Closeable {}
 
 class ShakeEffectAction : CaptureAnimationAction() {
     override fun createAnimationPanel(image: BufferedImage): AnimationPanel {
-        return CaptureShakeAnimationPanel(image)
+        return ShakeAnimationPanel(image)
     }
 }
 class BrokenGlassEffectAction : CaptureAnimationAction() {
     override fun createAnimationPanel(image: BufferedImage): AnimationPanel {
-        return CaptureBreakGlassAnimationPanel(image)
+        return BreakGlassAnimationPanel(image)
     }
 }

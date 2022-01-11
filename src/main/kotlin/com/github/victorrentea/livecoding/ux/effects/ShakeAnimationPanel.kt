@@ -1,16 +1,14 @@
-package com.github.victorrentea.livecoding.ux
+package com.github.victorrentea.livecoding.ux.effects
 
+import com.github.victorrentea.livecoding.ux.effects.AnimationPanel
 import com.intellij.openapi.application.ApplicationManager
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Image
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
-import javax.swing.JPanel
 import javax.swing.Timer
 
-class CaptureShakeAnimationPanel(private val capture: Image) : AnimationPanel() {
+class ShakeAnimationPanel(private val capture: Image) : AnimationPanel() {
     var timer: Timer? = null
     var dx: Int = 0
 

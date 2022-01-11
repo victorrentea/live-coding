@@ -1,16 +1,14 @@
-package com.github.victorrentea.livecoding.ux
+package com.github.victorrentea.livecoding.ux.effects
 
-import com.github.victorrentea.livecoding.ux.CaptureBreakGlassAnimationPanel.GlassPoint.*
+import com.github.victorrentea.livecoding.ux.effects.BreakGlassAnimationPanel.GlassPoint.*
 import com.intellij.openapi.application.ApplicationManager
 import com.jetbrains.rd.framework.base.deepClonePolymorphic
 import java.awt.*
 import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
-import java.io.Closeable
-import javax.swing.JPanel
 import javax.swing.Timer
 
-class CaptureBreakGlassAnimationPanel(private val fullImage: Image) : AnimationPanel() {
+class BreakGlassAnimationPanel(private val fullImage: Image) : AnimationPanel() {
     enum class GlassPoint(val dx: Double, val dy: Double) {
         LEFT_TOP(0.0, 0.0),
         RIGHT_TOP(1.0, 0.0),

@@ -11,7 +11,6 @@
 
     <actions>
         <action class="com.github.victorrentea.livecoding.ux.CopyGitCoordinates" text="Copy Git Coordinates to Clipboard">
-            <!--<keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>-->
             <add-to-group group-id="Git.MainMenu" anchor="last"/>
         </action>
 
@@ -19,10 +18,10 @@
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
 
-        <action class="com.github.victorrentea.livecoding.ux.ShakeEffectAction" text="Shake Effect">
+        <action class="com.github.victorrentea.livecoding.ux.effects.ShakeEffectAction" text="Shake Effect">
             <keyboard-shortcut first-keystroke="F7" keymap="$default"/>
         </action>
-        <action class="com.github.victorrentea.livecoding.ux.BrokenGlassEffectAction" text="Broken Glass Effect">
+        <action class="com.github.victorrentea.livecoding.ux.effects.BrokenGlassEffectAction" text="Broken Glass Effect">
             <keyboard-shortcut first-keystroke="F8" keymap="$default"/>
         </action>
 

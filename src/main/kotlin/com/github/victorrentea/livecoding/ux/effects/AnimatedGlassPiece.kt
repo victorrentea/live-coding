@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding.ux
+package com.github.victorrentea.livecoding.ux.effects
 
 import java.awt.Point
 import java.awt.geom.Point2D
