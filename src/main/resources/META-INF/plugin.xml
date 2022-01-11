@@ -18,10 +18,10 @@
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
 
-        <action class="com.github.victorrentea.livecoding.ux.effects.ShakeEffectAction" text="Shake Effect">
+        <action class="com.github.victorrentea.livecoding.ux.effects.ShakeAnimationAction" text="Shake Effect">
             <keyboard-shortcut first-keystroke="F7" keymap="$default"/>
         </action>
-        <action class="com.github.victorrentea.livecoding.ux.effects.BrokenGlassEffectAction" text="Broken Glass Effect">
+        <action class="com.github.victorrentea.livecoding.ux.effects.BrokenGlassAnimationAction" text="Broken Glass Effect">
             <keyboard-shortcut first-keystroke="F8" keymap="$default"/>
         </action>
 

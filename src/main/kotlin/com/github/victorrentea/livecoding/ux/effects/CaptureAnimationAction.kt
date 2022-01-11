@@ -11,9 +11,7 @@ import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
 import java.awt.image.BufferedImage
 import java.awt.image.MultiResolutionImage
-import java.io.Closeable
 import javax.swing.JFrame
-import javax.swing.JPanel
 
 
 abstract class CaptureAnimationAction : AnAction() {
@@ -87,15 +85,3 @@ abstract class CaptureAnimationAction : AnAction() {
    abstract fun createAnimationPanel(image: BufferedImage): AnimationPanel
 }
 
-abstract class AnimationPanel : JPanel(), Closeable {}
-
-class ShakeEffectAction : CaptureAnimationAction() {
-    override fun createAnimationPanel(image: BufferedImage): AnimationPanel {
-        return ShakeAnimationPanel(image)
-    }
-}
-class BrokenGlassEffectAction : CaptureAnimationAction() {
-    override fun createAnimationPanel(image: BufferedImage): AnimationPanel {
-        return BreakGlassAnimationPanel(image)
-    }
-}
