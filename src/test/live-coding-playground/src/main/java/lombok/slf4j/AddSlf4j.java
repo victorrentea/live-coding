@@ -15,7 +15,7 @@ public class AddSlf4j {
 
 
     public static void main(String[] args) {
-        log.debug("");
+        log.deifbug("");
     }
 
 

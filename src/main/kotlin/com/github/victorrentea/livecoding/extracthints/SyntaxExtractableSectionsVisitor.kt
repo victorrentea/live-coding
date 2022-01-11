@@ -18,15 +18,17 @@ class SyntaxExtractableSectionsVisitor {
         if (element is PsiCodeBlock) {
             for (i in 0 until element.statements.size) {
                 for (j in i until element.statements.size) {
-                    val tentativeSection = (i..j).toList().map { element.statements[it] !! }.toList()
+                    val tentativeStatements = (i..j).toList().map { element.statements[it] !! }.toList()
 
-                    if (tentativeSection.any { it is PsiSwitchLabelStatement }) continue
+                    if (tentativeStatements.any { it is PsiSwitchLabelStatement }) continue
 
-                    if (tentativeSection.any { hasOrphanBreakContinueChildren(it)}) continue
+                    if (tentativeStatements.any { hasOrphanBreakContinueChildren(it)}) continue
 
-                    if (tentativeSection.any { PsiTreeUtil.countChildrenOfType(it, PsiReturnStatement::class.java) > 0 }) continue // TODO remove:  In fact, we could extract any block if all the exec paths end with a RETURN or THROW
+                    if (tentativeStatements.any {
+                            PsiTreeUtil.findChildrenOfType(it, PsiReturnStatement::class.java).isNotEmpty()
+                        }) continue // TODO remove:  In fact, we could extract any block if all the exec paths end with a RETURN or THROW
 
-                    sections += tentativeSection
+                    sections += tentativeStatements
                 }
             }
         }

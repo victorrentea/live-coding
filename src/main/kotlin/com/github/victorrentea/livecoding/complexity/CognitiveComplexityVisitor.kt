@@ -71,7 +71,7 @@ class CognitiveComplexityVisitor {
 
     val complexityMap = mutableMapOf<PsiElement, CognitiveComplexityInContext>()
 
-    fun visitElement(element: PsiElement, nestingLevel: Int): CognitiveComplexity {
+    fun visitElement(element: PsiElement, nestingLevel: Int = 0): CognitiveComplexity {
         if (PsiErrorElementUtil.hasErrors(element.project, element.containingFile.virtualFile)) return CognitiveComplexity.ZERO
         // fundamental increment (B1)
         val ownCost = when (element) {
