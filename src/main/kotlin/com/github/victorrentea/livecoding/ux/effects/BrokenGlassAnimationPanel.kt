@@ -8,7 +8,7 @@ import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
 import javax.swing.Timer
 
-class BrokenGlassAnimationPanel(private val fullImage: Image) : AnimationPanel() {
+class BrokenGlassAnimationPanel(private val fullImage: Image, onFinishedCallback: () -> Unit) : AnimationPanel() {
     enum class GlassPoint(val dx: Double, val dy: Double) {
         LEFT_TOP(0.0, 0.0),
         RIGHT_TOP(1.0, 0.0),
@@ -37,15 +37,16 @@ class BrokenGlassAnimationPanel(private val fullImage: Image) : AnimationPanel()
             listOf(F, E, C, G),
             listOf(D, E, F, LEFT_BOTTOM)
         )
-
     }
 
+
     override fun close() {
-        timer?.stop();
+        timer?.stop()
     }
 
     var timer: Timer? = null
     val allPieces = computePiecesClip().map { extractOnePiece(it) }
+
 
     init {
         var iteration = 0
@@ -66,7 +67,8 @@ class BrokenGlassAnimationPanel(private val fullImage: Image) : AnimationPanel()
             if (iteration == nIterations) {
                 timer?.stop()
                 timer = null
-                println("FINISHED ANIMATION")
+//                onFinishedCallback();
+//                println("FINISHED ANIMATION")
             }
         }
         timer?.start()
@@ -86,19 +88,16 @@ class BrokenGlassAnimationPanel(private val fullImage: Image) : AnimationPanel()
     override fun paint(g: Graphics?) {
         val g2d = g as? Graphics2D ?: return
         val defaultTransform = g2d.deviceConfiguration.defaultTransform ?: return
-        val t = defaultTransform.createInverse();
+        val inverseDpi = defaultTransform.createInverse();
 
-        println("print clipped")
         g.color = Color.black
         g.fillRect(0, 0, width, height)
 
-        allPieces.forEachIndexed { index, image ->
-            val myT = t.deepClonePolymorphic()
-            myT.translate(image.externalCenter.x,image.externalCenter.y)
-            myT.rotate(image.rotation, image.relativeCenter.x, image.relativeCenter.y)
-            g.drawImage(image.image, myT, null)
+        allPieces.forEach { piece ->
+            val transform = inverseDpi.deepClonePolymorphic()
+            piece.applyTransform(transform)
+            g.drawImage(piece.image, transform, null)
         }
-
     }
 
     private fun extractOnePiece(polygon: Polygon): AnimatedGlassPiece {
@@ -120,6 +119,5 @@ class BrokenGlassAnimationPanel(private val fullImage: Image) : AnimationPanel()
             -0.6 * Math.random(),
             0.0, (Math.random() - 0.5) * 0.01
         )
-//        return imagePiece
     }
 }

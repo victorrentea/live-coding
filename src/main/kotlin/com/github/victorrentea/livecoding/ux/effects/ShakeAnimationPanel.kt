@@ -1,6 +1,5 @@
 package com.github.victorrentea.livecoding.ux.effects
 
-import com.github.victorrentea.livecoding.ux.effects.AnimationPanel
 import com.intellij.openapi.application.ApplicationManager
 import java.awt.Color
 import java.awt.Graphics
@@ -8,7 +7,7 @@ import java.awt.Graphics2D
 import java.awt.Image
 import javax.swing.Timer
 
-class ShakeAnimationPanel(private val capture: Image) : AnimationPanel() {
+class ShakeAnimationPanel(private val capture: Image, onFinishedCallback: () -> Unit) : AnimationPanel() {
     var timer: Timer? = null
     var dx: Int = 0
 
@@ -32,6 +31,7 @@ class ShakeAnimationPanel(private val capture: Image) : AnimationPanel() {
             if (iteration == nIterations) {
                 timer?.stop()
                 timer = null
+                onFinishedCallback()
             }
         }
         timer?.start()

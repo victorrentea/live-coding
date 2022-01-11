@@ -14,9 +14,9 @@ import java.awt.image.MultiResolutionImage
 import javax.swing.JFrame
 
 
-abstract class CaptureAnimationAction : AnAction() {
+abstract class AbstractAnimationAction : AnAction() {
     companion object {
-        private val log = logger<CaptureAnimationAction>()
+        private val log = logger<AbstractAnimationAction>()
     }
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.HOST_EDITOR)
@@ -60,28 +60,34 @@ abstract class CaptureAnimationAction : AnAction() {
         frame.isVisible = true
         frame.isFocusable = true
         frame.contentPane.layout = BorderLayout()
+        val panel = createAnimationPanel(scaledBufferedImg) {
+            frame.isVisible = false
+            frame.dispose()
+        }
 
-        val panel = createAnimationPanel(scaledBufferedImg)
+        fun stopAnimation() {
+            frame.isVisible = false
+            panel.close()
+            frame.dispose()
+        }
+
         frame.contentPane.add(panel, BorderLayout.CENTER)
         frame.addWindowFocusListener(object : WindowFocusListener {
             override fun windowGainedFocus(e: WindowEvent?) {}
             override fun windowLostFocus(e: WindowEvent?) {
-                frame.isVisible = false
-                panel.close()
-                frame.dispose()
+                stopAnimation()
             }
         })
         frame.addKeyListener(object : KeyListener {
             override fun keyTyped(e: KeyEvent?) {
                 if (e?.isAltDown == true) return // ignore alt tab
-                frame.isVisible = false
-                panel.close()
-                frame.dispose()
+                stopAnimation()
             }
             override fun keyPressed(e: KeyEvent?) {}
             override fun keyReleased(e: KeyEvent?) {}
         })
+
     }
-   abstract fun createAnimationPanel(image: BufferedImage): AnimationPanel
+   abstract fun createAnimationPanel(image: BufferedImage, onEndCallback: () -> Unit): AnimationPanel
 }
 
