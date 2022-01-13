@@ -18,7 +18,7 @@ class IntroduceGuardInspection : BaseInspection() {
     override fun buildVisitor() = IntroduceGuardVisitor()
 
     override fun buildErrorString(vararg infos: Any?): String {
-        return "The alternate (else) branch is much lighter"
+        return "The alternate (else) branch is much lighter - consider inverting the if"
     }
 
 //    override fun buildFix(vararg infos: Any?): InspectionGadgetsFix? {

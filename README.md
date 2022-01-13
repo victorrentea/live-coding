@@ -44,6 +44,8 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 **Note**: After it stabilizes, I plan to contribute this quickfix to IntelliJ IDEA Community to make it available for all Java developers out there. 
 
 ## Next features:
+- Replace slf4j Logger log = with @Slf4j inspection
+- "Webcam Hero" effect/notification to encourage more participants to open their webcams
 - Cleanup and split of cognitive complexity vs extract visual hints
 - Inspection to detect usages of jupiter Assertions or junit Assert and suggest replacing them with Assertions (assert4j) as a far better alternative
 - Inspection to detect call(x, x.method()) and suggest inlining the 2nd param
