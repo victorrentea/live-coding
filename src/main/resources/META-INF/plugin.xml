@@ -30,16 +30,16 @@
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
         </action>
 -->
-        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood1Action" text="Toggle Hardcore Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood1Action" text="Toggle Hardcore Background Mood">
             <keyboard-shortcut first-keystroke="control alt 7" keymap="$default"/>
         </action>
-        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood2Action" text="Toggle Child Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood2Action" text="Toggle Child Background Mood">
             <keyboard-shortcut first-keystroke="control alt 8" keymap="$default"/>
         </action>
-        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood3Action" text="Toggle Cool Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood3Action" text="Toggle Geek Background Mood">
             <keyboard-shortcut first-keystroke="control alt 9" keymap="$default"/>
         </action>
-        <action class="com.github.victorrentea.livecoding.ux.BackgroundMoodResetAction" text="Clear Background">
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMoodResetAction" text="Clear Background Mood">
             <keyboard-shortcut first-keystroke="control alt 0" keymap="$default"/>
         </action>
     </actions>
