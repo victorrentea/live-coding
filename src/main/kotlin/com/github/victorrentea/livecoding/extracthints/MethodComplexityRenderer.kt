@@ -9,10 +9,10 @@ import java.awt.FontMetrics
 import java.awt.Graphics
 
 
-class MethodRenderer(private val complexity: Int) : CustomHighlighterRenderer {
+class MethodComplexityRenderer(private val complexity: Int) : CustomHighlighterRenderer {
     override fun paint(editor: Editor, highlighter: RangeHighlighter, g: Graphics) {
         g.color = when (complexity) {
-            in 2..4 -> Color.green
+//            in 2..4 -> Color.green
             in 5..8 -> Color.orange
             in 9..1000 -> Color.red
             else -> return

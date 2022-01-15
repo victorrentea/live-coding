@@ -45,14 +45,11 @@ class ExtractAssistantInspection : LocalInspectionTool() {
         override fun visitElement(element: PsiElement) {
             super.visitElement(element)
             val method = element as? PsiMethod ?: return
-            if (PsiErrorElementUtil.hasErrors(element.project, element.containingFile.virtualFile)) {
-                return
-            }
+            if (PsiErrorElementUtil.hasErrors(element.project, element.containingFile.virtualFile)) return
             val methodBody = method.body ?: return
 
 
-            val complexityVisitor = CognitiveComplexityVisitor()
-            val totalComplexity = complexityVisitor.visitElement(method, 0).total()
+            val totalComplexity = CognitiveComplexityVisitor().visitElement(method, 0).total()
             log.debug("Method complexity : $totalComplexity")
 
             ApplicationManager.getApplication().invokeLater {
@@ -65,9 +62,10 @@ class ExtractAssistantInspection : LocalInspectionTool() {
                         HighlighterTargetArea.LINES_IN_RANGE
                     )
 
-                    h.customRenderer = MethodRenderer(totalComplexity)
+                    h.customRenderer = MethodComplexityRenderer(totalComplexity)
                 }
             }
+            if (totalComplexity <= 4) return
 
             val parameters = method.parameterList.parameters.toList()
             val variables = PsiTreeUtil.findChildrenOfType(method, PsiLocalVariable::class.java)
@@ -115,7 +113,7 @@ class ExtractAssistantInspection : LocalInspectionTool() {
                 }
 
     //            log.debug(section)
-                val complexity = section.mapNotNull { complexityVisitor.complexityMap[it] }
+                val complexity = section.mapNotNull { CognitiveComplexityVisitor().complexityMap[it] }
                     .fold(CognitiveComplexityInContext.ZERO) { acc, cc -> acc + cc }
 
                 val hostMethodComplexityAfter = totalComplexity - complexity.costInContext

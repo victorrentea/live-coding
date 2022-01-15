@@ -48,3 +48,7 @@
 ## 0.0.12
 - Added draft UI effects : to shake current screen (F7) or broken glass (F8)
 - cleaned up Import statics
+## 0.0.14
+- Fixed Bug about add @RAC + cleaned that inspection
+- made the method complexity renderer more silent
+- temporary disable introduce guard inspection

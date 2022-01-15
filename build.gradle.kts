@@ -115,7 +115,7 @@ tasks {
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
     }
     test {
-        // systemProperty("idea.home.path", "C:\\workspace\\intellij-community-master")
+         systemProperty("idea.home.path", "C:\\workspace\\intellij-community-master")
     }
 }
 dependencies {

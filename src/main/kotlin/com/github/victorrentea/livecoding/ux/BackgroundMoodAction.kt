@@ -76,7 +76,7 @@ open class BackgroundMoodAction(private val mood: BackgroundMood) : AnAction() {
             if (moodLabel != null) {
                 editor?.let { HintManager.getInstance().showErrorHint(it, "Entering $moodLabel Mode ...") }
             }
-            IdeBackgroundUtil.repaintAllWindows()
+//            IdeBackgroundUtil.repaintAllWindows()
         }
     }
 }
