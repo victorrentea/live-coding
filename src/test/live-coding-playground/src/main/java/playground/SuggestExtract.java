@@ -1,5 +1,6 @@
 package playground;
 
+import java.io.File;
 import java.util.List;
 
 public class SuggestExtract {
@@ -8,8 +9,16 @@ public class SuggestExtract {
         int t = 0;
         int y = 2;
         for (int i = 0; i < x; i++) {
-            if (x == 2 && list.size()==0  || list.get(0) == "a") {
-                return 2;
+            if (x == 2 && list.size() == 0 || list.get(0) == "a") {
+                if (x == 2 && list.size() == 0 || list.get(0) == "a") {
+                    if (x == 2 && list.size() == 0 || list.get(0) == "a") {
+                        if (x == 2 && list.size() == 0 || list.get(0) == "a") {
+                            if (x == 2 && list.size() == 0 || list.get(0) == "a") {
+                                y = 4;
+                            }
+                        }
+                    }
+                }
             }
         }
         int z = x + y;
@@ -17,6 +26,6 @@ public class SuggestExtract {
         z += y;
         list.add("a");
 
-        return z  + 2;
+        return z + 2;
     }
 }

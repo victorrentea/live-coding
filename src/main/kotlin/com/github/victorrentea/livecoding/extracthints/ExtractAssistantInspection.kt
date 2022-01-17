@@ -49,7 +49,8 @@ class ExtractAssistantInspection : LocalInspectionTool() {
             val methodBody = method.body ?: return
 
 
-            val totalComplexity = CognitiveComplexityVisitor().visitElement(method, 0).total()
+            val complexityVisitor = CognitiveComplexityVisitor()
+            val totalComplexity = complexityVisitor.visitElement(method, 0).total()
             log.debug("Method complexity : $totalComplexity")
 
             ApplicationManager.getApplication().invokeLater {
@@ -113,7 +114,7 @@ class ExtractAssistantInspection : LocalInspectionTool() {
                 }
 
     //            log.debug(section)
-                val complexity = section.mapNotNull { CognitiveComplexityVisitor().complexityMap[it] }
+                val complexity = section.mapNotNull { complexityVisitor.complexityMap[it] }
                     .fold(CognitiveComplexityInContext.ZERO) { acc, cc -> acc + cc }
 
                 val hostMethodComplexityAfter = totalComplexity - complexity.costInContext
@@ -170,7 +171,7 @@ class ExtractAssistantInspection : LocalInspectionTool() {
 
             extractOptions.sortByDescending { it.complexity.costInContext }
 
-            log.debug("=== final results ===")
+            log.debug("=== final results for ${method.name}(): ${extractOptions.size} ===")
 
             ApplicationManager.getApplication().invokeLater {
                 extractOptions.forEach { extract ->
