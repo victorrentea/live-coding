@@ -58,3 +58,5 @@
 - Added a few more static imports
 - Made quick import add imports for Set,List and Map
 - Added ReplaceWithSlf4j inspection
+- @ToString.Exclude is left qualified when added on fields when removing @Data from @Entity
+- added comment on @Setter on @Entity when removing @Data

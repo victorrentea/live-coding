@@ -61,7 +61,6 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 ## Next features:
 - Increase the font size for complexity rendering and change orange to a more visible color.
 - use @ToString.Exclude instead of @Exclude when fixing @Data on @Entity
-- Replace slf4j Logger log = with @Slf4j inspection
 - "Webcam Hero" effect/notification to encourage more participants to open their webcams
 - Cleanup and split of cognitive complexity vs extract visual hints
 - Inspection to detect usages of jupiter Assertions or junit Assert and suggest replacing them with Assertions (assert4j) as a far better alternative

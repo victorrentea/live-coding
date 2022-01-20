@@ -1,4 +1,4 @@
-package lombok.replacerac;
+package lombokplay.replacerac;
 
 import java.util.Objects;
 

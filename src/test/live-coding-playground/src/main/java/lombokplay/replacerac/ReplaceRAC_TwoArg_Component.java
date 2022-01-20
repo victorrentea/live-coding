@@ -1,4 +1,4 @@
-package lombok.replacerac;
+package lombokplay.replacerac;
 
 import org.springframework.stereotype.Component;
 

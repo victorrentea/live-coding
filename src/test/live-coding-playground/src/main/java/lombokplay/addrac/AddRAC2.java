@@ -1,4 +1,4 @@
-package lombok.addrac;
+package lombokplay.addrac;
 
 public class AddRAC2 {
     private final int x; //

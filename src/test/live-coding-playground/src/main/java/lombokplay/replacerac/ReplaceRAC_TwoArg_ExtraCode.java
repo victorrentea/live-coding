@@ -1,4 +1,4 @@
-package lombok.replacerac;
+package lombokplay.replacerac;
 
 public class ReplaceRAC_TwoArg_ExtraCode {
     private final int dummy;

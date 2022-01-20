@@ -1,4 +1,4 @@
-package lombok.addrac;
+package lombokplay.addrac;
 
 public class AddRACAlreadyCtor {
     private final int x;

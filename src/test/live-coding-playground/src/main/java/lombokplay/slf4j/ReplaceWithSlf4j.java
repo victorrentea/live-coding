@@ -1,4 +1,4 @@
-package lombok.slf4j;
+package lombokplay.slf4j;
 
 
 import org.slf4j.Logger;

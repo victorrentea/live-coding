@@ -1,11 +1,13 @@
-package playground;
+package lombokplay;
+
+import lombok.Data;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.List;
 
-
+@Data
 @Entity
 public class DataOnEntity {
 
@@ -14,7 +16,6 @@ public class DataOnEntity {
 
     private String name;
 
-    @ToString.Exclude
     @ElementCollection
     private List<String> children;
 }
