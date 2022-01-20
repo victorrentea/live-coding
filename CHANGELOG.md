@@ -57,3 +57,4 @@
 - Stopped Add @RequiredArgsConstructor if there is a constructor in the class
 - Added a few more static imports
 - Made quick import add imports for Set,List and Map
+- Added ReplaceWithSlf4j inspection

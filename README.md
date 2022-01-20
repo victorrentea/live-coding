@@ -7,6 +7,7 @@ More about me : https://www.victorrentea.ro
 ### Inspections and Code Speed
 - Add `@RequiredArgsConstructor` (lombok) either when `private final` fields are not initialized or to replace the constructor (especially in a Spring-managed bean).
 - QuickFix to define a `log` Slf4j logger, on any undefined `log` token, either by adding a `@Slf4j` (lombok) or declaring a standard Sfl4j `Logger log` field on the class
+- Inspection to replace a Slf4j `Logger log` definition with @Slf4j if semantics are preserved
 - Action to silently auto-import usual static methods and constants. The action _Auto-import statics_ is bound by default
   to `Ctrl-Shift-O`, but the shortcut is editable. The list of static tokens is editable via settings, but many commonly used ones are predefined, such as: 
   Collectors.toList, Assertions.assertThat, Mockito.mock/when/verify, Collectors.toList/toSet, Duration.*
@@ -60,7 +61,6 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 ## Next features:
 - Increase the font size for complexity rendering and change orange to a more visible color.
 - use @ToString.Exclude instead of @Exclude when fixing @Data on @Entity
-- make autoimporter import List/Set/Map also if not imported
 - Replace slf4j Logger log = with @Slf4j inspection
 - "Webcam Hero" effect/notification to encourage more participants to open their webcams
 - Cleanup and split of cognitive complexity vs extract visual hints

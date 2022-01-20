@@ -69,6 +69,13 @@
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Lombok"
+                         displayName="Replace Slf4J log field with @Slf4j"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceWithSlf4jInspection"/>
+        <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Lombok"
                          displayName="Add @RequiredArgsConstructor to set final fields"
                          enabledByDefault="true"
                          level="WARNING"
