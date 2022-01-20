@@ -52,3 +52,7 @@
 - Fixed Bug about add @RAC + cleaned that inspection
 - made the method complexity renderer more silent
 - temporary disable introduce guard inspection
+## 0.0.15
+- Improved Replace with @RequiredArgsConstructor to use syntax references not just parameter and field names
+- Stopped Add @RequiredArgsConstructor if there is a constructor in the class
+- Added a few more static imports

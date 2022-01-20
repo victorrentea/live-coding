@@ -19,12 +19,12 @@ import com.intellij.refactoring.suggested.startOffset
 import com.intellij.util.PsiErrorElementUtil
 
 
-
 class ExtractAssistantInspection : LocalInspectionTool() {
     companion object {
         val log = logger<ExtractAssistantInspection>()
         const val MY_LAYER = HighlighterLayer.LAST - 1
     }
+
     override fun inspectionStarted(session: LocalInspectionToolSession, isOnTheFly: Boolean) {
         ApplicationManager.getApplication().invokeLater {
             PsiEditorUtil.findEditor(session.file)?.let { editor ->
@@ -59,7 +59,7 @@ class ExtractAssistantInspection : LocalInspectionTool() {
                         null,
                         method.startOffset,
                         methodBody.startOffset + 1,
-                        HighlighterLayer.LAST -1,
+                        HighlighterLayer.LAST - 1,
                         HighlighterTargetArea.LINES_IN_RANGE
                     )
 
@@ -113,7 +113,7 @@ class ExtractAssistantInspection : LocalInspectionTool() {
                     continue
                 }
 
-    //            log.debug(section)
+                //            log.debug(section)
                 val complexity = section.mapNotNull { complexityVisitor.complexityMap[it] }
                     .fold(CognitiveComplexityInContext.ZERO) { acc, cc -> acc + cc }
 
@@ -193,18 +193,18 @@ class ExtractAssistantInspection : LocalInspectionTool() {
         private fun assignDisplayDepth(extractOptions: MutableList<ExtractOption>) {
             log.debug("Start assign depth to " + extractOptions.map { it.lines })
             var found = false
-            for (i in 1 .. 30) {
+            for (i in 1..30) {
                 // TODO test caused infinite loop once: Start assign depth to [(60, 75), (64, 65), (65, 65), (79, 80), (80, 80)]
                 for (extract in extractOptions) {
                     extractOptions.filter {
                         it != extract &&
-                        it.depth == extract.depth &&
-                        extract.displayHanging < it.displayHanging + 1 &&
-                         it.intersects(extract) &&
-                        (it.startLine > extract.startLine // first to start is more to right
-                            || extract.lineCount > it.lineCount)  // larger is on the left
+                                it.depth == extract.depth &&
+                                extract.displayHanging < it.displayHanging + 1 &&
+                                it.intersects(extract) &&
+                                (it.startLine > extract.startLine // first to start is more to right
+                                        || extract.lineCount > it.lineCount)  // larger is on the left
                     }.forEach {
-                        log.debug("INC depth of "+extract.lines + " to " + (it.displayHanging + 1) + " because of " + it.lines)
+                        log.debug("INC depth of " + extract.lines + " to " + (it.displayHanging + 1) + " because of " + it.lines)
                         extract.displayHanging = it.displayHanging + 1
                         found = true
                     }

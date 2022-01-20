@@ -1,6 +1,5 @@
 package com.github.victorrentea.livecoding
 
-import com.github.victorrentea.livecoding.lombok.ReplaceRequiredArgsConstructorFix
 import com.github.victorrentea.livecoding.lombok.ReplaceWithRequiredArgsConstructorInspection
 import com.intellij.codeInspection.LocalInspectionTool
 import org.junit.Ignore
@@ -15,7 +14,7 @@ class LombokReplaceRacTest(fileName: String) : InspectionParameterizedTestBase(f
     }
 
     override fun inspectionName() = ReplaceWithRequiredArgsConstructorInspection.INSPECTION_NAME
-    override fun fixName() = ReplaceRequiredArgsConstructorFix.FIX_NAME
+    override fun fixName() = ReplaceWithRequiredArgsConstructorInspection.FIX_NAME
 
     override fun inspectionClass(): Class<out LocalInspectionTool> = ReplaceWithRequiredArgsConstructorInspection::class.java
 

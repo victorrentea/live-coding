@@ -30,6 +30,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "java.util.stream.Collectors.toSet",
             "java.util.stream.Collectors.toList",
             "java.util.stream.Collectors.toMap",
+            "java.util.stream.Collectors.joining",
             "java.util.stream.Collectors.groupingBy",
             "java.util.function.Predicate.not",
             "org.mockito.Mockito.mock",
