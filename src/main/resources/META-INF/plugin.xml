@@ -14,7 +14,7 @@
             <add-to-group group-id="Git.MainMenu" anchor="last"/>
         </action>
 
-        <action class="com.github.victorrentea.livecoding.ImportStaticsAction" text="Auto-Import Statics">
+        <action class="com.github.victorrentea.livecoding.varie.QuickImportAction" text="Quick Import">
             <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
         </action>
 

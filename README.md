@@ -58,7 +58,6 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 **Note**: After it stabilizes, I plan to contribute this quickfix to IntelliJ IDEA Community to make it available for all Java developers out there. 
 
 ## Next features:
-- Alt-ENTER on any part of the ctor (including "public") -> @RAC
 - Increase the font size for complexity rendering and change orange to a more visible color.
 - use @ToString.Exclude instead of @Exclude when fixing @Data on @Entity
 - make autoimporter import List/Set/Map also if not imported

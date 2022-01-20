@@ -1,4 +1,4 @@
-package playground;
+package quickimport;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class AddStaticImport {
+public class AddStaticImports {
     @Test
     void aTest() {
         List<Integer> list = Stream.of(1).collect(toList());
@@ -18,6 +18,11 @@ public class AddStaticImport {
         assertThat(1).isEqualTo(1);
 
         verify(aMock).getInt();
+    }
+    static class A {
+        public int getInt() {
+            return 1;
+        }
     }
 }
 

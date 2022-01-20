@@ -1,9 +1,8 @@
-package playground;
+package quickimport;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.List;
@@ -11,9 +10,9 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static playground.Stupid.verify;
+import static quickimport.ShortenStaticImports.Stupid.verify;
 
-public class ReplaceStaticImport {
+public class ShortenStaticImports {
     
     @Test
     void aTest() throws InterruptedException, ExecutionException, TimeoutException {
@@ -29,17 +28,17 @@ public class ReplaceStaticImport {
         future.get(1, TimeUnit.MILLISECONDS);
 
     }
-}
+    static class A {
+        public int getInt() {
+            return 1;
+        }
+    }
 
+    static class Stupid {
+        public static void verify() {
 
-class A {
-    public int getInt() {
-        return 1;
+        }
     }
 }
 
-class Stupid {
-    public static void verify() {
 
-    }
-}

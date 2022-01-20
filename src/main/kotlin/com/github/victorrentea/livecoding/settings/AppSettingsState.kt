@@ -50,11 +50,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "java.time.Duration.ofMinutes",
             "java.time.Duration.ofSeconds",
             "java.time.Duration.ofMillis",
-            "java.util.concurrent.CompletableFuture.completedFuture"
+            "java.util.concurrent.CompletableFuture.completedFuture",
         )
     }
-
-
 
     private fun parseStaticImports(lines: List<String>) =
         lines
