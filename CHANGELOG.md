@@ -60,3 +60,5 @@
 - Added ReplaceWithSlf4j inspection
 - @ToString.Exclude is left qualified when added on fields when removing @Data from @Entity
 - added comment on @Setter on @Entity when removing @Data
+- Implemented detection of extract suggestions for blocks ending in return on all branches (first draft)
+- Changed the look and feel of presenting the extract suggestions

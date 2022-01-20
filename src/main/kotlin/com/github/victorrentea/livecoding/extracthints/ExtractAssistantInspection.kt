@@ -48,6 +48,7 @@ class ExtractAssistantInspection : LocalInspectionTool() {
             if (PsiErrorElementUtil.hasErrors(element.project, element.containingFile.virtualFile)) return
             val methodBody = method.body ?: return
 
+            log.debug("Start analyzing ${method.name} lines: " + method.startLineNumber() + ".." + method.endLineNumber())
 
             val complexityVisitor = CognitiveComplexityVisitor()
             val totalComplexity = complexityVisitor.visitElement(method, 0).total()
@@ -160,7 +161,8 @@ class ExtractAssistantInspection : LocalInspectionTool() {
                     it != toRemove &&
                             toRemove.section.containsAll(it.section) &&
                             toRemove.parameterCount == it.parameterCount &&
-                            toRemove.complexity.costInContext == it.complexity.costInContext
+                            toRemove.complexity.costInContext == it.complexity.costInContext &&
+                            toRemove.section.size < (toRemove.section.first().containingBlock?.statements?.size ?: Int.MAX_VALUE)
                 }
             }
             log.debug("REMOVING ${largerButNotMoreComplex.size} larger but not more complex:")

@@ -17,23 +17,30 @@ class ExtractSuggestionRenderer(private val depth: Int) : CustomHighlighterRende
 
         val hanging = depth * scale(5)
 
-        val marginFromText = scale(2)
+        val marginFromText = scale(4)
 
         val x = sectionTextStartPoint.x - marginFromText - hanging
         val y0 = sectionTextStartPoint.y + scale(1)
         val y1 = sectionTextEndPoint.y + editor.lineHeight - scale(2)
 
         // top margin
-        g.drawLine(x, y0, x + scale(2), y0)
+//        g.drawLine(x, y0, x + scale(2), y0)
 
         // bottom margin
-        g.drawLine(x, y1, x + scale(2), y1)
+//        g.drawLine(x, y1, x + scale(2), y1)
 
         // (main) long line
         val g2d = g as Graphics2D
-        g2d.stroke = BasicStroke(0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,
-            1.0f, floatArrayOf(3f), 0f)
-        g2d.drawLine(x, y0, x, y1)
+        val newGraphics = g2d.create() as Graphics2D
+        try {
+            newGraphics.color = Color(195,214,232)
+            newGraphics.stroke = BasicStroke(
+                3.toFloat()
+                //, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL
+//                ,1.0f, floatArrayOf(3f), 0f
+            )
+            newGraphics.drawLine(x, y0, x, y1)
+        } finally { newGraphics.dispose() }
 
     }
 

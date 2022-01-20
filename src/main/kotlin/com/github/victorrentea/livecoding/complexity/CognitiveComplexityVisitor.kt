@@ -87,7 +87,7 @@ class CognitiveComplexityVisitor {
 //        println("Visit $element")
 
         if (ownCost + nestingCost > 0) {
-            println("Add $ownCost + $nestingCost(nesting) for $element at line " + element.getLineNumber())
+//            log.debug("Add $ownCost + $nestingCost(nesting) for $element at line " + element.getLineNumber())
         }
 
         val ownComplexity = CognitiveComplexity(nestingCost, if (addNestingCost) 1 else 0, ownCost)

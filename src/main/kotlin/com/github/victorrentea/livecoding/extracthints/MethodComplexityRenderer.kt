@@ -13,7 +13,7 @@ class MethodComplexityRenderer(private val complexity: Int) : CustomHighlighterR
     override fun paint(editor: Editor, highlighter: RangeHighlighter, g: Graphics) {
         g.color = when (complexity) {
 //            in 2..4 -> Color.green
-            in 5..8 -> Color.orange
+            in 5..8 -> Color(255,153,51)
             in 9..1000 -> Color.red
             else -> return
         }
