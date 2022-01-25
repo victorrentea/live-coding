@@ -1,35 +1,35 @@
 package com.github.victorrentea.livecoding.lombok
 
 import com.github.victorrentea.livecoding.FrameworkDetector
-import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalQuickFixOnPsiElement
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.codeInspection.*
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.PsiModifier.FINAL
 import com.intellij.psi.PsiModifier.STATIC
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.PsiErrorElementUtil
+import com.siyeh.ig.BaseInspectionVisitor
+import com.siyeh.ig.InspectionGadgetsFix
 import kotlin.math.min
 
 
-class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
+class AddRequiredArgsConstructorInspection : LombokJavaInspectionBase() {
     companion object {
         const val INSPECTION_NAME = "Final fields can be injected via @RequiredArgsConstructor"
         const val FIX_NAME = "Add @RequiredArgsConstructor (lombok)"
+        val log = logger<AddRequiredArgsConstructorInspection>()
     }
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        if (!FrameworkDetector.lombokIsPresent(holder.file)) {
-            return PsiElementVisitor.EMPTY_VISITOR
-        }
-        return AddRequiredArgsConstructorVisitor(holder)
-    }
+    override fun buildErrorString(vararg infos: Any?) = INSPECTION_NAME
 
-    class AddRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
+    override fun buildVisitor(): BaseInspectionVisitor {
+        return AddRequiredArgsConstructorVisitor()
+    }
+    class AddRequiredArgsConstructorVisitor() : BaseInspectionVisitor() {
         override fun visitElement(field: PsiElement) {
             super.visitElement(field)
             if (field !is PsiField) return
@@ -39,30 +39,18 @@ class AddRequiredArgsConstructorInspection : LocalInspectionTool() {
             val psiClass = field.containingClass ?: return
             if (psiClass.constructors.isNotEmpty()) return
 
-            val textLength = min(
-                field.nameIdentifier.textRangeInParent.endOffset + 1,
-                field.nameIdentifier.parent.textRange.length
-            )
-            val textRange = TextRange(0, textLength)  // +1 so ALT-ENTER works even after ;
-
-            holder.registerProblem(
-                field,
-                INSPECTION_NAME,
-                ProblemHighlightType.GENERIC_ERROR, // red underline
-                textRange,
-                AddRequiredArgsConstructorFix(psiClass)
-            )
+            registerError(field)
         }
-
     }
 
-    class AddRequiredArgsConstructorFix(psiClass: PsiClass) : LocalQuickFixOnPsiElement(psiClass) {
-        override fun getFamilyName() = "Live-Coding"
+    override fun buildFix(vararg infos: Any?): InspectionGadgetsFix {
+        return AddRequiredArgsConstructorFix()
+    }
+    class AddRequiredArgsConstructorFix : InspectionGadgetsFix() {
+        override fun getFamilyName() = FIX_NAME
 
-        override fun getText() = FIX_NAME
-
-        override fun invoke(project: Project, file: PsiFile, psiClass: PsiElement, same: PsiElement) {
-            if (psiClass !is PsiClass) return
+        override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
+            val psiClass = PsiTreeUtil.getParentOfType(descriptor?.psiElement, PsiClass::class.java) ?: return
             val modifiers = psiClass.modifierList ?: return
             val constructor = psiClass.constructors.getOrNull(0)
             WriteCommandAction.runWriteCommandAction(project, FIX_NAME, "Live-Coding", {

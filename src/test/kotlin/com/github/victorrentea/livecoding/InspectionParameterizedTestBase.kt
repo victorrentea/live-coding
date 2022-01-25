@@ -1,7 +1,9 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection
 import com.intellij.codeInsight.daemon.impl.HighlightInfo
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.rootManager
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import com.intellij.testFramework.fixtures.MavenDependencyUtil
@@ -12,6 +14,7 @@ import java.io.File
 
 @RunWith(Parameterized::class)
 abstract class InspectionParameterizedTestBase(private val fileName: String) : LightJavaCodeInsightFixtureTestCase() {
+    private val log = logger<InspectionParameterizedTestBase>()
     override fun getProjectDescriptor() = JAVA_8
 
     override fun getTestDataPath() = JAVA_SRC_FOLDER
@@ -27,22 +30,22 @@ abstract class InspectionParameterizedTestBase(private val fileName: String) : L
     @Test
     fun test() {
 
-        MavenDependencyUtil.addFromMaven(module.rootManager.modifiableModel, "org.projectlombok:lombok:1.18.22")
-
         myFixture.enableInspections(inspectionClass())
 
         myFixture.configureByFiles(fileName)
 
         val expectedHighlightedLines = File(JAVA_SRC_FOLDER, fileName).readLines()
             .mapIndexedNotNull { lineNumber, line -> if (line.contains("//")) lineNumber + 1 else null }
-        println("EXPECTED HIGHLIGHTED LINES: $expectedHighlightedLines")
+        log.info("EXPECTED HIGHLIGHTED LINES: $expectedHighlightedLines")
 
         val highlights = myFixture.doHighlighting()
             .also { allHighlights ->
-                println("-- all highlights --")
-                allHighlights.forEach { println("${it.getLineNumber()}: ${it.description}") }
+                log.info("-- all highlights --")
+                allHighlights.forEach { log.info("${it.getLineNumber()}: ${it.description}") }
             }
             .filter { it.description == inspectionName() }
+
+        log.info("Got ${highlights.size} matches by name")
 
         val actualHighlightedLines = highlights.map { it.getLineNumber() }
 

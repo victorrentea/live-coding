@@ -1,8 +1,10 @@
 package com.github.victorrentea.livecoding
 
+import com.github.victorrentea.livecoding.LombokTestUtil.LOMBOK_DESCRIPTOR
 import com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.openapi.project.rootManager
+import com.intellij.testFramework.LightProjectDescriptor
 import com.intellij.testFramework.fixtures.MavenDependencyUtil
 import org.junit.Ignore
 import org.junit.runners.Parameterized.Parameters
@@ -12,7 +14,11 @@ class LombokAddRacTest(fileName: String) : InspectionParameterizedTestBase(fileN
     companion object {
         @JvmStatic
         @Parameters(name = "{0}")
-        fun parameters(): List<String> = getInputFilePaths("lombok/addrac")
+        fun parameters(): List<String> = getInputFilePaths("lombokplay/addrac")
+    }
+
+    override fun getProjectDescriptor(): LightProjectDescriptor {
+        return LOMBOK_DESCRIPTOR
     }
 
     override fun inspectionName() = AddRequiredArgsConstructorInspection.INSPECTION_NAME

@@ -35,7 +35,7 @@ class Slf4jQuickFixAnnotator : Annotator {
 
     private fun addAnnotation(holder: AnnotationHolder, element: PsiElement) {
         if (FrameworkDetector.lombokIsPresent(element) && FrameworkDetector.slf4jIsPresent(element)) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Add @Slf4j to class (lombok)")
+            holder.newAnnotation(HighlightSeverity.ERROR, "Add @Slf4j on class (lombok)")
                 .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
                 .withFix(AddSlf4jAnnotationQuickFix(element))
                 .create()
@@ -51,7 +51,7 @@ class Slf4jQuickFixAnnotator : Annotator {
     class AddSlf4jAnnotationQuickFix(val logExpression: PsiElement) : BaseIntentionAction() {
         override fun getFamilyName() = "Live-Coding"
 
-        override fun getText() = "Add @Slf4j to class (lombok)"
+        override fun getText() = "Add @Slf4j on class (lombok)"
 
         override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?) = true
 

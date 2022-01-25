@@ -2,10 +2,7 @@ package com.github.victorrentea.livecoding.lombok
 
 import com.github.victorrentea.livecoding.FrameworkDetector
 import com.github.victorrentea.livecoding.checkItemsAre
-import com.intellij.codeInspection.LocalInspectionTool
-import com.intellij.codeInspection.LocalQuickFixOnPsiElement
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.codeInspection.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger
@@ -13,23 +10,27 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.siyeh.ig.BaseInspectionVisitor
+import com.siyeh.ig.InspectionGadgetsFix
 
 
-class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
+class ReplaceWithRequiredArgsConstructorInspection : LombokJavaInspectionBase() {
     companion object {
         val log = logger<ReplaceWithRequiredArgsConstructorInspection>()
         const val INSPECTION_NAME = "Boilerplate constructor only injecting dependencies"
         const val FIX_NAME = "Replace with @RequiredArgsConstructor (lombok)"
     }
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        if (!FrameworkDetector.lombokIsPresent(holder.file)) {
-            return PsiElementVisitor.EMPTY_VISITOR
-        }
-        return ReplaceRequiredArgsConstructorVisitor(holder)
+    override fun buildVisitor(): BaseInspectionVisitor {
+        return ReplaceRequiredArgsConstructorVisitor()
+    }
+    override fun buildErrorString(vararg infos: Any?) = INSPECTION_NAME
+
+    override fun buildFix(vararg infos: Any?): InspectionGadgetsFix {
+        return ReplaceRequiredArgsConstructorFix()
     }
 
-    class ReplaceRequiredArgsConstructorVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
+    class ReplaceRequiredArgsConstructorVisitor : BaseInspectionVisitor() {
         override fun visitElement(constructor: PsiElement) {
             super.visitElement(constructor)
             if (constructor !is PsiMethod) return
@@ -38,19 +39,9 @@ class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
             if (!constructorOnlyCopiesParamsToFinalFields(constructor)) return
 
             if (constructor.parameterList.parametersCount >= 2 && isSpringBean(constructor.containingClass)) {
-                val constructorName = PsiTreeUtil.findChildOfType(constructor, PsiIdentifier::class.java) ?: constructor
-
-                holder.registerProblem(
-                    constructorName,
-                    INSPECTION_NAME,
-                    ProblemHighlightType.WEAK_WARNING,
-                    ReplaceRequiredArgsConstructorFix(constructor))
+                registerMethodError(constructor)
             } else {
-                holder.registerProblem(
-                    constructor,
-                    INSPECTION_NAME,
-                    ProblemHighlightType.INFORMATION,
-                    ReplaceRequiredArgsConstructorFix(constructor))
+                registerError(constructor, ProblemHighlightType.INFORMATION)
             }
         }
 
@@ -97,12 +88,11 @@ class ReplaceWithRequiredArgsConstructorInspection : LocalInspectionTool() {
         }
     }
 
-    class ReplaceRequiredArgsConstructorFix(constructor: PsiMethod) : LocalQuickFixOnPsiElement(constructor) {
-        override fun getFamilyName() = "Live-Coding"
+    class ReplaceRequiredArgsConstructorFix : InspectionGadgetsFix() {
+        override fun getFamilyName() = FIX_NAME
 
-        override fun getText() = FIX_NAME
-
-        override fun invoke(project: Project, file: PsiFile, constructor: PsiElement, endElement: PsiElement) {
+        override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
+            val constructor = PsiTreeUtil.getParentOfType(descriptor?.psiElement, PsiMethod::class.java) ?: return
             val parentClass = PsiTreeUtil.getParentOfType(constructor, PsiClass::class.java) ?: return
             val modifiers = parentClass.modifierList ?: return
 
