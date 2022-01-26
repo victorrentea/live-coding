@@ -62,3 +62,6 @@
 - added comment on @Setter on @Entity when removing @Data
 - Implemented detection of extract suggestions for blocks ending in return on all branches (first draft)
 - Changed the look and feel of presenting the extract suggestions
+## 0.0.16
+- Added Introduce Guard inspection for heavy-else / anemic-then branches of an IF
+- Fixed 3 Lombok inspections to take into account user configuration of severity 

@@ -2,7 +2,10 @@ package introduceguard;
 
 public class MissingTopLevelElse {
     public void method(int x) {
-        if (x != 0) { //
+        if (x == 0) {
+            System.out.println();
+            
+        } else { //
             for (int i=0;i<x;i++) {
                 if (i == x%2) {
                     System.out.println("Stuff to do".concat("a"));
