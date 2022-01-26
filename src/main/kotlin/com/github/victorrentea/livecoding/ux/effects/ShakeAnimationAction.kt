@@ -26,7 +26,6 @@ class ShakeAnimationAction : AbstractAnimationAction() {
             val shakeMaxAmpl = 30.0 // px
             timer = Timer(refreshMillis) { e ->
                 ApplicationManager.getApplication().invokeLater {
-
                     val ampl = shakeMaxAmpl * (nIterations - iteration) / nIterations
                     val sin = Math.sin(6.0 * nShakes * iteration / nIterations)
                     dx = (ampl * sin).toInt()

@@ -1,7 +1,9 @@
 package com.github.victorrentea.livecoding.ux.effects
 
+import com.github.victorrentea.livecoding.lombok.AddRequiredArgsConstructorInspection
 import com.github.victorrentea.livecoding.ux.effects.BrokenGlassAnimationAction.BrokenGlassAnimationPanel.GlassPoint.*
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.logger
 import com.jetbrains.rd.framework.base.deepClonePolymorphic
 import java.awt.*
 import java.awt.geom.Point2D
@@ -9,6 +11,9 @@ import java.awt.image.BufferedImage
 import javax.swing.Timer
 
 class BrokenGlassAnimationAction : AbstractAnimationAction() {
+    companion object{
+        val log = logger<BrokenGlassAnimationAction>()
+    }
     override fun createAnimationPanel(image: BufferedImage, onEndCallback: () -> Unit): AnimationPanel {
         return BrokenGlassAnimationPanel(image,onEndCallback)
     }
@@ -55,15 +60,15 @@ class BrokenGlassAnimationAction : AbstractAnimationAction() {
 
         init {
             var iteration = 0
-            val nIterations = 2000
-            timer = Timer(20) {
+            val nIterations = 1000
+            timer = Timer(40) {
                 ApplicationManager.getApplication().invokeLater {
                     for (piece in allPieces) {
                         piece.rotation += piece.rotationSpeed
                         piece.vy += .5 // gravity
                         piece.externalCenter.x += piece.vx
                         piece.externalCenter.y += piece.vy
-                        println("Piece " + piece.externalCenter.y)
+                        log.debug("Piece " + piece.externalCenter.y)
                     }
                     repaint()
                 }

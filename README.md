@@ -24,6 +24,7 @@ More about me : https://www.victorrentea.ro
 - **Screen Effects**: 
   - Shake Screen (`F7`)
   - Broken Glass (`F8`)
+  - Siren (`Shift-F8`)
 - **Background Feelings**: change the background image to:
   - Horror (`Ctrl-Alt-7`)
   - Child play (`Ctrl-Alt-8`)

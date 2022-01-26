@@ -64,4 +64,6 @@
 - Changed the look and feel of presenting the extract suggestions
 ## 0.0.16
 - Added Introduce Guard inspection for heavy-else / anemic-then branches of an IF
-- Fixed 3 Lombok inspections to take into account user configuration of severity 
+- Fixed 3 Lombok inspections to take into account user configuration of severity
+## 0.0.17
+- Added Siren Screen Effect (Shift-F8)
