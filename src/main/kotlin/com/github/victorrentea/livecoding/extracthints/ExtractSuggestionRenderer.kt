@@ -20,8 +20,8 @@ class ExtractSuggestionRenderer(private val depth: Int) : CustomHighlighterRende
         val marginFromText = scale(4)
 
         val x = sectionTextStartPoint.x - marginFromText - hanging
-        val y0 = sectionTextStartPoint.y + scale(1)
-        val y1 = sectionTextEndPoint.y + editor.lineHeight - scale(2)
+        val y0 = sectionTextStartPoint.y + scale(4)
+        val y1 = sectionTextEndPoint.y + editor.lineHeight - scale(4)
 
         // top margin
 //        g.drawLine(x, y0, x + scale(2), y0)

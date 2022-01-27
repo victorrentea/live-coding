@@ -62,6 +62,7 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 ## Next features/bugfixes:
 - Add @Slf4j to highlight in WEAK_WARNING the whole row (with ;)
 - "Webcam Hero" effect/notification to encourage more participants to open their webcams
+- Migrate all inspections to take into account configured severity
 - Cleanup and split of cognitive complexity vs extract visual hints
 - Inspection to detect usages of jupiter Assertions or junit Assert and suggest replacing them with Assertions (assert4j) as a far better alternative
 - Inspection to detect call(x, x.method()) and suggest inlining the 2nd param

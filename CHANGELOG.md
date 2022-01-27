@@ -67,3 +67,5 @@
 - Fixed 3 Lombok inspections to take into account user configuration of severity
 ## 0.0.17
 - Added Siren Screen Effect (Shift-F8)
+## 0.0.18
+- extract suggestion renderer to leave Y space between sections 
