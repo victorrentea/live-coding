@@ -55,7 +55,8 @@
 
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jQuickFixAnnotator"/>
 
-        <editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.ChangeColorOfTestFiles" />
+        <!--<editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.ChangeColorOfTestFiles" />-->
+
 <!--<intentionAction>
     <category>Java</category>
     <category>Lombok</category>

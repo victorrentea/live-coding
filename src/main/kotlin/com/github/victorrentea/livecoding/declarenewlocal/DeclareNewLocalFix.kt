@@ -9,12 +9,34 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.actions.VcsContextWrapper
+import com.intellij.openapi.vcs.configurable.VcsManagerConfigurableProvider
 import com.intellij.psi.*
 import com.intellij.psi.util.isAncestor
 import com.intellij.psi.util.siblings
 import com.intellij.refactoring.rename.RenameHandlerRegistry
 import com.intellij.refactoring.suggested.endOffset
 import org.jetbrains.concurrency.asCompletableFuture
+import java.awt.Color
+
+//interface Rectangular {
+//    fun side1(): Int;
+//    fun side2(): Int;
+//}
+//class Square(val e:Int):Rectangle(e,e)
+//class Square(val e:Int):Rectangular by Rectangle(e,e), IColor by Colorful(Color.GREEN) {
+//}
+//interface IColor
+//class Colorful(val color:Color) : IColor
+//class Rectangle(val w:Int,val h:Int) :Rectangular{
+//    override fun side1() = w
+//    override fun side2() = h
+//}
+//fun main() {
+//    val s = Square(5)
+//    println(s.side1())
+//}
+
 
 class DeclareNewLocalFix(localVariable: PsiVariable, reassignment: PsiAssignmentExpression) :
     LocalQuickFixOnPsiElement(localVariable, reassignment) {

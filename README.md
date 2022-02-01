@@ -60,6 +60,7 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 **Note**: After it stabilizes, I plan to contribute this quickfix to IntelliJ IDEA Community to make it available for all Java developers out there. 
 
 ## Next features/bugfixes:
+- Detect (ideally UN-SET) "rearrange code" checkbox in commit dialog.
 - Add @Slf4j to highlight in WEAK_WARNING the whole row (with ;)
 - "Webcam Hero" effect/notification to encourage more participants to open their webcams
 - Migrate all inspections to take into account configured severity

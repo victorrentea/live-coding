@@ -68,4 +68,5 @@
 ## 0.0.17
 - Added Siren Screen Effect (Shift-F8)
 ## 0.0.18
-- extract suggestion renderer to leave Y space between sections 
+- extract suggestion renderer to leave a bit of vertical space between sections 
+- remove 'color test files UX' - proved not really helpful.
