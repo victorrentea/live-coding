@@ -14,7 +14,7 @@ class DeclareNewLocalTest(fileName: String) : InspectionParameterizedTestBase(fi
     }
 
     override fun inspectionName() = DeclareNewLocalInspection.INSPECTION_NAME
-    override fun fixName() = DeclareNewLocalFix.FIX_NAME
+    override fun fixName() = DeclareNewLocalInspection.FIX_NAME
 
     override fun inspectionClass(): Class<out LocalInspectionTool> = DeclareNewLocalInspection::class.java
 

@@ -1,16 +1,14 @@
 package com.github.victorrentea.livecoding.declarenewlocal
 
 import com.github.victorrentea.livecoding.*
-import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.isAncestor
-import com.intellij.psi.util.parents
 import com.intellij.psi.util.parentsOfType
+import com.siyeh.ig.BaseInspectionVisitor
 
-class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVisitor() {
+class DeclareNewLocalVisitor : BaseInspectionVisitor() {
     companion object{
         private val log = logger<DeclareNewLocalVisitor>()
     }
@@ -46,17 +44,11 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
                     && !inACase(writeToDeclareAt)
                 ) {
                     // values never "leak out of this block"
-                    val assignToSplit = writeToDeclareAt.parent as? PsiAssignmentExpression ?: return
-                    if (assignToSplit.rExpression == null) return
-                    if (!DeclareNewLocalFix.supportedAssignmentTokens.contains(assignToSplit.operationSign.tokenType))  return
+
+                   if (!DeclareNewLocalFix.supportsDeclarationForWrite(writeToDeclareAt)) return
 
                     log.debug("ADDED PROBLEM")
-                    holder.registerProblem(
-                        assignToSplit,
-                        DeclareNewLocalInspection.INSPECTION_NAME,
-                        ProblemHighlightType.WEAK_WARNING,
-                        DeclareNewLocalFix(psiLocalVar, assignToSplit)
-                    )
+                    registerError(writeToDeclareAt)
                 } else {
                     log.debug("Some later usages are not in child blocks")
                 }
@@ -104,7 +96,7 @@ class DeclareNewLocalVisitor(private val holder: ProblemsHolder) : PsiElementVis
         return true
     }
 
-    fun blockTerminatesFunction(block: PsiCodeBlock): Boolean =
+    private fun blockTerminatesFunction(block: PsiCodeBlock): Boolean =
         PsiTreeUtil.getChildOfAnyType(block, PsiReturnStatement::class.java) != null ||
                 PsiTreeUtil.getChildOfAnyType(block, PsiThrowStatement::class.java) != null
 

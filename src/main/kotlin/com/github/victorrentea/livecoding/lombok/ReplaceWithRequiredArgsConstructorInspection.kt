@@ -1,6 +1,5 @@
 package com.github.victorrentea.livecoding.lombok
 
-import com.github.victorrentea.livecoding.FrameworkDetector
 import com.github.victorrentea.livecoding.checkItemsAre
 import com.intellij.codeInspection.*
 import com.intellij.openapi.application.ApplicationManager
@@ -14,7 +13,7 @@ import com.siyeh.ig.BaseInspectionVisitor
 import com.siyeh.ig.InspectionGadgetsFix
 
 
-class ReplaceWithRequiredArgsConstructorInspection : LombokJavaInspectionBase() {
+class ReplaceWithRequiredArgsConstructorInspection : AbstractLombokJavaInspectionBase() {
     companion object {
         val log = logger<ReplaceWithRequiredArgsConstructorInspection>()
         const val INSPECTION_NAME = "Boilerplate constructor only injecting dependencies"

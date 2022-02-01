@@ -1,23 +1,19 @@
 package com.github.victorrentea.livecoding.lombok
 
-import com.github.victorrentea.livecoding.FrameworkDetector
 import com.intellij.codeInspection.*
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.PsiModifier.FINAL
 import com.intellij.psi.PsiModifier.STATIC
 import com.intellij.psi.codeStyle.JavaCodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.util.PsiErrorElementUtil
 import com.siyeh.ig.BaseInspectionVisitor
 import com.siyeh.ig.InspectionGadgetsFix
-import kotlin.math.min
 
 
-class AddRequiredArgsConstructorInspection : LombokJavaInspectionBase() {
+class AddRequiredArgsConstructorInspection : AbstractLombokJavaInspectionBase() {
     companion object {
         const val INSPECTION_NAME = "Final fields can be injected via @RequiredArgsConstructor"
         const val FIX_NAME = "Add @RequiredArgsConstructor (lombok)"
@@ -35,7 +31,7 @@ class AddRequiredArgsConstructorInspection : LombokJavaInspectionBase() {
             if (field !is PsiField) return
             if (field.hasModifierProperty(STATIC)) return
             if (!field.hasModifierProperty(FINAL)) return
-            if (field.hasInitializer()) return // KO for private final int x = 2
+            if (field.hasInitializer()) return // KO for eg private final int x = 2
             val psiClass = field.containingClass ?: return
             if (psiClass.constructors.isNotEmpty()) return
 
