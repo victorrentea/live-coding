@@ -19,42 +19,45 @@ class DeclareNewLocalVisitor : BaseInspectionVisitor() {
 
         val referencesToMe = psiLocalVar.referencesToMe
         log.debug("Try to define a NEW LOCAL ${psiLocalVar.name} referenced on lines " +
-                referencesToMe.map { ":" + it.getLineNumber() + "(" + (if (it.isRead()) "R" else "W") + ")" })
+                referencesToMe.map { ":" + it.getLineNumber() + "(" + (if (it.isRead()) "R" else "") + (if (it.isWrite()) "W" else "") + ")" })
 
 
         var i = 0
-        while (i < referencesToMe.size && referencesToMe[i].containingBlock == psiLocalVar.containingBlock && referencesToMe[i].isWrite()) i++ // skip redundant initializers
+        while (i < referencesToMe.size
+            && referencesToMe[i].containingBlock == psiLocalVar.containingBlock
+            && referencesToMe[i].isWrite()) i++ // skip redundant initializers
 
         while (i < referencesToMe.size) {
-            while (i < referencesToMe.size && referencesToMe[i].isRead()) i++ // skip
+            while (i < referencesToMe.size && !referencesToMe[i].isWrite()) i++ // skip R
             if (i == referencesToMe.size) break;
-            // i = first write after reads
-            while (i + 1 < referencesToMe.size && referencesToMe[i + 1].isWrite()) i++ // skip to the last consecutive write
-            // i = last write after reads
-            if (i + 1 < referencesToMe.size) { // there are more references after (Reads)
-                val writeToDeclareAt = referencesToMe[i]
-                // there are reads after me
-                log.debug("Trying to split at assignment on line " + writeToDeclareAt.getLineNumber())
+            // i = first W or RW after a series of R
 
-                val laterUsages = referencesToMe.drop(i + 1)
+            while (i + 1 < referencesToMe.size && !referencesToMe[i + 1].isRead()) i++ // skip W
+            // i = last W in the sequence
 
-                if (laterUsages.isNotEmpty()
-                    && neverReadLaterInParentBlock(writeToDeclareAt, laterUsages)
-                    && !inALoop(writeToDeclareAt)
-                    && !inACase(writeToDeclareAt)
-                ) {
-                    // values never "leak out of this block"
+            if (i + 1 == referencesToMe.size) break; // there are NO more references after (Reads)
 
-                   if (!DeclareNewLocalFix.supportsDeclarationForWrite(writeToDeclareAt)) return
+            val writeToDeclareAt = referencesToMe[i]
+            // there are reads after me
+            log.debug("Trying to split at assignment on line " + writeToDeclareAt.getLineNumber())
 
-                    log.debug("ADDED PROBLEM")
-                    registerError(writeToDeclareAt)
-                } else {
-                    log.debug("Some later usages are not in child blocks")
-                }
-                i++
+            val laterUsages = referencesToMe.drop(i + 1)
+
+            if (laterUsages.isNotEmpty()
+                && !inALoop(writeToDeclareAt)
+                && !inACase(writeToDeclareAt)
+                && neverReadLaterInParentBlock(writeToDeclareAt, laterUsages)
+            ) {
+                // values never "leak out of this block"
+
+               if (DeclareNewLocalFix.supportsDeclarationForWrite(writeToDeclareAt)) {
+                   log.debug("ADDED PROBLEM")
+                   registerError(writeToDeclareAt)
+               }
+            } else {
+                log.debug("Some later usages are not in child blocks")
             }
-
+            i++
         }
     }
 

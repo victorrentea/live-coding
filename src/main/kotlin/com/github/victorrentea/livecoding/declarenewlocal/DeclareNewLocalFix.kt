@@ -4,6 +4,7 @@ import com.github.victorrentea.livecoding.containingBlock
 import com.github.victorrentea.livecoding.referencesToMe
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.ide.DataManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -38,22 +39,24 @@ class DeclareNewLocalFix : InspectionGadgetsFix() {
 
         fun replaceAssignmentWithDeclaration(
             writeToDeclareAt: PsiReferenceExpression,
-            variableName: String
+            newVariableName: String
         ): PsiDeclarationStatement? {
             val assignment = writeToDeclareAt.parent as? PsiAssignmentExpression ?:return null
-            val psiLocalVariable = writeToDeclareAt.resolve() as? PsiLocalVariable ?:return null
+            val psiLocalVariable = writeToDeclareAt.resolve() as? PsiVariable ?:return null
             val psiFactory = JavaPsiFacade.getElementFactory(assignment.project)
+            val varName = psiLocalVariable.name ?: return null
+
             val declarationInit = when (assignment.operationSign.tokenType) {
-                JavaTokenType.PLUSEQ -> createBinaryExpression(psiLocalVariable.name, "+", assignment.rExpression!!)
-                JavaTokenType.MINUSEQ -> createBinaryExpression(psiLocalVariable.name, "-", assignment.rExpression!!)
-                JavaTokenType.ASTERISKEQ -> createBinaryExpression(psiLocalVariable.name, "*", assignment.rExpression!!)
-                JavaTokenType.DIVEQ -> createBinaryExpression(psiLocalVariable.name, "/", assignment.rExpression!!)
-                JavaTokenType.PERCEQ -> createBinaryExpression(psiLocalVariable.name, "%", assignment.rExpression!!)
+                JavaTokenType.PLUSEQ -> createBinaryExpression(varName, "+", assignment.rExpression!!)
+                JavaTokenType.MINUSEQ -> createBinaryExpression(varName, "-", assignment.rExpression!!)
+                JavaTokenType.ASTERISKEQ -> createBinaryExpression(varName, "*", assignment.rExpression!!)
+                JavaTokenType.DIVEQ -> createBinaryExpression(varName, "/", assignment.rExpression!!)
+                JavaTokenType.PERCEQ -> createBinaryExpression(varName, "%", assignment.rExpression!!)
                 JavaTokenType.EQ -> assignment.rExpression
                 else -> throw IllegalArgumentException("Unsupported token in assignment: " + assignment.text)
             }
             val newDeclaration = psiFactory.createVariableDeclarationStatement(
-                variableName, psiLocalVariable.type, declarationInit
+                newVariableName, psiLocalVariable.type, declarationInit
             )
 
             assignment.siblings(withSelf = false)
@@ -84,15 +87,12 @@ class DeclareNewLocalFix : InspectionGadgetsFix() {
     override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
         val writeToDeclareAt = descriptor?.psiElement as? PsiReferenceExpression ?: return
 
-        val localVariable = writeToDeclareAt.resolve() as? PsiLocalVariable;
-        if (localVariable == null) {
-            println("NOT A LOCAL VAR ")
-            return
-        }
+        val variable = writeToDeclareAt.resolve() as? PsiVariable ?: return;
         if (project == null) return
 
-        log.debug(" ---------- act ${localVariable.name} ---------")
-        val usages = localVariable.referencesToMe
+        val originalVarName = variable.name
+        log.debug(" ---------- act $originalVarName ---------")
+        val usages = variable.referencesToMe
         val usagesOfNewVariable = usages.drop(usages.indexOf(writeToDeclareAt) + 1)
             .filter { writeToDeclareAt.containingBlock.isAncestor(it) }
 
@@ -100,13 +100,11 @@ class DeclareNewLocalFix : InspectionGadgetsFix() {
 
         WriteCommandAction.runWriteCommandAction(project, DeclareNewLocalInspection.FIX_NAME, "Live-Coding", {
 
-            println("RUN WRITE")
             val writeStartOffset = writeToDeclareAt.startOffset
-            println("original OFFSET : $writeStartOffset")
-            val newDeclaration = replaceAssignmentWithDeclaration(writeToDeclareAt, localVariable.name + "_") ?: return@runWriteCommandAction
+            val newDeclaration = replaceAssignmentWithDeclaration(writeToDeclareAt, originalVarName + "_") ?: return@runWriteCommandAction
             val elementFactory = JavaPsiFacade.getElementFactory(project)
             for (psiReferenceExpression in usagesOfNewVariable) {
-                val ref = elementFactory.createExpressionFromText(localVariable.name + "_", psiReferenceExpression)
+                val ref = elementFactory.createExpressionFromText(originalVarName + "_", psiReferenceExpression)
                 psiReferenceExpression.replace(ref)
             }
             val documentManager = PsiDocumentManager.getInstance(project)
@@ -115,17 +113,19 @@ class DeclareNewLocalFix : InspectionGadgetsFix() {
             val decl = newDeclaration.declaredElements[0] as PsiLocalVariable
             val declOffset = decl.nameIdentifier?.startOffsetInParent ?: 99
             val finalOffset = writeStartOffset + declOffset
-            println("decl OFFSET : $finalOffset")
 
+            if (!ApplicationManager.getApplication().isUnitTestMode()) {
+                DataManager.getInstance().dataContextFromFocusAsync.asCompletableFuture()
+                    .thenAccept { dataContext ->
+                        val editor = FileEditorManager.getInstance(project).selectedEditor as TextEditor
+                        editor.editor.caretModel.moveToOffset(finalOffset)
+                        // open the rename refactor
+                        val renameHandler = RenameHandlerRegistry.getInstance().getRenameHandler(dataContext)
 
-            DataManager.getInstance().dataContextFromFocusAsync.asCompletableFuture()
-                .thenAccept { dataContext ->
-                    val editor = FileEditorManager.getInstance(project).selectedEditor as TextEditor
-                    editor.editor.caretModel.moveToOffset(finalOffset)
-                    // open the rename refactor
-                    val renameHandler = RenameHandlerRegistry.getInstance().getRenameHandler(dataContext)
-                    renameHandler?.invoke(project, editor.editor, file, dataContext)
-                }
+            //                    DataManager.getInstance().saveInDataContext(dataContext, Key.create(PsiElementRenameHandler.DEFAULT_NAME.name), originalVarName)
+                        renameHandler?.invoke(project, editor.editor, file, dataContext)
+                    }
+            }
         })
     }
 

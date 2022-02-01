@@ -1,8 +1,5 @@
 package declarenewlocal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class LoopAccumulator {
     public void f(int p, int j) {
         int x = 2;
