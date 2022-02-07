@@ -63,14 +63,13 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 
 ## Next features/bugfixes:
 - Detect (ideally UN-SET) "rearrange code" checkbox in commit dialog.
-
-- Migrate all inspections to take into account configured severity
+- Separate cognitive complexity rendering from visual extract aids inspections.
 - IDEA: put _ instead of SPACE when writing the names of tests @Test public void service_does_not_depend_on_infrastructure
-- Cleanup and split of cognitive complexity vs extract visual hints
 - Inspection to detect call(x, x.method()) and suggest inlining the 2nd param
 - Suggest avoiding "default ->" in switch expressions on enums (to allow the compiler to check all branches)
 - Detect consecutive IF on exclusive == , suggest adding an "else"
 - Detect local calls to methods annotated with proxying annotations, like Spring: @Transactional, @Cacheable, @PreAuthorized, ... 
+- LOW: Migrate all inspections to take into account configured severity
 - **Big Dreams: "analyze parameter mutation" inspection** to report what fields of parameters change at call site (analysis upon request)
 ## Notes
 - To see debug when running plugin locally, in the 'guest' IJ go to Help>Diagnostic Tools>Debug Log Settings and enter `#com.github.victorrentea.livecoding` in there
