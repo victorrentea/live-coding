@@ -62,6 +62,7 @@ class DeclareNewLocalFix : InspectionGadgetsFix() {
             assignment.siblings(withSelf = false)
                 .dropWhile { (it as? PsiJavaToken)?.tokenType == JavaTokenType.SEMICOLON }
                 .forEach { newDeclaration.add(it) }
+
             assignment.parent.replace(newDeclaration)
             return newDeclaration
         }

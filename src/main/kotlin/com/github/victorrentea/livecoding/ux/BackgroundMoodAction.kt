@@ -18,6 +18,7 @@ enum class BackgroundMood(val label: String?) {
     MOOD1("Hard-core"),
     MOOD2("Relax"),
     MOOD3("Geek"),
+    MOOD4("Lonely"),
     NONE(null)
 }
 
@@ -27,12 +28,13 @@ private var state = BackgroundMood.NONE
 private val DEFAULT_IMAGE_PATHS = mapOf(
     BackgroundMood.MOOD1 to pathFromTemp("horror", BackgroundMood.MOOD1) + ",50",
     BackgroundMood.MOOD2 to pathFromTemp("child", BackgroundMood.MOOD2) + ",15",
-    BackgroundMood.MOOD3 to pathFromTemp("cool", BackgroundMood.MOOD3) + ",30"
+    BackgroundMood.MOOD3 to pathFromTemp("cool", BackgroundMood.MOOD3) + ",30",
+    BackgroundMood.MOOD4 to pathFromTemp("open-webcam", BackgroundMood.MOOD4) + ",30"
 )
 
 private fun pathFromTemp(imgNameInResources: String, mood: BackgroundMood): String? {
     val savedPaths = AppSettingsState.getInstance().unzippedImagedPaths
-    log.debug("unzippedimages: " + savedPaths)
+    log.debug("unzippedimages: $savedPaths")
 
     savedPaths.entries.removeIf { (_, path) -> !File(path!!).isFile } // temp file was deleted
 
@@ -70,7 +72,7 @@ open class BackgroundMoodAction(private val mood: BackgroundMood) : AnAction() {
             val imgPath = DEFAULT_IMAGE_PATHS[state]
             prop.setValue(IdeBackgroundUtil.EDITOR_PROP, imgPath)
 
-            log.debug("Path " + imgPath)
+            log.debug("Path $imgPath")
 
             val moodLabel = mood.label
             if (moodLabel != null) {
@@ -88,6 +90,9 @@ class BackgroundMood2Action : BackgroundMoodAction(BackgroundMood.MOOD2) {
 }
 
 class BackgroundMood3Action : BackgroundMoodAction(BackgroundMood.MOOD3) {
+}
+
+class BackgroundMood4Action : BackgroundMoodAction(BackgroundMood.MOOD4) {
 }
 
 class BackgroundMoodResetAction : BackgroundMoodAction(BackgroundMood.NONE)

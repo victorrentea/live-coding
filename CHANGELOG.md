@@ -70,3 +70,4 @@
 ## 0.0.18
 - extract suggestion renderer to leave a bit of vertical space between sections 
 - remove 'color test files UX' - proved not really helpful.
+- Added background mood to ask more people to open their webcam (Ctrl-alt-6)
