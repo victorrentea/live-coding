@@ -10,10 +10,14 @@ import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 
 object FrameworkDetector {
+    fun assertjIsPresent(element: PsiElement) =
+        JavaPsiFacade.getInstance(element.project)
+            .findClass("org.assertj.core.api.Assertions", element.resolveScope) != null
+
     fun lombokIsPresent(element: PsiElement) =
-        hasLombokLibrary(element.project)
-//        JavaPsiFacade.getInstance(element.project)
-//            .findClass("lombok.RequiredArgsConstructor", element.resolveScope) != null
+//        hasLombokLibrary(element.project)
+        JavaPsiFacade.getInstance(element.project)
+            .findClass("lombok.RequiredArgsConstructor", element.resolveScope) != null
     fun slf4jIsPresent(element: PsiElement) =
         JavaPsiFacade.getInstance(element.project)
             .findClass("org.slf4j.LoggerFactory", element.resolveScope) != null

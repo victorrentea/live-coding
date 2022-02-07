@@ -67,7 +67,8 @@
 - Fixed 3 Lombok inspections to take into account user configuration of severity
 ## 0.0.17
 - Added Siren Screen Effect (Shift-F8)
-## 0.0.18
+## 1.0.0
 - extract suggestion renderer to leave a bit of vertical space between sections 
 - remove 'color test files UX' - proved not really helpful.
 - Added background mood to ask more people to open their webcam (Ctrl-alt-6)
+- Inspection to replace usages of JUnit5 Assertions or JUnit4 Assert with AssertJ Assertions, aka. assertThat(actual).isEqualTo(expected); - correct, but not exhaustive

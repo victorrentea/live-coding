@@ -15,9 +15,8 @@
         </action>
 
         <action class="com.github.victorrentea.livecoding.varie.QuickImportAction" text="Quick Import">
-            <keyboard-shortcut first-keystroke="control shift O" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default"/>
         </action>
-
         <action class="com.github.victorrentea.livecoding.ux.effects.ShakeAnimationAction" text="Shake Effect">
             <keyboard-shortcut first-keystroke="F7" keymap="$default"/>
         </action>
@@ -135,6 +134,14 @@
                          enabledByDefault="true"
                          level="WARNING"
                          implementationClass="com.github.victorrentea.livecoding.varie.DontOverrideBeforeInspection"/>
+
+        <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Test frameworks"
+                         displayName="Migrate to AssertJ assertions"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.assertj.MigrateToAssertJInspection"/>
     </extensions>
 
 </idea-plugin>

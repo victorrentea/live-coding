@@ -14,10 +14,6 @@ class DeclareNewLocalInspection : BaseInspection() {
     companion object {
         const val INSPECTION_NAME = "Local variable semantics might be confusing";
         const val FIX_NAME = "Declare new variable here"
-
-
-
-
     }
 
     override fun buildErrorString(vararg infos: Any?) = INSPECTION_NAME
