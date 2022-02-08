@@ -1,4 +1,4 @@
-package assertj;
+package assertj.migrate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

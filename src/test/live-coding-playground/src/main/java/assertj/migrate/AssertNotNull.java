@@ -1,12 +1,12 @@
-package assertj;
+package assertj.migrate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class AssertNull {
+public class AssertNotNull {
     @Test
     public void test() {
         Object actual = "x";
-        Assertions.assertNull(actual); //
+        Assertions.assertNotNull(actual); //
     }
 }

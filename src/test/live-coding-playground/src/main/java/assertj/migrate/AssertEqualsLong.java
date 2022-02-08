@@ -1,12 +1,12 @@
-package assertj;
+package assertj.migrate;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class AssertEqualsInt {
+public class AssertEqualsLong {
     @Test
     public void test() {
-        int actual = 1;
+        long actual = 1L;
         Assertions.assertEquals(1, actual); //
     }
 }

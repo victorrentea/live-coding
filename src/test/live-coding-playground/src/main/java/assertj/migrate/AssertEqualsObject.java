@@ -1,4 +1,4 @@
-package assertj;
+package assertj.migrate;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -10,5 +10,6 @@ public class AssertEqualsObject {
         String actual = "a";
         Assert.assertEquals("a", actual); //
         Assertions.assertEquals("a", actual); //
+        Assertions.assertNotEquals("b", actual); //
     }
 }
