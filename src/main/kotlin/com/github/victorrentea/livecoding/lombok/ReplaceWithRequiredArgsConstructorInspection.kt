@@ -1,9 +1,8 @@
 package com.github.victorrentea.livecoding.lombok
 
 import com.github.victorrentea.livecoding.checkItemsAre
-import com.intellij.codeInspection.*
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.*
@@ -20,14 +19,9 @@ class ReplaceWithRequiredArgsConstructorInspection : AbstractLombokJavaInspectio
         const val FIX_NAME = "Replace with @RequiredArgsConstructor (lombok)"
     }
 
-    override fun buildVisitor(): BaseInspectionVisitor {
-        return ReplaceRequiredArgsConstructorVisitor()
-    }
-    override fun buildErrorString(vararg infos: Any?) = INSPECTION_NAME
+    override fun buildVisitor() = ReplaceRequiredArgsConstructorVisitor()
 
-    override fun buildFix(vararg infos: Any?): InspectionGadgetsFix {
-        return ReplaceRequiredArgsConstructorFix()
-    }
+    override fun buildErrorString(vararg infos: Any?) = INSPECTION_NAME
 
     class ReplaceRequiredArgsConstructorVisitor : BaseInspectionVisitor() {
         override fun visitElement(constructor: PsiElement) {
@@ -47,14 +41,14 @@ class ReplaceWithRequiredArgsConstructorInspection : AbstractLombokJavaInspectio
         private fun constructorOnlyCopiesParamsToFinalFields(constructor: PsiMethod): Boolean {
             val body = constructor.body ?: return false
 
-            val assignments = body.statements.map {it.firstChild}.toList().checkItemsAre<PsiAssignmentExpression>()
+            val assignments = body.statements.map { it.firstChild }.toList().checkItemsAre<PsiAssignmentExpression>()
                 ?: return false // non assignments statements found
 
             val containingClass = constructor.containingClass ?: return false
 
             val finalFields = containingClass.fields
-                .filter {it.hasModifierProperty(PsiModifier.FINAL) }
-                .filter {!it.hasModifierProperty(PsiModifier.STATIC)  }
+                .filter { it.hasModifierProperty(PsiModifier.FINAL) }
+                .filter { !it.hasModifierProperty(PsiModifier.STATIC) }
 
             val constructorParams = constructor.parameterList.parameters
 
@@ -74,35 +68,34 @@ class ReplaceWithRequiredArgsConstructorInspection : AbstractLombokJavaInspectio
             return true
         }
 
-        private fun isSpringBean(psiClass: PsiClass?): Boolean  {
+        private fun isSpringBean(psiClass: PsiClass?): Boolean {
             if (psiClass?.hasAnnotation("org.springframework.stereotype.Component") == true) {
                 return true
             }
             fun isComponentStereotype(annotation: PsiAnnotation) =
                 annotation.resolveAnnotationType()?.hasAnnotation("org.springframework.stereotype.Component") == true
-            if (psiClass?.annotations?.any {isComponentStereotype(it)} == true) {
+            if (psiClass?.annotations?.any { isComponentStereotype(it) } == true) {
                 return true
             }
             return false
         }
     }
 
+    override fun buildFix(vararg infos: Any?) = ReplaceRequiredArgsConstructorFix()
+
     class ReplaceRequiredArgsConstructorFix : InspectionGadgetsFix() {
         override fun getFamilyName() = FIX_NAME
 
         override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
-            val constructor = PsiTreeUtil.getParentOfType(descriptor?.psiElement, PsiMethod::class.java) ?: return
+            val constructor =
+                PsiTreeUtil.getParentOfType(descriptor?.psiElement, PsiMethod::class.java, false) ?: return
             val parentClass = PsiTreeUtil.getParentOfType(constructor, PsiClass::class.java) ?: return
             val modifiers = parentClass.modifierList ?: return
 
-            ApplicationManager.getApplication().invokeLater {
-                WriteCommandAction.runWriteCommandAction(project, FIX_NAME, "Live-Coding", {
-                    val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
-                    JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
+            val annotation = modifiers.addAnnotation("lombok.RequiredArgsConstructor")
+            JavaCodeStyleManager.getInstance(project).shortenClassReferences(annotation)
 
-                    constructor.delete()
-                })
-            }
+            constructor.delete()
         }
 
     }

@@ -13,7 +13,7 @@ import com.siyeh.ig.psiutils.ImportUtils
 class MigrateToAssertJInspection : BaseInspection() {
     companion object {
         const val INSPECTION_NAME = "JUnit assertion can be migrated to AssertJ";
-        const val FIX_NAME = "Replace with 'org.assertj.core.api.Assertions' method call (AssertJ)"
+        const val FIX_NAME = "Replace with AssertJ assertion"
         private val log = logger<MigrateToAssertJInspection>()
 
         private fun tryImportStatically(fqMethodName: String, context: PsiElement): String {

@@ -1,0 +1,39 @@
+<html>
+<body>
+<p>Detects usage of AssertJ Assertions that can be replaced with equivalent expressions using richer fluent assertions,
+    and often producing more expressive messages on failure</p>
+
+<!-- tooltip end -->
+<table>
+    <tr>
+        <th>Before</th>
+        <th>After</th>
+    </tr>
+    <tr>
+        <td>
+            <code>assertThat(collection.size()).isEqualTo(2);</code>
+        </td>
+        <td>
+            <code>assertThat(collection).hasSize(2);</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>assertThat(stream.count()).isEqualTo(2);</code>
+        </td>
+        <td>
+            <code>assertThat(stream).hasSize(2);</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>assertThat(string.length()).isEqualTo(2);</code>
+        </td>
+        <td>
+            <code>assertThat(string).hasSize(2);</code>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

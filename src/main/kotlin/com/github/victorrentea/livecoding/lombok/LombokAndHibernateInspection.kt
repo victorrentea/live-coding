@@ -27,7 +27,6 @@ class LombokAndHibernateInspection : LocalInspectionTool() {
             }
             return annotation
         }
-        /** Adds the annotation if not already present */
         fun PsiModifierListOwner.removeAnnotation(qualifiedName: String) {
             val modifiers = modifierList ?: return
             val annotation = modifiers.findAnnotation(qualifiedName) ?: return

@@ -3,7 +3,59 @@
 Suggests replacing JUnit Assertions with AssertJ Assertions.
 
 <!-- tooltip end -->
-<p>Text after this comment will only be shown in the settings of the inspection.</p>
+<table>
+    <tr>
+        <th>Before</th>
+        <th>After</th>
+    </tr>
+    <tr>
+        <td>
+            <code>assertEquals(e, a);</code><br>
+            <code>assertNotEquals(e, a);</code>
+        </td>
+        <td>
+            <code>assertThat(a).isEqualTo(e);</code> <br>
+            <code>assertThat(a).isNotEqualTo(e);</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>assertTrue(a);</code> <br>
+            <code>assertFalse(a);</code>
+        </td>
+        <td>
+            <code>assertThat(a).isTrue();</code> <br>
+            <code>assertThat(a).isFalse();</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>assertNull(a);</code> <br>
+            <code>assertNotNull(a);</code>
+        </td>
+        <td>
+            <code>assertThat(a).isNull();</code> <br>
+            <code>assertThat(a).isNotNull();</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>assertThrows(ex, () -> {});</code>
+        </td>
+        <td>
+            <code>assertThatThrownBy(() -> {}).isInstanceOf(ex);</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <code>assertEquals(e, a, "message");</code>
+            (similar for others above when they take an explanation message)
+        </td>
+        <td>
+            <code>assertThat(a).describedAs("message").isEqualTo(e);</code>
+        </td>
+    </tr>
+</table>
 
 </body>
 </html>

@@ -26,19 +26,42 @@ class OptimizeAssertJInspection : BaseInspection() {
             if (!calledPsiMethod.hasModifierProperty(PsiModifier.STATIC)) return
             if ((calledPsiMethod.containingClass?.qualifiedName ?: return) != "org.assertj.core.api.Assertions") return
 
-            val parentCall=assertThatCall.parent.parent as? PsiMethodCallExpression ?: return
+            val parentCall = assertThatCall.parent.parent as? PsiMethodCallExpression ?: return
             if (parentCall.parent !is PsiExpressionStatement) return // chaining more than once, eg assertThat().bla().bla();
-            val methodNameAfterAssertThat = parentCall.methodExpression.referenceName ?: return
+            val gammaText = parentCall.methodExpression.referenceName ?: return
 
             val assertThatArg = assertThatCall.argumentList.expressions[0]
             if (assertThatArg !is PsiMethodCallExpression) return
-            val calledMethodOnArg = assertThatArg.resolveMethod()?:return
-            val calledMethodOnArgFQN = calledMethodOnArg.containingClass?.qualifiedName + "." +calledMethodOnArg.name
-            log.debug(calledMethodOnArgFQN)
-            if (calledMethodOnArgFQN=="java.util.List.size" && methodNameAfterAssertThat == "isEqualTo") {
-                val replacementCode =
-                    assertThatCall.methodExpression.text + "(" + assertThatArg.methodExpression.qualifierExpression?.text + ").hasSize(" + parentCall.argumentList.expressions[0].text + ")"
-                assertThatArg.methodExpression.referenceNameElement?.let { registerError(it, replacementCode) }
+            val betaElement = assertThatArg.methodExpression.referenceNameElement ?: return
+            val calledMethodOnArg = assertThatArg.resolveMethod() ?: return
+            val betaFQN = calledMethodOnArg.containingClass?.qualifiedName + "." + calledMethodOnArg.name
+            log.debug(betaFQN)
+
+            //  assertThat(<alfa>.<beta>()).<gamma>(..);
+
+            val alfaText = assertThatArg.methodExpression.qualifierExpression?.text
+            val gammaParamText = parentCall.argumentList.expressions[0].text
+            val replacementCode =
+                if (gammaText == "isEqualTo" && betaFQN in listOf(
+                        "java.util.List.size",
+                        "java.util.Set.size",
+                        "java.util.Map.size",
+                        "java.lang.String.length",
+                        "java.util.stream.Stream.count"
+                    )
+                ) {
+                    if (gammaParamText == "0") {
+                        "($alfaText).isEmpty()" // TODO Victor 2022-02-09: move to another separate inspection
+                    } else  {
+                        "($alfaText).hasSize($gammaParamText)"
+                    }
+                } else {
+                    null
+                }
+            replacementCode?.let {
+                registerError(
+                    betaElement, assertThatCall.methodExpression.text + it
+                )
             }
         }
     }
@@ -46,6 +69,7 @@ class OptimizeAssertJInspection : BaseInspection() {
     override fun buildFix(vararg infos: Any?): InspectionGadgetsFix {
         return OptimizeAssertJFix(infos[0] as String)
     }
+
     class OptimizeAssertJFix(private val replacementCode: String) : InspectionGadgetsFix() {
         override fun getFamilyName() = FIX_NAME
 
@@ -56,7 +80,8 @@ class OptimizeAssertJInspection : BaseInspection() {
             log.debug("Replacing: '${fullStatementExpression.text}' with '$replacementCode'")
 
             val newExpression =
-                JavaPsiFacade.getElementFactory(project).createExpressionFromText(replacementCode, fullStatementExpression)
+                JavaPsiFacade.getElementFactory(project)
+                    .createExpressionFromText(replacementCode, fullStatementExpression)
 
             fullStatementExpression.replace(newExpression)
         }

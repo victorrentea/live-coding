@@ -91,3 +91,5 @@ a first stable version
 ## 1.0.1 
 - Add Optimize AssertJ assertions inspection 
 - Improve Junit->Assertions migration inspection (more api included): added description and isNotEqualTo
+- Added better inspection descriptions for AssertJ ones
+- Bugfix for Replace with @RAC (lombok)
