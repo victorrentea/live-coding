@@ -122,7 +122,7 @@
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Method metrics"
-                         displayName="Highlight sections can be extracted"
+                         displayName="Suggest sections that can be extracted"
                          enabledByDefault="false"
                          level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.extracthints.ExtractAssistantInspection"/>
@@ -150,6 +150,13 @@
                          enabledByDefault="true"
                          level="WEAK WARNING"
                          implementationClass="com.github.victorrentea.livecoding.assertj.OptimizeAssertJInspection"/>
+        <localInspection language="JAVA"
+                         groupPath="Java"
+                         groupName="Method metrics"
+                         displayName="Display cognitive complexity of methods"
+                         enabledByDefault="true"
+                         level="INFO"
+                         implementationClass="com.github.victorrentea.livecoding.complexity.ComplexityRendererInspection"/>
     </extensions>
 
 </idea-plugin>

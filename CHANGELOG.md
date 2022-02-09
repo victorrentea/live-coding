@@ -93,3 +93,4 @@ a first stable version
 - Improve Junit->Assertions migration inspection (more api included): added description and isNotEqualTo
 - Added better inspection descriptions for AssertJ ones
 - Bugfix for Replace with @RAC (lombok)
+- Separated rendering of method complexity from suggesting extract sections. > 2 inspections under "Java>Method metrics"

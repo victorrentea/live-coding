@@ -54,19 +54,6 @@ class ExtractAssistantInspection : LocalInspectionTool() {
             val totalComplexity = complexityVisitor.visitElement(method, 0).total()
             log.debug("Method complexity : $totalComplexity")
 
-            ApplicationManager.getApplication().invokeLater {
-                PsiEditorUtil.findEditor(element)?.markupModel?.let { markupModel ->
-                    val h: RangeHighlighter = markupModel.addRangeHighlighter(
-                        null,
-                        method.startOffset,
-                        methodBody.startOffset + 1,
-                        HighlighterLayer.LAST - 1,
-                        HighlighterTargetArea.LINES_IN_RANGE
-                    )
-
-                    h.customRenderer = MethodComplexityRenderer(totalComplexity)
-                }
-            }
             if (totalComplexity <= 4) return
 
             val parameters = method.parameterList.parameters.toList()

@@ -6,5 +6,6 @@ data class CognitiveComplexity(val nestingCost:Int, val nestingCount:Int, val ow
     }
     operator fun plus(other: CognitiveComplexity) =
         CognitiveComplexity(nestingCost + other.nestingCost, nestingCount + other.nestingCount, ownCost + other.ownCost)
+
     fun total() = nestingCost + ownCost
 }
