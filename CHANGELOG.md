@@ -97,3 +97,6 @@ a first stable version
 
 ## 1.0.2
 - Add title action to menu to display current section title
+
+## 1.0.3
+- Title action hovers on top on alt-tab

@@ -7,43 +7,108 @@ import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
-import java.awt.Color
+import com.intellij.openapi.wm.WindowManager
+import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.JButton
-import javax.swing.JComponent
-import javax.swing.JTextField
+import java.awt.event.WindowEvent
+import java.awt.event.WindowFocusListener
+import javax.swing.*
 
-class TitleAction : DumbAwareAction(), CustomComponentAction {
+
+class TitleAction : DumbAwareAction(), CustomComponentAction, WindowFocusListener {
     private val EMPTY_TITLE = "Title..."
-    override fun actionPerformed(e: AnActionEvent) {
-        val button = e.getPresentation().getClientProperty(CustomComponentAction.COMPONENT_KEY) as JButton
+    private var registeredFocusListener = false
+    var text: String? = null
 
-        val field = JTextField(if (button.text == EMPTY_TITLE) "" else button.text)
+    var chapterOnTop: JFrame? = null
 
-        val builder = DialogBuilder(e.project)
-        builder.setCenterPanel(field)
-        builder.setTitle("Chapter")
-        builder.removeAllActions()
-        builder.addCloseButton()
-        builder.addCancelAction()
-        builder.addOkAction()
-        builder.okAction.setText("Set")
-        builder.cancelAction.setText("Clear")
+    override fun windowGainedFocus(e: WindowEvent?) {
+        if (e == null) return
+        if (chapterOnTop != null) {
+            chapterOnTop!!.isVisible = false
+            chapterOnTop!!.dispose()
+            chapterOnTop = null
+        }
+    }
 
-        val result = builder.show()
-        if (result == DialogWrapper.OK_EXIT_CODE) {
-            button.text = field.text
-            button.background = Color.yellow
-        } else if (result == DialogWrapper.CANCEL_EXIT_CODE) {
-            button.text = EMPTY_TITLE
-            button.background = null
+    override fun windowLostFocus(e: WindowEvent?) {
+        if (e == null) return
+        if (text == null) return
+        if (e.oppositeWindow == null) {
+            chapterOnTop = JFrame().let {
+                it.isAlwaysOnTop = true
+                it.isUndecorated = true
+                it.background = Color(0, 0, 0, 0)
+                it.focusableWindowState = false
+                it.isFocusable = false
+                it.contentPane = TranslucentPane()
+
+                val b = JButton(text)
+                b.background = Color.yellow
+                it.add(b)
+                it.size = Dimension(b.size)
+
+                it.isVisible = true
+                val x = (Toolkit.getDefaultToolkit().screenSize.width - it.size.width) / 2
+                it.location = Point(x, 0)
+                it.pack()
+                it
+            }
+        }
+    }
+
+    class TranslucentPane : JPanel() {
+        init {
+            isOpaque = false
         }
 
+        override fun paintComponent(g: Graphics) {
+            super.paintComponent(g)
+            val g2d = g.create() as Graphics2D
+            g2d.composite = AlphaComposite.SrcOver.derive(0f)
+            g2d.color = background
+            g2d.fillRect(0, 0, width, height)
+        }
     }
+
+    override fun actionPerformed(e: AnActionEvent) {
+
+        val textField = JTextField(text)
+
+        val builder = DialogBuilder(e.project)
+        builder.setCenterPanel(textField)
+        builder.setTitle("Chapter")
+        builder.removeAllActions()
+        builder.addOkAction().setText("Set")
+        builder.addCancelAction().setText("Cancel")
+
+        val result = builder.show()
+
+        val button = e.presentation.getClientProperty(CustomComponentAction.COMPONENT_KEY) as JButton
+        if (result == DialogWrapper.OK_EXIT_CODE) {
+            if (textField.text != "" && textField.text != null) {
+                text = textField.text
+                button.text = textField.text
+                button.background = Color.yellow
+                if (!registeredFocusListener) {
+                    val frame = WindowManager.getInstance().getFrame(e.project) ?: return
+                    frame.addWindowFocusListener(this)
+//                    println("Added focus listener")
+                    registeredFocusListener = true
+                }
+            } else {
+                text = null
+                button.text = EMPTY_TITLE
+                button.background = null
+            }
+        }
+    }
+
 
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {
         val button = JButton(EMPTY_TITLE)
+        button.isFocusable = false
         button.toolTipText = "Set current section title"
         button.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent) {

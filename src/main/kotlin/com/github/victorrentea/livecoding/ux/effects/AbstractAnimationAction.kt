@@ -71,6 +71,7 @@ abstract class AbstractAnimationAction : AnAction() {
             frame.dispose()
         }
 
+
         frame.contentPane.add(panel, BorderLayout.CENTER)
         frame.addWindowFocusListener(object : WindowFocusListener {
             override fun windowGainedFocus(e: WindowEvent?) {}

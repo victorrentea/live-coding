@@ -27,6 +27,7 @@ I am using it every week in the workshops and talks I deliver. More about me on 
   - Child play (`Ctrl-Alt-8`)
   - Geek (`Ctrl-Alt-9`)
   - Clear (`Ctrl-Alt-0`)
+- **Current Title** toolbar button to set the current section
 ### Refactoring Aid
 - **Declare new variable here** Inspection and Fix for local variables reassigned in the same method to unrelated new values
 - **Display cognitive complexity of methods** Inspection, rendering it after the function name
