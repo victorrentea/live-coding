@@ -94,3 +94,6 @@ a first stable version
 - Added better inspection descriptions for AssertJ ones
 - Bugfix for Replace with @RAC (lombok)
 - Separated rendering of method complexity from suggesting extract sections. > 2 inspections under "Java>Method metrics"
+
+## 1.0.2
+- Add title action to menu to display current section title

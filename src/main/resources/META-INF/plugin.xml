@@ -32,7 +32,12 @@
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
         </action>
 -->
-        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action" text="Toggle Lonely Background Mood">
+        <action class="com.github.victorrentea.livecoding.ux.TitleAction" text="Title" >
+            <add-to-group group-id="MainToolBar"  relative-to-action="SearchEverywhere" anchor="before"/>
+        </action>
+
+        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action"
+                text="Toggle Lonely Background Mood">
             <keyboard-shortcut first-keystroke="control alt 6" keymap="$default"/>
         </action>
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMood1Action" text="Toggle Hardcore Background Mood">
@@ -46,8 +51,10 @@
         </action>
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMoodResetAction" text="Clear Background Mood">
             <keyboard-shortcut first-keystroke="control alt 0" keymap="$default"/>
+
         </action>
     </actions>
+
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable parentId="tools" instance="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
                                  id="com.github.victorrentea.livecoding.settings.SettingsConfigurable"

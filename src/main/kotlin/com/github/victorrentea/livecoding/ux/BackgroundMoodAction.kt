@@ -14,6 +14,7 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import kotlin.io.path.absolutePathString
 
+
 enum class BackgroundMood(val label: String?) {
     MOOD1("Hard-core"),
     MOOD2("Relax"),
@@ -61,6 +62,7 @@ open class BackgroundMoodAction(private val mood: BackgroundMood) : AnAction() {
 
         }
     }
+
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR)
         ApplicationManager.getApplication().invokeLater {
@@ -83,16 +85,15 @@ open class BackgroundMoodAction(private val mood: BackgroundMood) : AnAction() {
     }
 }
 
-class BackgroundMood1Action : BackgroundMoodAction(BackgroundMood.MOOD1) {
-}
+class BackgroundMood1Action : BackgroundMoodAction(BackgroundMood.MOOD1)
 
-class BackgroundMood2Action : BackgroundMoodAction(BackgroundMood.MOOD2) {
-}
+class BackgroundMood2Action : BackgroundMoodAction(BackgroundMood.MOOD2)
 
-class BackgroundMood3Action : BackgroundMoodAction(BackgroundMood.MOOD3) {
-}
+class BackgroundMood3Action : BackgroundMoodAction(BackgroundMood.MOOD3)
 
-class BackgroundMood4Action : BackgroundMoodAction(BackgroundMood.MOOD4) {
-}
+class BackgroundMood4Action : BackgroundMoodAction(BackgroundMood.MOOD4)
 
 class BackgroundMoodResetAction : BackgroundMoodAction(BackgroundMood.NONE)
+
+
+
