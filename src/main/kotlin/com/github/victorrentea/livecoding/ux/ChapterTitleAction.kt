@@ -11,14 +11,13 @@ import com.intellij.openapi.wm.WindowManager
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
 import javax.swing.*
 
 
-class TitleAction : DumbAwareAction(), CustomComponentAction, WindowFocusListener {
-    private val EMPTY_TITLE = "Title..."
+class ChapterTitleAction : DumbAwareAction(), CustomComponentAction, WindowFocusListener {
+    private val EMPTY_TITLE = "Chapter..."
     private var registeredFocusListener = false
     var text: String? = null
 
@@ -130,7 +129,7 @@ class TitleAction : DumbAwareAction(), CustomComponentAction, WindowFocusListene
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {
         val button = JButton(EMPTY_TITLE)
         button.isFocusable = false
-        button.toolTipText = "Set current section title"
+        button.toolTipText = "Set current chapter title"
         button.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent) {
                 actionPerformed(
