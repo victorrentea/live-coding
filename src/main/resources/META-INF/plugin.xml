@@ -32,7 +32,7 @@
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
         </action>
 -->
-        <action class="com.github.victorrentea.livecoding.ux.ChapterTitleAction" text="Chapter Title" >
+        <action class="com.github.victorrentea.livecoding.ux.chapter.ChapterTitleAction" text="Chapter Title" >
             <add-to-group group-id="MainToolBar"  relative-to-action="SearchEverywhere" anchor="before"/>
         </action>
 

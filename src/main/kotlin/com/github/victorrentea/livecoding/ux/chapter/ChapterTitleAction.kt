@@ -1,4 +1,4 @@
-package com.github.victorrentea.livecoding.ux
+package com.github.victorrentea.livecoding.ux.chapter
 
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -21,79 +21,25 @@ class ChapterTitleAction : DumbAwareAction(), CustomComponentAction, WindowFocus
     private var registeredFocusListener = false
     var text: String? = null
 
-    var chapterOnTop: JFrame? = null
+    var stayOnTopFrame: JFrame? = null
 
     override fun windowGainedFocus(e: WindowEvent?) {
         if (e == null) return
-        if (chapterOnTop != null) {
-            chapterOnTop!!.isVisible = false
-            chapterOnTop!!.dispose()
-            chapterOnTop = null
+        if (stayOnTopFrame != null) {
+            stayOnTopFrame!!.isVisible = false
+            stayOnTopFrame!!.dispose()
+            stayOnTopFrame = null
         }
     }
 
     override fun windowLostFocus(e: WindowEvent?) {
         if (e == null) return
-        if (text == null) return
         if (e.oppositeWindow == null) {
-            chapterOnTop = JFrame().let {
-                it.isAlwaysOnTop = true
-                it.isUndecorated = true
-                it.background = Color(0, 0, 0, 0)
-                it.focusableWindowState = false
-                it.isFocusable = false
-                it.contentPane = TranslucentPane()
-
-                val b = JButton(text)
-                var tEnter: Long = 0
-                var yLocationTop = true
-                b.addMouseListener(object:MouseAdapter() {
-                    override fun mouseEntered(e: MouseEvent?) {
-                        tEnter = System.currentTimeMillis()
-                    }
-
-                    override fun mouseExited(e: MouseEvent?) {
-                        val timeHovered = System.currentTimeMillis() - tEnter
-                        if (timeHovered > 1000) {
-                            yLocationTop = !yLocationTop
-                            if (yLocationTop) {
-                                it.location = Point(it.location.x, 0)
-                            } else {
-                                it.location = Point(it.location.x, Toolkit.getDefaultToolkit().screenSize.height-it.size.height)
-                            }
-                            it.repaint()
-                        }
-                    }
-                })
-                b.background = Color.yellow
-                it.add(b)
-                it.size = Dimension(b.size)
-
-                it.isVisible = true
-                val x = (Toolkit.getDefaultToolkit().screenSize.width - it.size.width) / 2
-                it.location = Point(x, 0)
-                it.pack()
-                it
-            }
-        }
-    }
-
-    class TranslucentPane : JPanel() {
-        init {
-            isOpaque = false
-        }
-
-        override fun paintComponent(g: Graphics) {
-            super.paintComponent(g)
-            val g2d = g.create() as Graphics2D
-            g2d.composite = AlphaComposite.SrcOver.derive(0f)
-            g2d.color = background
-            g2d.fillRect(0, 0, width, height)
+            stayOnTopFrame = ChapterOnTopFrame(text ?: return)
         }
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-
         val textField = JTextField(text)
 
         val builder = DialogBuilder(e.project)
