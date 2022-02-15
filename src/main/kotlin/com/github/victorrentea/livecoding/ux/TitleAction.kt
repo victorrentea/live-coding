@@ -11,6 +11,7 @@ import com.intellij.openapi.wm.WindowManager
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
 import javax.swing.*
@@ -45,6 +46,26 @@ class TitleAction : DumbAwareAction(), CustomComponentAction, WindowFocusListene
                 it.contentPane = TranslucentPane()
 
                 val b = JButton(text)
+                var tEnter: Long = 0
+                var yLocationTop = true
+                b.addMouseListener(object:MouseAdapter() {
+                    override fun mouseEntered(e: MouseEvent?) {
+                        tEnter = System.currentTimeMillis()
+                    }
+
+                    override fun mouseExited(e: MouseEvent?) {
+                        val timeHovered = System.currentTimeMillis() - tEnter
+                        if (timeHovered > 1000) {
+                            yLocationTop = !yLocationTop
+                            if (yLocationTop) {
+                                it.location = Point(it.location.x, 0)
+                            } else {
+                                it.location = Point(it.location.x, Toolkit.getDefaultToolkit().screenSize.height-it.size.height)
+                            }
+                            it.repaint()
+                        }
+                    }
+                })
                 b.background = Color.yellow
                 it.add(b)
                 it.size = Dimension(b.size)

@@ -100,3 +100,4 @@ a first stable version
 
 ## 1.0.3
 - Title action hovers on top on alt-tab
+- TItle hover runs from mouse on 1 sec pause on it.
