@@ -101,3 +101,6 @@ a first stable version
 ## 1.0.3
 - Title action hovers on top on alt-tab
 - TItle hover runs from mouse on 1 sec pause on it.
+
+## 1.0.4
+- CognitiveComplexity: Switched to using event bus for communication between inspection and renderer 

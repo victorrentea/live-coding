@@ -56,6 +56,10 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+        <!--<codeInsight.inlayProvider implementationClass="com.github.victorrentea.livecoding.complexity.C" />-->
+       <!--<editorFactoryListener implementation="com.github.victorrentea.livecoding.complexity.ComplEFL" />-->
+        <postStartupActivity implementation="com.github.victorrentea.livecoding.complexity.ComplexityRendererStartup" />
+
         <applicationConfigurable parentId="tools" instance="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
                                  id="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
                                  displayName="Live-Coding"/>
@@ -163,7 +167,7 @@
                          displayName="Display cognitive complexity of methods"
                          enabledByDefault="true"
                          level="INFO"
-                         implementationClass="com.github.victorrentea.livecoding.complexity.ComplexityRendererInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.complexity.ComplexityEvaluatorInspection"/>
     </extensions>
 
 </idea-plugin>
