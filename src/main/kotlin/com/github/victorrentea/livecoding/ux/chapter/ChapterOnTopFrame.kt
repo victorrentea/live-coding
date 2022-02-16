@@ -7,7 +7,7 @@ import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
 
-class ChapterOnTopFrame(text:String) : JFrame() {
+class ChapterOnTopFrame(chapter: Chapter) : JFrame() {
     init {
         isAlwaysOnTop = true
         isUndecorated = true
@@ -16,7 +16,7 @@ class ChapterOnTopFrame(text:String) : JFrame() {
         isFocusable = false
         contentPane = TranslucentPane()
 
-        val b = JButton(text)
+        val b = JButton(chapter.title)
         var tEnter: Long = 0
         var yLocationTop = true
         b.addMouseListener(object: MouseAdapter() {

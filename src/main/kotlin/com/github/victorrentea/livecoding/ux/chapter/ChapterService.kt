@@ -5,17 +5,23 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 
-//@State(name = "ChapterService",  storages = [Storage("chapter-data.xml")])
-class ChapterService/* : PersistentStateComponent<ChapterService>*/ {
-    var currentChapter: Chapter = Chapter.NoChapter
-        set(value) {
-            pastChapters += currentChapter
-            field = value
-        }
-    var pastChapters = mutableListOf<Chapter>()
+@State(name = "ChapterService",  storages = [Storage("chapter4.xml")])
+class ChapterService : PersistentStateComponent<ChapterService.ChapterState> {
+    private val state = ChapterState(null, mutableListOf())
 
-//    override fun getState() = this
-//
-//    override fun loadState(state: ChapterService) = XmlSerializerUtil.copyBean(state, this)
+    fun currentChapter() = state.currentChapter
+
+    fun startChapter(chapter: Chapter?) {
+        if (state.currentChapter != null) {
+            state.pastChapters += state.currentChapter !!
+        }
+        state.currentChapter = chapter
+    }
+
+    override fun getState() = state
+
+    override fun loadState(state: ChapterState) = XmlSerializerUtil.copyBean(state, this.state)
+
+    data class ChapterState(var currentChapter: Chapter? = null, val pastChapters :MutableList<Chapter> = mutableListOf())
 }
 
