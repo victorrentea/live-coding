@@ -56,6 +56,9 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+
+        <applicationService serviceImplementation="com.github.victorrentea.livecoding.ux.chapter.ChapterService" />
+
         <!--<codeInsight.inlayProvider implementationClass="com.github.victorrentea.livecoding.complexity.C" />-->
        <!--<editorFactoryListener implementation="com.github.victorrentea.livecoding.complexity.ComplEFL" />-->
         <postStartupActivity implementation="com.github.victorrentea.livecoding.complexity.ComplexityRendererStartup" />
