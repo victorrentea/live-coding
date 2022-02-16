@@ -103,4 +103,4 @@ a first stable version
 - TItle hover runs from mouse on 1 sec pause on it.
 
 ## 1.0.4
-- CognitiveComplexity: Switched to using event bus for communication between inspection and renderer 
+- CognitiveComplexity: Switched to using event bus for communication between inspection and renderer, to fix a bug of updating complexity when method changes.
