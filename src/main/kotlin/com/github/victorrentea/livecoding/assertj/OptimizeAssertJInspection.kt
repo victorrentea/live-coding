@@ -40,7 +40,7 @@ class OptimizeAssertJInspection : BaseInspection() {
             //  assertThat(<alfa>.<beta>()).<gamma>(..);
 
             val alfaText = assertThatArg.methodExpression.qualifierExpression?.text
-            val gammaParamText = parentCall.argumentList.expressions[0].text
+            val gammaParamText = parentCall.argumentList.expressions.getOrNull(0)?.text?:return
             val replacementCode =
                 if (gammaText == "isEqualTo" && betaFQN in listOf(
                         "java.util.List.size",

@@ -65,6 +65,10 @@ PS: you could also install the "Live-coding Toolkit" plugin if you want to test 
 **Note**: After it stabilizes, I plan to contribute this quickfix to IntelliJ IDEA Community to make it available for all Java developers out there. 
 
 ## Next features/bugfixes:
+- Chapter title to be shared with all IJ instances - button autoupdated
+- Chapter title to be displayed on top only when no IJ is visible
+- Click on Chapter stay on top to open edit screen.
+- 
 - TODO broadcast an event so if many windows are open, the chapter name remains in sync + persist it to DB
 - Detect (ideally UN-SET) "rearrange code" checkbox in commit dialog.
 - Separate cognitive complexity rendering from visual extract aids inspections.
