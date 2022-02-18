@@ -19,7 +19,7 @@ class ChapterStartup : StartupActivity, WindowFocusListener {
     override fun windowGainedFocus(e: WindowEvent?) {
         if (e == null) return
         if (stayOnTopFrame != null) {
-            println("Gainedfocus ")
+//            println("Gainedfocus ")
             stayOnTopFrame!!.isVisible = false
             stayOnTopFrame!!.dispose()
             stayOnTopFrame = null
@@ -27,10 +27,10 @@ class ChapterStartup : StartupActivity, WindowFocusListener {
     }
 
     override fun windowLostFocus(e: WindowEvent?) {
-            println("Lost focus FIRST")
+//            println("Lost focus FIRST")
         if (e == null) return
         if (e.oppositeWindow == null) {
-            println("Lost focus")
+//            println("Lost focus")
             val chapter = service<ChapterService>().currentChapter() ?: return
             stayOnTopFrame = ChapterOnTopFrame(chapter)
         }

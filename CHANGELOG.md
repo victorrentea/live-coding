@@ -104,3 +104,6 @@ a first stable version
 
 ## 1.0.4
 - CognitiveComplexity: Switched to using event bus for communication between inspection and renderer, to fix a bug of updating complexity when method changes.
+
+## 1.0.6
+- Chapter: + history + clear button. Persisted in settings.

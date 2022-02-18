@@ -9,7 +9,4 @@ class Chapter(var title: String = "TODO", start: LocalDateTime = LocalDateTime.n
 
     fun startTime(): LocalDateTime = LocalDateTime.parse(startTimeStr, ISO_DATE_TIME)
 
-
-    fun formatForHistory() =
-        if (title == null) null else startTime().format(ofPattern("ddd, mmm dd 'at' HH:mm")) + " " + title
 }

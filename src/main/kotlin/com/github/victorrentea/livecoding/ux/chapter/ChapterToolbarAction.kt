@@ -1,5 +1,9 @@
 package com.github.victorrentea.livecoding.ux.chapter
 
+import com.intellij.ide.CopyPasteManagerEx
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
@@ -9,8 +13,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.util.castSafelyTo
-import java.awt.event.WindowEvent
-import java.awt.event.WindowFocusListener
+import com.intellij.util.ui.TextTransferable
+import org.jetbrains.annotations.NotNull
 import java.time.LocalDateTime
 import javax.swing.*
 
@@ -55,5 +59,20 @@ class ChapterToolbarAction : DumbAwareAction(), CustomComponentAction {
     }
 
     override fun createCustomComponent(presentation: Presentation, place: String) =
-        ChapterToolbarComponent({ actionPerformed(it) }, {service<ChapterService>().startChapter(null)})
+        ChapterToolbarComponent { actionPerformed(it) }
+}
+
+
+class ChapterClearToolbarAction: DumbAwareAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+        service<ChapterService>().startChapter(null)
+    }
+
+}
+class ChapterHistoryToolbarAction: DumbAwareAction() {
+    override fun actionPerformed(e: AnActionEvent) {
+        val historyStr = service<ChapterService>().chapterHistory()
+        CopyPasteManagerEx.getInstanceEx().setContents(TextTransferable(historyStr as @NotNull CharSequence))
+        Notifications.Bus.notify(Notification("Branch Context group", "Chapter History copied to clipboard",historyStr, NotificationType.INFORMATION))
+    }
 }

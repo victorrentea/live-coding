@@ -32,9 +32,15 @@
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
         </action>
 -->
-        <action class="com.github.victorrentea.livecoding.ux.chapter.ChapterToolbarAction" text="Chapter Title" >
+        <group>
+            <action class="com.github.victorrentea.livecoding.ux.chapter.ChapterToolbarAction" text="Chapter Title" >
+            </action>
+            <action class="com.github.victorrentea.livecoding.ux.chapter.ChapterClearToolbarAction" text="Stop Chapter" icon="AllIcons.Actions.CloseDarkGrey" >
+            </action>
+            <action class="com.github.victorrentea.livecoding.ux.chapter.ChapterHistoryToolbarAction" text="Copy History" icon="AllIcons.Actions.Copy" >
+            </action>
             <add-to-group group-id="MainToolBar"  relative-to-action="SearchEverywhere" anchor="before"/>
-        </action>
+        </group>
 
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action"
                 text="Toggle Lonely Background Mood">
