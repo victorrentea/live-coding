@@ -72,6 +72,9 @@ class ReplaceWithRequiredArgsConstructorInspection : AbstractLombokJavaInspectio
             if (psiClass?.hasAnnotation("org.springframework.stereotype.Component") == true) {
                 return true
             }
+            if (psiClass?.hasAnnotation("org.springframework.web.bind.annotation.RestController") == true) {
+                return true
+            }
             fun isComponentStereotype(annotation: PsiAnnotation) =
                 annotation.resolveAnnotationType()?.hasAnnotation("org.springframework.stereotype.Component") == true
             if (psiClass?.annotations?.any { isComponentStereotype(it) } == true) {

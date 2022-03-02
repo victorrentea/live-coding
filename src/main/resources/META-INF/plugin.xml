@@ -32,7 +32,7 @@
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
         </action>
 -->
-        <group>
+        <group text="Chapter Controls">
             <action class="com.github.victorrentea.livecoding.ux.chapter.ChapterToolbarAction" text="Chapter Title" >
             </action>
             <action class="com.github.victorrentea.livecoding.ux.chapter.ChapterClearToolbarAction" text="Stop Chapter" icon="AllIcons.Actions.CloseDarkGrey" >

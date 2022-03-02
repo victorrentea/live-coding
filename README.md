@@ -36,7 +36,6 @@ I am using it every week in the workshops and talks I deliver. More about me on 
   2. no inner "return",
   3. doesn't strip the host function of ALL of its complexity ()
 
-
 <!-- Plugin description end -->
 ## Call for help
 I plan to improve the code style to bring it closer to the IntelliJ codebase, and then contribute parts of this plugin to the community opensource IntelliJ project.
@@ -44,10 +43,8 @@ I plan to improve the code style to bring it closer to the IntelliJ codebase, an
 **If you have prior experience with IntelliJ platform development, and you are willing to pair program with me several rounds to help me improve the code, please contact me!** 
 
 ## Next features/bugfixes:
-- Chapter title to be shared with all IJ instances - button to be auto updated
-- Chapter title to be displayed on top only when no IJ is visible
-- Click on Chapter stay on top to open edit screen. 
-- TODO broadcast an event so if many windows are open, the chapter name remains in sync + persist it to DB
+- Report complexity per class too
+- the chapter name remains persisted in DB
 - Detect (ideally UN-SET) "rearrange code" checkbox in commit dialog.
 - Separate cognitive complexity rendering from visual extract aids inspections.
 - IDEA: put _ instead of SPACE when writing the names of tests @Test public void service_does_not_depend_on_infrastructure

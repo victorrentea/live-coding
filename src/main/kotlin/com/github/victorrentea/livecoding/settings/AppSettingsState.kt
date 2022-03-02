@@ -57,6 +57,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "java.time.Duration.ofSeconds",
             "java.time.Duration.ofMillis",
             "java.util.concurrent.CompletableFuture.completedFuture",
+            "java.util.Optional.ofNullable",
+            "java.util.Optional.of",
+            "java.util.Optional.empty",
         )
     }
 
