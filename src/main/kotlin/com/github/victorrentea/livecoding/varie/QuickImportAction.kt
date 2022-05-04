@@ -15,8 +15,10 @@ class QuickImportAction : AnAction() {
     companion object {
         val COMMON_CLASSES = listOf(
             "java.util.List",
+            "java.util.ArrayList",
             "java.util.Set",
             "java.util.Map",
+            "java.util.HashMap",
         ).associateBy { it.substringAfterLast(".") }
     }
 

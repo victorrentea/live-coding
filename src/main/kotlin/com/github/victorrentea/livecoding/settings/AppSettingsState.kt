@@ -6,6 +6,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import java.util.*
 
 @State(
     name = "com.github.victorrentea.livecoding.settings.AppSettingsState",
@@ -36,6 +37,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "org.mockito.Mockito.mock",
             "org.mockito.Mockito.when",
             "org.mockito.Mockito.verify",
+            "org.mockito.Mockito.doNothing",
             "java.lang.System.currentTimeMillis",
             "org.mockito.ArgumentMatchers.anyInt",
             "org.mockito.ArgumentMatchers.any",
@@ -60,6 +62,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "java.util.Optional.ofNullable",
             "java.util.Optional.of",
             "java.util.Optional.empty",
+            "java.util.Objects.requireNonNull",
         )
     }
 

@@ -2,18 +2,79 @@ package com.github.victorrentea.livecoding.ux
 
 import com.github.victorrentea.livecoding.settings.AppSettingsState
 import com.intellij.codeInsight.hint.HintManager
+import com.intellij.execution.JavaTestConfigurationBase
+import com.intellij.execution.RunConfigurationExtension
+import com.intellij.execution.configurations.JavaParameters
+import com.intellij.execution.configurations.RunConfigurationBase
+import com.intellij.execution.configurations.RunnerSettings
+import com.intellij.execution.process.ProcessHandler
+import com.intellij.execution.testframework.sm.runner.SMTRunnerEventsAdapter
+import com.intellij.execution.testframework.sm.runner.SMTRunnerEventsListener
+import com.intellij.execution.testframework.sm.runner.SMTestProxy.SMRootTestProxy
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.wm.impl.IdeBackgroundUtil
+import com.intellij.util.Alarm
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 import kotlin.io.path.absolutePathString
 
+class TestListener : RunConfigurationExtension() {
+    override fun isApplicableFor(configuration: RunConfigurationBase<*>): Boolean {
+        return configuration is JavaTestConfigurationBase
+
+    }
+
+    override fun attachToProcess(
+        configuration: RunConfigurationBase<*>,
+        handler: ProcessHandler,
+        runnerSettings: RunnerSettings?
+    ) {
+        if (runnerSettings == null && isApplicableFor(configuration)) {
+            val disposable = Disposer.newDisposable()
+            val connection = configuration.project.messageBus.connect()
+//            val listener = TestDiscoveryExtension.SOCKET_LISTENER_KEY[configuration]
+//            if (listener == null) {
+                val processTracesAlarm = Alarm(Alarm.ThreadToUse.POOLED_THREAD, disposable)
+                connection.subscribe(SMTRunnerEventsListener.TEST_STATUS, object : SMTRunnerEventsAdapter() {
+                    override fun onTestingStarted(testsRoot: SMRootTestProxy) {
+                        println("Started tests")
+                    }
+                    override fun onTestingFinished(testsRoot: SMRootTestProxy) {
+                        println("Tests ran. PassedX=" + testsRoot.isPassed())
+                        if (testsRoot.handler !== handler) return
+                        processTracesAlarm.cancelAllRequests()
+                        processTracesAlarm.addRequest(
+                            {
+//                                println("Tests ran. Passed2=" + testsRoot.isPassed())
+//                                println("Tests ran. Passed=" + testsRoot.hasPassedTests())
+                            },
+                            0
+                        )
+                        connection.disconnect()
+                        Disposer.dispose(disposable)
+                    }
+                })
+//            } else {
+//                listener.attach(handler)
+//            }
+        }
+    }
+    override fun <T : RunConfigurationBase<*>?> updateJavaParameters(
+        configuration: T,
+        params: JavaParameters,
+        runnerSettings: RunnerSettings?
+    ) {
+//        TODO("Not yet implemented")
+    }
+
+}
 
 enum class BackgroundMood(val label: String?) {
     MOOD1("Hard-core"),

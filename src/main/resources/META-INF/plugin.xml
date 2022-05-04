@@ -62,7 +62,7 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-
+<runConfigurationExtension implementation="com.github.victorrentea.livecoding.ux.TestListener" />
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.ux.chapter.ChapterService" />
 
         <!--<codeInsight.inlayProvider implementationClass="com.github.victorrentea.livecoding.complexity.C" />-->
