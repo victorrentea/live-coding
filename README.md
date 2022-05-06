@@ -5,10 +5,10 @@ In addition, it adds a number of inspections that automate various changes/migra
 
 I am using it every week in the workshops and talks I deliver. More about me on https://www.victorrentea.ro
 
-### Inspections and Coding Speed
+### Inspections and Coding Speed    
 - Inspection to add `@RequiredArgsConstructor` (Lombok) instead of a boilerplate constructor
 - When a 'log' is undefined, quick fix to add `@Slf4j` (Lombok) or write the code to define that field. Also, replace the field definition by `@Slf4j`.
-- 'Quick Import' action to silently auto-import common constants (eg Duration.SECONDS), static methods (eg Mockito.mock) or common types (eg java.util.List). Bound by default to `Ctrl-Alt-Shift-O` shortcut. 
+- 'Quick Import' action to silently auto-import common constants (eg Duration.SECONDS), static methods (eg Mockito.mock) or common types (eg java.util.List). Bound by default to `Ctrl-Alt-Shift-O`/`Command-Option-Control-O` shortcut. 
 - Inspection to detect `@Data` on an `@Entity` and suggests replacing with safer code.
 - Inspection to migrate usage of JUnit4 or JUnit5 assertions to AssertJ Assertions. Example: assertThat(actual).isEqualTo(expected);
 - Inspection to optimize usage of AssertJ assertion api. Example: assertThat(list).hasSize(1)
@@ -22,11 +22,11 @@ I am using it every week in the workshops and talks I deliver. More about me on 
   - Broken Glass (`F8`)
   - Siren (`Shift-F8`)
 - **Background Feelings**: change the background image to:
-  - Call to Open Webcam (`Ctrl-Alt-6`)
-  - Horror (`Ctrl-Alt-7`)
-  - Child play (`Ctrl-Alt-8`)
-  - Geek (`Ctrl-Alt-9`)
-  - Clear (`Ctrl-Alt-0`)
+  - Call to Open Webcam (`Ctrl-Alt-6`/`Command-Option-6`)
+  - Horror (`Ctrl-Alt-7`/`Command-Option-7`)
+  - Child play (`Ctrl-Alt-8`/`Command-Option-8`)
+  - Geek (`Ctrl-Alt-9`/`Command-Option-9`)
+  - Clear (`Ctrl-Alt-0`/`Command-Option-0`)
 - **Chapter Title** toolbar button to set the current section title
 ### Refactoring Aid
 - **Declare new variable here** Inspection and Fix for local variables reassigned in the same method to unrelated new values
