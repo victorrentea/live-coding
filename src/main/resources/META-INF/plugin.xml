@@ -16,7 +16,7 @@
 
         <action class="com.github.victorrentea.livecoding.varie.QuickImportAction" text="Quick Import">
             <keyboard-shortcut first-keystroke="control alt shift O" keymap="$default"/>
-            <keyboard-shortcut first-keystroke="command option control O" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="meta alt control O" keymap="Mac OS X 10.5+"/>
         </action>
         <action class="com.github.victorrentea.livecoding.ux.effects.ShakeAnimationAction" text="Shake Effect">
             <keyboard-shortcut first-keystroke="F7" keymap="$default"/>
@@ -46,23 +46,23 @@
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action"
                 text="Toggle Lonely Background Mood">
             <keyboard-shortcut first-keystroke="control alt 6" keymap="$default"/>
-            <keyboard-shortcut first-keystroke="command option 6" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="meta alt 6" keymap="$default"/>
         </action>
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMood1Action" text="Toggle Hardcore Background Mood">
             <keyboard-shortcut first-keystroke="control alt 7" keymap="$default"/>
-            <keyboard-shortcut first-keystroke="command option 7" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="meta alt 7" keymap="$default"/>
         </action>
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMood2Action" text="Toggle Child Background Mood">
             <keyboard-shortcut first-keystroke="control alt 8" keymap="$default"/>
-            <keyboard-shortcut first-keystroke="command option 8" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="meta alt 8" keymap="$default"/>
         </action>
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMood3Action" text="Toggle Geek Background Mood">
             <keyboard-shortcut first-keystroke="control alt 9" keymap="$default"/>
-            <keyboard-shortcut first-keystroke="command option 9" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="meta alt 9" keymap="$default"/>
         </action>
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMoodResetAction" text="Clear Background Mood">
             <keyboard-shortcut first-keystroke="control alt 0" keymap="$default"/>
-            <keyboard-shortcut first-keystroke="command option 0" keymap="$default"/>
+            <keyboard-shortcut first-keystroke="meta alt 0" keymap="$default"/>
 
         </action>
     </actions>
