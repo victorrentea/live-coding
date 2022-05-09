@@ -138,13 +138,13 @@
                          implementationClass="com.github.victorrentea.livecoding.declarenewlocal.DeclareNewLocalInspection"/>
 
 
-        <localInspection language="JAVA"
+      <!--  <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Data flow"
                          displayName="Introduce guard to simplify if"
                          enabledByDefault="true"
                          level="WEAK WARNING"
-                         implementationClass="com.github.victorrentea.livecoding.varie.IntroduceGuardInspection"/>
+                         implementationClass="com.github.victorrentea.livecoding.varie.IntroduceGuardInspection"/>-->
 
         <localInspection language="JAVA"
                          groupPath="Java"
