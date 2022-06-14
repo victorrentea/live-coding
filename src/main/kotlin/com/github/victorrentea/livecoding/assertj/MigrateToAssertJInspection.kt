@@ -45,10 +45,7 @@ class MigrateToAssertJInspection : BaseInspection() {
 
             if (classQName !in listOf("org.junit.jupiter.api.Assertions", "org.junit.Assert")) return
 
-            val descr = if (calledPsiMethod.parameterList.parameters.last()
-                    .let{it.name == "message" && it.type.equalsToText("java.lang.String")}) {
-                "\n.describedAs(" + expression.argumentList.expressions.last().text+")\n"
-            } else ""
+            val descr = getDescribedAs(calledPsiMethod, expression)
 
             val args = expression.argumentList.expressions
             val arg0 = args[0].text
@@ -66,6 +63,16 @@ class MigrateToAssertJInspection : BaseInspection() {
             }
 
             registerError(expression.methodExpression, migratedCode)
+        }
+
+        private fun getDescribedAs(
+            calledPsiMethod: PsiMethod,
+            expression: PsiMethodCallExpression
+        ): String {
+            val lastParam = calledPsiMethod.parameterList.parameters.lastOrNull() ?: return ""
+            if (lastParam.name != "message" || !lastParam.type.equalsToText("java.lang.String")) return ""
+            val lastArg = expression.argumentList.expressions.lastOrNull() ?: return ""
+            return "\n.describedAs(" + lastArg.text + ")\n"
         }
     }
 

@@ -16,6 +16,7 @@ class QuickImportAction : AnAction() {
         val COMMON_CLASSES = listOf(
             "java.util.List",
             "java.util.ArrayList",
+            "java.util.Optional",
             "java.util.Set",
             "java.util.Map",
             "java.util.HashMap",

@@ -36,9 +36,9 @@ class ExtractAssistantInspection : LocalInspectionTool() {
         }
     }
 
-    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return SuggestMethodsToExtractVisitor()
-    }
+    override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor =
+        SuggestMethodsToExtractVisitor()
+
 
     class SuggestMethodsToExtractVisitor : PsiElementVisitor() {
 

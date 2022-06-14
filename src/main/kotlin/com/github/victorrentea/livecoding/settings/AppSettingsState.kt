@@ -38,6 +38,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             "org.mockito.Mockito.when",
             "org.mockito.Mockito.verify",
             "org.mockito.Mockito.doNothing",
+            "org.mockito.Mockito.verifyNoMoreInteractions",
             "java.lang.System.currentTimeMillis",
             "org.mockito.ArgumentMatchers.anyInt",
             "org.mockito.ArgumentMatchers.any",
