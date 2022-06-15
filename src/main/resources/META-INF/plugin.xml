@@ -68,12 +68,14 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-<!--<runConfigurationExtension implementation="com.github.victorrentea.livecoding.ux.TestListener" />-->
+        <codeInsight.inlayProvider language="JAVA" implementationClass="com.github.victorrentea.livecoding.complexity.CognitiveComplexityInlineHintsProvider"/>
+
+        <!--<runConfigurationExtension implementation="com.github.victorrentea.livecoding.ux.TestListener" />-->
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.ux.chapter.ChapterService" />
 
         <!--<codeInsight.inlayProvider implementationClass="com.github.victorrentea.livecoding.complexity.C" />-->
        <!--<editorFactoryListener implementation="com.github.victorrentea.livecoding.complexity.ComplEFL" />-->
-        <postStartupActivity implementation="com.github.victorrentea.livecoding.complexity.ComplexityRendererStartup" />
+        <!--<postStartupActivity implementation="com.github.victorrentea.livecoding.complexity.ComplexityRendererStartup" />-->
         <postStartupActivity implementation="com.github.victorrentea.livecoding.ux.chapter.ChapterStartup" />
 
         <applicationConfigurable parentId="tools" instance="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
@@ -177,6 +179,7 @@
                          enabledByDefault="true"
                          level="WEAK WARNING"
                          implementationClass="com.github.victorrentea.livecoding.assertj.OptimizeAssertJInspection"/>
+<!--
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Method metrics"
@@ -184,6 +187,7 @@
                          enabledByDefault="true"
                          level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.complexity.ComplexityEvaluatorInspection"/>
+-->
     </extensions>
 
 </idea-plugin>

@@ -107,3 +107,6 @@ a first stable version
 
 ## 1.0.6
 - Chapter: + history + clear button. Persisted in settings.
+
+## 1.0.13
+- Render cognitive complexity as inlay hints
