@@ -1,5 +1,6 @@
 package com.github.victorrentea.livecoding.settings
 
+import com.github.victorrentea.livecoding.ux.BackgroundImage
 import com.github.victorrentea.livecoding.ux.BackgroundMood
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
@@ -22,7 +23,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             staticImports = parseStaticImports(newList)
         }
 
-    var unzippedImagedPaths = mutableMapOf<BackgroundMood, String?>()
+    var unzippedImagedPaths = mutableMapOf<BackgroundImage, String>()
 
     init {
         staticImportsList = listOf(

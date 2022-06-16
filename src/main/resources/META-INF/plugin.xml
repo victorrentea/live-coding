@@ -46,11 +46,11 @@
             <add-to-group group-id="MainToolBar"  relative-to-action="SearchEverywhere" anchor="before"/>
         </group>
 
-        <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action"
+       <!-- <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action"
                 text="Toggle Lonely Background Mood">
             <keyboard-shortcut first-keystroke="control alt 6" keymap="$default"/>
             <keyboard-shortcut first-keystroke="meta alt 6" keymap="$default"/>
-        </action>
+        </action>-->
         <action class="com.github.victorrentea.livecoding.ux.BackgroundMood1Action" text="Toggle Hardcore Background Mood">
             <keyboard-shortcut first-keystroke="control alt 7" keymap="$default"/>
             <keyboard-shortcut first-keystroke="meta alt 7" keymap="$default"/>

@@ -32,7 +32,8 @@ class CognitiveComplexityInlineHintsProvider: InlayHintsProvider<NoSettings> {
 
                 val presentation =
                     factory.roundWithBackground(
-                        factory.withTooltip("Cognitive Complexity",
+                        factory.withTooltip(
+                            "Cognitive Complexity is $cc",
                             factory.smallText(text)
                     )
                 )

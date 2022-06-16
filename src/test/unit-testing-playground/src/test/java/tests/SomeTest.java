@@ -9,4 +9,11 @@ public class SomeTest {
         System.out.println("Done");
         throw new RuntimeException("oups");
     }
+
+
+    @Test
+    void test2() {
+        System.out.println("Error");
+        throw new RuntimeException("oups");
+    }
 }
