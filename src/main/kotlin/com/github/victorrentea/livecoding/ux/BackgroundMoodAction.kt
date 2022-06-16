@@ -25,57 +25,6 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import kotlin.io.path.absolutePathString
 
-class TestListener : RunConfigurationExtension() {
-    override fun isApplicableFor(configuration: RunConfigurationBase<*>): Boolean {
-        return configuration is JavaTestConfigurationBase
-
-    }
-
-    override fun attachToProcess(
-        configuration: RunConfigurationBase<*>,
-        handler: ProcessHandler,
-        runnerSettings: RunnerSettings?
-    ) {
-        if (runnerSettings == null && isApplicableFor(configuration)) {
-            val disposable = Disposer.newDisposable()
-            val connection = configuration.project.messageBus.connect()
-//            val listener = TestDiscoveryExtension.SOCKET_LISTENER_KEY[configuration]
-//            if (listener == null) {
-                val processTracesAlarm = Alarm(Alarm.ThreadToUse.POOLED_THREAD, disposable)
-                connection.subscribe(SMTRunnerEventsListener.TEST_STATUS, object : SMTRunnerEventsAdapter() {
-                    override fun onTestingStarted(testsRoot: SMRootTestProxy) {
-                        println("Started tests")
-                    }
-                    override fun onTestingFinished(testsRoot: SMRootTestProxy) {
-                        println("Tests ran. PassedX=" + testsRoot.isPassed())
-                        if (testsRoot.handler !== handler) return
-                        processTracesAlarm.cancelAllRequests()
-                        processTracesAlarm.addRequest(
-                            {
-//                                println("Tests ran. Passed2=" + testsRoot.isPassed())
-//                                println("Tests ran. Passed=" + testsRoot.hasPassedTests())
-                            },
-                            0
-                        )
-                        connection.disconnect()
-                        Disposer.dispose(disposable)
-                    }
-                })
-//            } else {
-//                listener.attach(handler)
-//            }
-        }
-    }
-    override fun <T : RunConfigurationBase<*>?> updateJavaParameters(
-        configuration: T,
-        params: JavaParameters,
-        runnerSettings: RunnerSettings?
-    ) {
-//        TODO("Not yet implemented")
-    }
-
-}
-
 enum class BackgroundMood(val label: String?) {
     MOOD1("Hard-core"),
     MOOD2("Relax"),
@@ -139,7 +88,7 @@ open class BackgroundMoodAction(private val mood: BackgroundMood) : AnAction() {
 
             val moodLabel = mood.label
             if (moodLabel != null) {
-                editor?.let { HintManager.getInstance().showErrorHint(it, "Entering $moodLabel Mode ...") }
+                editor?.let { HintManager.getInstance().showErrorHint(it, "Feeling $moodLabel ...") }
             }
 //            IdeBackgroundUtil.repaintAllWindows()
         }

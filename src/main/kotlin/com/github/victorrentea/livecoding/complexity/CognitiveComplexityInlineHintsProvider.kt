@@ -24,8 +24,9 @@ class CognitiveComplexityInlineHintsProvider: InlayHintsProvider<NoSettings> {
 
                 val cc = CognitiveComplexityVisitor().visitElement(method).total()
 
-                val text = if (cc<5) "👌"
-                    else if (cc<10) "🥴 cognitive:$cc"
+                val text = if (cc<=1) return true;
+                    else if (cc<=5) "👌"
+                    else if (cc<=10) "🥴 cognitive:$cc"
                     else "🛑 cognitive:$cc - REFACTOR!"
 //                val text = "$emoji cognitive:$cc"
 

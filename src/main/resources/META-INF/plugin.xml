@@ -8,6 +8,9 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <depends>Git4Idea</depends>
+<!--<applicationListeners>
+    <listener class="com.github.victorrentea.livecoding.ux.TestListener" topic="com.intellij.execution.testframework.TestStatusListener"/>
+</applicationListeners>-->
 
     <actions>
         <action class="com.github.victorrentea.livecoding.ux.CopyGitCoordinates" text="Copy Git Coordinates to Clipboard">
@@ -68,6 +71,7 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+        <testStatusListener implementation="com.github.victorrentea.livecoding.ux.TestListener" />
         <codeInsight.inlayProvider language="JAVA" implementationClass="com.github.victorrentea.livecoding.complexity.CognitiveComplexityInlineHintsProvider"/>
 
         <!--<runConfigurationExtension implementation="com.github.victorrentea.livecoding.ux.TestListener" />-->
@@ -81,6 +85,7 @@
         <applicationConfigurable parentId="tools" instance="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
                                  id="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
                                  displayName="Live-Coding"/>
+
 
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.settings.AppSettingsState"/>
 
