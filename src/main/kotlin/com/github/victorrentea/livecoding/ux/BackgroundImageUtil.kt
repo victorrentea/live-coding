@@ -20,7 +20,6 @@ object BackgroundImageUtil {
         PropertiesComponent.getInstance().setValue(IdeBackgroundUtil.EDITOR_PROP, null)
     }
     fun setBackgroundImage(image: BackgroundImage, opacity: Int) {
-        fadeoutTimer?.stop()
         justSetBackgroundImage(image, opacity)
     }
 
@@ -29,28 +28,6 @@ object BackgroundImageUtil {
         val imgPath = filePath + "," + opacity
         log.debug("Path $imgPath")
         PropertiesComponent.getInstance().setValue(IdeBackgroundUtil.EDITOR_PROP, imgPath)
-    }
-
-    private var fadeoutTimer: Timer? = null
-
-    fun setBackgroundImageFadingOut(image: BackgroundImage, initialOpacity: Int, fadeoutSeconds: Int) {
-        fadeoutTimer?.stop()
-        justSetBackgroundImage(image, initialOpacity)
-        val t0 = System.currentTimeMillis()
-        val endTime = t0 + fadeoutSeconds * 1000
-        fadeoutTimer = Timer(2000) {
-            val t = System.currentTimeMillis()
-            if (t > endTime) {
-                justSetBackgroundImage(image, 0)
-                fadeoutTimer?.stop()
-            } else {
-                val currentOpacity = initialOpacity * (endTime - t) / (endTime - t0)
-                println("opacity: $currentOpacity")
-                justSetBackgroundImage(image, currentOpacity.toInt())
-            }
-        }
-        fadeoutTimer?.start()
-        println("Started")
     }
 
     private fun pathFromTemp(image: BackgroundImage): String {

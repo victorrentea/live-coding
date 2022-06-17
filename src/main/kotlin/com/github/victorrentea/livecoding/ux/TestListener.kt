@@ -8,12 +8,10 @@ class TestListener : TestStatusListener() {
     override fun testSuiteFinished(root: AbstractTestProxy?) {
         if (root == null) return
 
-        if (root.hasPassedTests()) {
-            BackgroundImageUtil.setBackgroundImageFadingOut(BackgroundImage.GREEN, 50,10)
-        } else {
-            BackgroundImageUtil.setBackgroundImageFadingOut(BackgroundImage.RED, 30, 10)
-        }
-
+        if (root.isPassed)
+            FadingOutSplash("pass")
+        else
+            FadingOutSplash("fail")
 //        println("Status : passed: " + root.hasPassedTests())
 //        println("Status : defect: " + root.isDefect)
 //        println("Status : interrupted: " + root.isInterrupted)
