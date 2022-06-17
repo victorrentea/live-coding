@@ -21,7 +21,7 @@ class CopyGitCoordinates : AnAction(){
         val currentRepository = GitBranchUtil.getCurrentRepository(project) ?: return
         val remoteUrl = currentRepository.remotes.firstOrNull()?.pushUrls?.firstOrNull() ?: return
         val branchName = currentRepository.currentBranch?.name ?: return
-        val text = "Git: $remoteUrl\nBranch: $branchName"
+        val text = "Branch: $branchName on git: $remoteUrl"
 
         CopyPasteManagerEx.getInstanceEx().setContents(TextTransferable(text as @NotNull CharSequence))
         Notifications.Bus.notify(Notification("Branch Context group", "Git coordinates copied",text, NotificationType.INFORMATION))
