@@ -23,6 +23,8 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
             staticImports = parseStaticImports(newList)
         }
 
+    var showTestResultsSplash = true
+
     var unzippedImagedPaths = mutableMapOf<BackgroundImage, String>()
 
     init {
