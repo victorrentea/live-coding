@@ -24,6 +24,7 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
         }
 
     var showTestResultsSplash = true
+    var playTestResultsSound = true
 
     var unzippedImagedPaths = mutableMapOf<BackgroundImage, String>()
 

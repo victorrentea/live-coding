@@ -110,3 +110,6 @@ a first stable version
 
 ## 1.0.13
 - Render cognitive complexity as inlay hints
+
+## 1.0.17
+- added test results splash + sounds

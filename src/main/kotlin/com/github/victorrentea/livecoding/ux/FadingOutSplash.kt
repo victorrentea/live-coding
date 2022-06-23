@@ -39,7 +39,7 @@ class FadingOutSplash(fileName: String) {
         frame.background = Color(0, 0, 0, 0)
         frame.isVisible = true
         frame.addMouseListener(object : MouseAdapter() {
-            override fun mouseEntered(e: MouseEvent) {
+            override fun mouseClicked(e: MouseEvent?) {
                 frame.dispose()
             }
         })
@@ -54,13 +54,12 @@ class FadingOutSplash(fileName: String) {
                 frame.dispose();
             } else {
                 val currentOpacity = initialOpacity * (endTime - t) / (endTime - t0)
-                println("opacity: $currentOpacity")
+//                println("opacity: $currentOpacity")
                 imagePanel.opacity = currentOpacity;
                 invokeLater { frame.repaint() }
             }
         }
         fadeoutTimer.start()
-        println("Started")
     }
 
     inner class ImagePanel( var opacity: Float, fileName: String) : JPanel() {
@@ -77,14 +76,10 @@ class FadingOutSplash(fileName: String) {
                     }
                 }
         }
-
         override fun paintComponent(g: Graphics) {
-            super.paintComponent(g)
-            val g2d = g.create() as Graphics2D
-//            g2d.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity)
-            g2d.composite = AlphaComposite.SrcOver.derive(opacity)
-            g2d.drawImage(img, 0, 0, width, height, this)
-            g2d.dispose()
+            val g2 = g.create() as Graphics2D
+            g2.composite = AlphaComposite.SrcOver.derive(opacity)
+            g2.drawImage(img, 0, 0, width, height, this)
         }
 
         override fun getPreferredSize(): Dimension {
