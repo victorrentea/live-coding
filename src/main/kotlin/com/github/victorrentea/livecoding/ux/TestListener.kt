@@ -3,11 +3,16 @@ package com.github.victorrentea.livecoding.ux
 import com.github.victorrentea.livecoding.settings.AppSettingsState
 import com.intellij.execution.testframework.AbstractTestProxy
 import com.intellij.execution.testframework.TestStatusListener
+import com.intellij.openapi.diagnostic.logger
+import java.io.BufferedInputStream
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 
 class TestListener : TestStatusListener() {
+    companion object {
+        protected val log = logger<TestStatusListener>()
+    }
     override fun testSuiteFinished(root: AbstractTestProxy?) {
         if (root == null) return
 
@@ -28,7 +33,11 @@ class TestListener : TestStatusListener() {
     }
     private fun playSound(fileName: String) {
         TestListener::class.java.getResourceAsStream("/icons/$fileName").use {
-            val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(it)
+            if (it==null) {
+                log.error("Cannot open audio stream: $fileName")
+                return
+            }
+            val audioInputStream: AudioInputStream = AudioSystem.getAudioInputStream(BufferedInputStream(it))
             val clip: Clip = AudioSystem.getClip()
             clip.open(audioInputStream)
             clip.start()
