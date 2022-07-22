@@ -113,6 +113,7 @@
                          enabledByDefault="true"
                          level="WEAK WARNING"
                          implementationClass="com.github.victorrentea.livecoding.lombok.ReplaceWithSlf4jInspection"/>
+
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Lombok"

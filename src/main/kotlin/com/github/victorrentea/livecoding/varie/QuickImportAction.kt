@@ -18,6 +18,7 @@ class QuickImportAction : AnAction() {
             "java.util.ArrayList",
             "java.util.Optional",
             "java.util.Set",
+            "java.util.HashSet",
             "java.util.Map",
             "java.util.HashMap",
         ).associateBy { it.substringAfterLast(".") }

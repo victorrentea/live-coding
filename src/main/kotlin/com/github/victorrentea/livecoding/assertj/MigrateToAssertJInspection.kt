@@ -48,9 +48,9 @@ class MigrateToAssertJInspection : BaseInspection() {
             val descr = getDescribedAs(calledPsiMethod, expression)
 
             val args = expression.argumentList.expressions
-            val arg0 = args[0].text
+            val arg0 = args.getOrNull(0)?.text ?: return
             val arg1 = args.getOrNull(1)?.text
-            val migratedCode = "org.assertj.core.api.Assertions." + when (calledPsiMethod.name)  {
+            val migratedCode = "org.assertj.core.api.Assertions." + when (calledPsiMethod.name) {
                 "assertEquals" -> "assertThat($arg1)$descr.isEqualTo($arg0)"
                 "assertNotEquals" -> "assertThat($arg1)$descr.isNotEqualTo($arg0)"
                 "assertTrue" -> "assertThat($arg0)$descr.isTrue()"
@@ -58,7 +58,7 @@ class MigrateToAssertJInspection : BaseInspection() {
                 "assertNull" -> "assertThat($arg0)$descr.isNull()"
                 "assertNotNull" -> "assertThat($arg0)$descr.isNotNull()"
                 "assertThrows" -> if (descr == "") "assertThatThrownBy($arg1).isInstanceOf($arg0)"
-                                    else "assertThatThrownBy($arg1, "+expression.argumentList.expressions.last().text+").isInstanceOf($arg0)"
+                else "assertThatThrownBy($arg1, " + expression.argumentList.expressions.last().text + ").isInstanceOf($arg0)"
                 else -> return
             }
 
