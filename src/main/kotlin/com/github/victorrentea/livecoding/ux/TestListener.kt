@@ -3,6 +3,7 @@ package com.github.victorrentea.livecoding.ux
 import com.github.victorrentea.livecoding.settings.AppSettingsState
 import com.intellij.execution.testframework.AbstractTestProxy
 import com.intellij.execution.testframework.TestStatusListener
+import com.intellij.execution.testframework.sm.runner.states.TestStateInfo.Magnitude
 import com.intellij.openapi.diagnostic.logger
 import java.io.BufferedInputStream
 import javax.sound.sampled.AudioInputStream
@@ -16,7 +17,11 @@ class TestListener : TestStatusListener() {
     override fun testSuiteFinished(root: AbstractTestProxy?) {
         if (root == null) return
 
-        if (root.isPassed) {
+
+        val passed = root.magnitude == Magnitude.PASSED_INDEX.value
+                ||root.magnitude == Magnitude.IGNORED_INDEX.value
+
+        if (passed) {
             if (AppSettingsState.getInstance().playTestResultsSound)
                 playSound("pass.wav");
             if (AppSettingsState.getInstance().showTestResultsSplash)
