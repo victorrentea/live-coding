@@ -4,8 +4,14 @@
 
 ## [Unreleased]
 
+## [1.0.12]
+minor fixes
+
 ## [1.0.0]
-a first stable version
+- extract suggestion renderer to leave a bit of vertical space between sections 
+- remove 'color test files UX' - proved not really helpful.
+- Added background mood to ask more people to open their webcam (Ctrl-alt-6)
+- Inspection to replace usages of JUnit5 Assertions or JUnit4 Assert with AssertJ Assertions, aka. assertThat(actual).isEqualTo(expected); - correct, but not exhaustive
 
 ## 0.0.2
 - Place @RAC to inner-most class in both suggestion to fix and to replace existing constructor
@@ -82,13 +88,7 @@ a first stable version
 ## 0.0.17
 - Added Siren Screen Effect (Shift-F8)
 
-## 1.0.0
-- extract suggestion renderer to leave a bit of vertical space between sections 
-- remove 'color test files UX' - proved not really helpful.
-- Added background mood to ask more people to open their webcam (Ctrl-alt-6)
-- Inspection to replace usages of JUnit5 Assertions or JUnit4 Assert with AssertJ Assertions, aka. assertThat(actual).isEqualTo(expected); - correct, but not exhaustive
-
-## 1.0.1 
+## 1.0.1
 - Add Optimize AssertJ assertions inspection 
 - Improve Junit->Assertions migration inspection (more api included): added description and isNotEqualTo
 - Added better inspection descriptions for AssertJ ones
