@@ -4,12 +4,16 @@
 
 ## Unreleased
 
-## 1.0.22
+## 1.0.23
 
 - Rebuilt and modernized for IntelliJ Platform 2024.3+ (sinceBuild 243).
 - Migrated to IntelliJ Platform Gradle Plugin 2.x, Kotlin 2.1, Gradle 9, JDK 21.
 - Adapted to platform API changes: non-null parameters in inspection visitors and quick fixes,
   removal of `castSafelyTo`, migration of `InvertIfConditionAction` to ModCommand API.
+- Removed all Internal API usages flagged by Marketplace verification:
+  `TestStateInfo.Magnitude` replaced with public `AbstractTestProxy.isPassed()/isIgnored()`,
+  and the internal `BaseInspection.shouldInspect(PsiFile)` overrides replaced by
+  per-visitor AssertJ/Lombok applicability checks.
 
 ## 1.0.0
 
