@@ -12,7 +12,6 @@ import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.util.castSafelyTo
 import com.intellij.util.ui.TextTransferable
 import org.jetbrains.annotations.NotNull
 import java.time.LocalDateTime
@@ -53,8 +52,7 @@ class ChapterToolbarAction : DumbAwareAction(), CustomComponentAction {
             service<ChapterService>().startChapter(null)
         }
 
-        e.presentation.getClientProperty(CustomComponentAction.COMPONENT_KEY)
-            .castSafelyTo<ChapterToolbarComponent>()
+        (e.presentation.getClientProperty(CustomComponentAction.COMPONENT_KEY) as? ChapterToolbarComponent)
             ?.setChapter(currentChapter)
     }
 

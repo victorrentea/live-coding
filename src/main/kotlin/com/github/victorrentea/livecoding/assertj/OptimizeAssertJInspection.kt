@@ -20,8 +20,8 @@ class OptimizeAssertJInspection : BaseInspection() {
     override fun buildVisitor() = OptimizeAssertJVisitor()
 
     class OptimizeAssertJVisitor : BaseInspectionVisitor() {
-        override fun visitMethodCallExpression(assertThatCall: PsiMethodCallExpression?) {
-            val calledPsiMethod = assertThatCall?.methodExpression?.resolve() as? PsiMethod ?: return
+        override fun visitMethodCallExpression(assertThatCall: PsiMethodCallExpression) {
+            val calledPsiMethod = assertThatCall.methodExpression.resolve() as? PsiMethod ?: return
             if (assertThatCall.methodExpression.referenceName != "assertThat") return
             if (!calledPsiMethod.hasModifierProperty(PsiModifier.STATIC)) return
             if ((calledPsiMethod.containingClass?.qualifiedName ?: return) != "org.assertj.core.api.Assertions") return
@@ -73,9 +73,7 @@ class OptimizeAssertJInspection : BaseInspection() {
     class OptimizeAssertJFix(private val replacementCode: String) : InspectionGadgetsFix() {
         override fun getFamilyName() = FIX_NAME
 
-        override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
-            if (project == null) return;
-            if (descriptor?.psiElement == null) return;
+        override fun doFix(project: Project, descriptor: ProblemDescriptor) {
             val fullStatementExpression = descriptor.psiElement.parent.parent.parent.parent.parent.parent
             log.debug("Replacing: '${fullStatementExpression.text}' with '$replacementCode'")
 

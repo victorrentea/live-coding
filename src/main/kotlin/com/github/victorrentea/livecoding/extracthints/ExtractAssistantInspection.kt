@@ -14,8 +14,6 @@ import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiEditorUtil
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
 import com.intellij.util.PsiErrorElementUtil
 
 
@@ -168,8 +166,8 @@ class ExtractAssistantInspection : LocalInspectionTool() {
                     PsiEditorUtil.findEditor(element)?.markupModel?.let { markupModel ->
                         val h: RangeHighlighter = markupModel.addRangeHighlighter(
                             null,
-                            extract.section.first().startOffset,
-                            extract.section.last().endOffset,
+                            extract.section.first().textRange.startOffset,
+                            extract.section.last().textRange.endOffset,
                             MY_LAYER,
                             HighlighterTargetArea.LINES_IN_RANGE
                         )

@@ -14,7 +14,6 @@ import com.intellij.psi.*
 import com.intellij.psi.util.isAncestor
 import com.intellij.psi.util.siblings
 import com.intellij.refactoring.rename.RenameHandlerRegistry
-import com.intellij.refactoring.suggested.startOffset
 import com.siyeh.ig.InspectionGadgetsFix
 import org.jetbrains.concurrency.asCompletableFuture
 
@@ -85,11 +84,10 @@ class DeclareNewLocalFix : InspectionGadgetsFix() {
 
     override fun getFamilyName() = DeclareNewLocalInspection.FIX_NAME
 
-    override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
-        val writeToDeclareAt = descriptor?.psiElement as? PsiReferenceExpression ?: return
+    override fun doFix(project: Project, descriptor: ProblemDescriptor) {
+        val writeToDeclareAt = descriptor.psiElement as? PsiReferenceExpression ?: return
 
-        val variable = writeToDeclareAt.resolve() as? PsiVariable ?: return;
-        if (project == null) return
+        val variable = writeToDeclareAt.resolve() as? PsiVariable ?: return
 
         val originalVarName = variable.name
         log.debug(" ---------- act $originalVarName ---------")
@@ -101,7 +99,7 @@ class DeclareNewLocalFix : InspectionGadgetsFix() {
 
         WriteCommandAction.runWriteCommandAction(project, DeclareNewLocalInspection.FIX_NAME, "Live-Coding", {
 
-            val writeStartOffset = writeToDeclareAt.startOffset
+            val writeStartOffset = writeToDeclareAt.textRange.startOffset
             val newDeclaration = replaceAssignmentWithDeclaration(writeToDeclareAt, originalVarName + "_") ?: return@runWriteCommandAction
             val elementFactory = JavaPsiFacade.getElementFactory(project)
             for (psiReferenceExpression in usagesOfNewVariable) {

@@ -1,5 +1,6 @@
 package com.github.victorrentea.livecoding.lombok
 
+import com.github.victorrentea.livecoding.FrameworkDetector
 import com.github.victorrentea.livecoding.checkItemsAre
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.ProblemHighlightType
@@ -25,6 +26,7 @@ class ReplaceWithRequiredArgsConstructorInspection : AbstractLombokJavaInspectio
 
     class ReplaceRequiredArgsConstructorVisitor : BaseInspectionVisitor() {
         override fun visitElement(constructor: PsiElement) {
+            if (!FrameworkDetector.hasLombokLibrary(constructor.project)) return
             super.visitElement(constructor)
             if (constructor !is PsiMethod) return
             if (!constructor.isConstructor) return
@@ -89,9 +91,9 @@ class ReplaceWithRequiredArgsConstructorInspection : AbstractLombokJavaInspectio
     class ReplaceRequiredArgsConstructorFix : InspectionGadgetsFix() {
         override fun getFamilyName() = FIX_NAME
 
-        override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
+        override fun doFix(project: Project, descriptor: ProblemDescriptor) {
             val constructor =
-                PsiTreeUtil.getParentOfType(descriptor?.psiElement, PsiMethod::class.java, false) ?: return
+                PsiTreeUtil.getParentOfType(descriptor.psiElement, PsiMethod::class.java, false) ?: return
             val parentClass = PsiTreeUtil.getParentOfType(constructor, PsiClass::class.java) ?: return
             val modifiers = parentClass.modifierList ?: return
 
