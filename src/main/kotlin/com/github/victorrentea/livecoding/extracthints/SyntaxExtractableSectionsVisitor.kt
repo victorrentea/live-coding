@@ -5,7 +5,6 @@ import com.intellij.lang.ASTNode
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.refactoring.suggested.startOffset
 import org.mozilla.javascript.ast.IfStatement
 
 class SyntaxExtractableSectionsVisitor {
@@ -14,7 +13,7 @@ class SyntaxExtractableSectionsVisitor {
     }
     private val sections = mutableSetOf<List<PsiStatement>>()
 
-    fun getSections() = sections.toList().sortedWith(compareBy({it.first().startOffset}, {it.last().startOffset}))
+    fun getSections() = sections.toList().sortedWith(compareBy({it.first().textRange.startOffset}, {it.last().textRange.startOffset}))
 
     fun visitElement(element: PsiElement) {
         if (element is PsiCodeBlock) {

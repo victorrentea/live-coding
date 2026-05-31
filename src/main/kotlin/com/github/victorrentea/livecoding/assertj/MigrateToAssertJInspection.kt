@@ -29,16 +29,14 @@ class MigrateToAssertJInspection : BaseInspection() {
 
     }
 
-    override fun shouldInspect(file: PsiFile?) =
-        file?.let { FrameworkDetector.assertjIsPresent(it) } == true
-
     override fun buildErrorString(vararg infos: Any?) = INSPECTION_NAME
 
     override fun buildVisitor() = MigrateToAssertJVisitor()
 
     class MigrateToAssertJVisitor : BaseInspectionVisitor() {
-        override fun visitMethodCallExpression(expression: PsiMethodCallExpression?) {
-            val calledPsiMethod = expression?.methodExpression?.resolve() as? PsiMethod ?: return
+        override fun visitMethodCallExpression(expression: PsiMethodCallExpression) {
+            if (!FrameworkDetector.assertjIsPresent(expression)) return
+            val calledPsiMethod = expression.methodExpression.resolve() as? PsiMethod ?: return
 
             if (!calledPsiMethod.hasModifierProperty(PsiModifier.STATIC)) return
             val classQName = calledPsiMethod.containingClass?.qualifiedName ?: return
@@ -83,9 +81,8 @@ class MigrateToAssertJInspection : BaseInspection() {
             return FIX_NAME
         }
 
-        override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
-            if (project == null) return
-            val methodCall = descriptor?.psiElement?.parent as? PsiMethodCallExpression ?: return
+        override fun doFix(project: Project, descriptor: ProblemDescriptor) {
+            val methodCall = descriptor.psiElement.parent as? PsiMethodCallExpression ?: return
 
             val fqMethodPart = rawMigratedCode.substringBefore("(")
             val shortMethod = tryImportStatically(fqMethodPart, methodCall)

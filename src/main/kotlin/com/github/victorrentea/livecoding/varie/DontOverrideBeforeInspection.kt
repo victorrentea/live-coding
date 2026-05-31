@@ -12,9 +12,7 @@ class DontOverrideBeforeInspection : BaseInspection() {
     override fun buildVisitor() = DontOverrideBeforeVisitor()
 
     class DontOverrideBeforeVisitor : BaseInspectionVisitor() {
-        override fun visitMethod(method: PsiMethod?) {
-            if (method == null) return
-
+        override fun visitMethod(method: PsiMethod) {
             if (!method.modifierList.hasAnyAnnotation(
                     "org.junit.jupiter.api.BeforeEach",
                     "org.junit.Before")) return

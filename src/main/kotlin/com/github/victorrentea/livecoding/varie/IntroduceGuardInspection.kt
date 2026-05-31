@@ -28,9 +28,7 @@ class IntroduceGuardInspection : BaseInspection() {
     override fun buildVisitor() = IntroduceGuardVisitor()
 
     class IntroduceGuardVisitor : BaseInspectionVisitor() {
-        override fun visitIfStatement(ifStatement: PsiIfStatement?) {
-            if (ifStatement == null) return
-
+        override fun visitIfStatement(ifStatement: PsiIfStatement) {
             val applicable =
                 complexity(ifStatement.thenBranch) > 3 &&
                         complexity(ifStatement.elseBranch) == 0
@@ -52,17 +50,16 @@ class IntroduceGuardInspection : BaseInspection() {
             return FIX_NAME
         }
 
-        override fun doFix(project: Project?, descriptor: ProblemDescriptor?) {
-            if (project == null) return
-            if (descriptor == null) return
+        override fun doFix(project: Project, descriptor: ProblemDescriptor) {
+            val containingFile = descriptor.psiElement.containingFile ?: return
             val document =
-                PsiDocumentManager.getInstance(project).getDocument(descriptor.psiElement.containingFile) ?: return
+                PsiDocumentManager.getInstance(project).getDocument(containingFile) ?: return
             ApplicationManager.getApplication().invokeLater {
                 WriteCommandAction.runWriteCommandAction(project, "Flip 'if'", "Live-Coding", {
-                    val action = InvertIfConditionAction()
+                    val intention = InvertIfConditionAction().asIntention()
                     val editor = ImaginaryEditor(project, document)
-                    if (action.isAvailable(project, editor, descriptor.psiElement)) {
-                        action.invoke(project, editor, descriptor.psiElement)
+                    if (intention.isAvailable(project, editor, containingFile)) {
+                        intention.invoke(project, editor, containingFile)
                     }
                 })
             }
