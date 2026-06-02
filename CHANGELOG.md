@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.0.24
+
+- Install/update without an IDE restart on IntelliJ 2025.2+: gave the "Chapter Controls" action group an `id`
+  so the plugin can be loaded dynamically. (On 2024.3–2025.1 a restart is still required, because the
+  `testStatusListener` extension is not dynamically loadable in those builds.)
+
 ## 1.0.23
 
 - Rebuilt and modernized for IntelliJ Platform 2024.3+ (sinceBuild 243).
