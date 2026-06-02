@@ -89,6 +89,8 @@
 
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.settings.AppSettingsState"/>
 
+        <applicationService serviceImplementation="com.github.victorrentea.livecoding.openfile.OpenFileReporter"/>
+
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jQuickFixAnnotator"/>
 
         <!--<editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.ChangeColorOfTestFiles" />-->
@@ -195,5 +197,15 @@
                          implementationClass="com.github.victorrentea.livecoding.complexity.ComplexityEvaluatorInspection"/>
 -->
     </extensions>
+
+    <applicationListeners>
+        <listener class="com.github.victorrentea.livecoding.openfile.IdeActivationListener"
+                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+    </applicationListeners>
+
+    <projectListeners>
+        <listener class="com.github.victorrentea.livecoding.openfile.OpenFileSelectionListener"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    </projectListeners>
 
 </idea-plugin>

@@ -26,6 +26,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var showTestResultsSplash = true
     var playTestResultsSound = true
 
+    var reportOpenFileToAddon = false
+    var addonReportUrl = "http://127.0.0.1:55123/intellij/file-opened"
+
     var unzippedImagedPaths = mutableMapOf<BackgroundImage, String>()
 
     init {

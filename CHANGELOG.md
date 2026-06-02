@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+## 1.0.25 - 2026-06-02
+
+- New opt-in "Report open file to add-on" setting (Settings → Tools → Live-Coding). When enabled,
+  after you dwell ~5s on a file in a focused IDE window, the plugin POSTs the file's git remote URL
+  and its path relative to the git repo root to a configurable local add-on URL (defaults to
+  `http://127.0.0.1:55123/intellij/file-opened`). Disabled by default — existing users are
+  unaffected unless they turn it on.
+
 ## 1.0.24
 
 - Install/update without an IDE restart on IntelliJ 2025.2+: gave the "Chapter Controls" action group an `id`
