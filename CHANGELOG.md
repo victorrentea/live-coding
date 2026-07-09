@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+## 1.0.26 - 2026-07-09
+
+- Zoom the rendered Markdown preview with **Ctrl/Cmd + mouse wheel** (Cmd/Ctrl + 0 resets to 100%).
+  IntelliJ has no built-in wheel-zoom for the Markdown preview (JetBrains YouTrack IJPL-93544); this
+  hooks the Markdown plugin's browser-preview extension point and scales the rendered page via CSS
+  zoom, persisted across previews. Requires the bundled Markdown plugin.
+
 ## 1.0.25 - 2026-06-02
 
 - New opt-in "Report open file to add-on" setting (Settings → Tools → Live-Coding). When enabled,
