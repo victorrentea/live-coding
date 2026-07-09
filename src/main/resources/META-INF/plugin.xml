@@ -8,6 +8,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <depends>Git4Idea</depends>
+    <depends>org.intellij.plugins.markdown</depends>
 <!--<applicationListeners>
     <listener class="com.github.victorrentea.livecoding.ux.TestListener" topic="com.intellij.execution.testframework.TestStatusListener"/>
 </applicationListeners>-->
@@ -196,6 +197,12 @@
                          level="INFO"
                          implementationClass="com.github.victorrentea.livecoding.complexity.ComplexityEvaluatorInspection"/>
 -->
+    </extensions>
+
+    <!-- Ctrl/Cmd + mouse-wheel zoom for the rendered Markdown preview -->
+    <extensions defaultExtensionNs="org.intellij.markdown">
+        <browserPreviewExtensionProvider
+            implementation="com.github.victorrentea.livecoding.markdown.MarkdownPreviewZoomExtension$Provider"/>
     </extensions>
 
     <applicationListeners>
