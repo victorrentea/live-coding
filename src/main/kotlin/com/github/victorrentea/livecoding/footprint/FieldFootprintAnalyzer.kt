@@ -11,6 +11,7 @@ import com.intellij.psi.PsiField
 import com.intellij.psi.PsiLocalVariable
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.PsiMethodCallExpression
+import com.intellij.psi.PsiMethodReferenceExpression
 import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiParenthesizedExpression
 import com.intellij.psi.PsiReferenceExpression
@@ -80,6 +81,11 @@ class FieldFootprintAnalyzer(
         var host: PsiElement = occurrence
         while (host.parent is PsiParenthesizedExpression) host = host.parent!!
         return when (val parent = host.parent) {
+            // Bound method reference `target::getFoo` / `target::setBar` (a PsiMethodReferenceExpression
+            // is itself a PsiReferenceExpression, so this branch MUST precede the generic one below).
+            // The method is not invoked here, so there is no syntactic chain to follow.
+            is PsiMethodReferenceExpression ->
+                if (parent.qualifierExpression === host) methodRefOnTarget(parent.referenceName) else Footprint.EMPTY
             is PsiReferenceExpression -> {
                 if (parent.qualifierExpression === host) {
                     val call = parent.parent as? PsiMethodCallExpression ?: return Footprint.EMPTY
@@ -112,6 +118,19 @@ class FieldFootprintAnalyzer(
         getterField(name)?.let { field -> return Footprint.sound(setOf(chainedPath(call, field))) }
         setterField(name)?.let { field -> return Footprint.written(field) }
         return Footprint.unknown("Calls non-getter target.$name() (internal reads not analyzed)")
+    }
+
+    /**
+     * Classify a bound method reference `target::name` (e.g. `stream.map(order::getId)` or
+     * `list.forEach(order::setStatus)`). Same getter/setter/whole-object rules as a direct call,
+     * but a method reference can never be chained, so the read is always a single field.
+     */
+    private fun methodRefOnTarget(name: String?): Footprint {
+        val n = name ?: return Footprint.unknown("Unresolved method-ref on target")
+        if (n in Sinks.WHOLE_OBJECT_METHODS) return Footprint.wholeObject("Method-ref target::$n (reads whole object)")
+        getterField(n)?.let { field -> return Footprint.sound(setOf(field)) }
+        setterField(n)?.let { field -> return Footprint.written(field) }
+        return Footprint.unknown("Method-ref target::$n (internal reads not analyzed)")
     }
 
     private fun passedAsArgument(
