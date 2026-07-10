@@ -157,6 +157,10 @@ class FieldFootprintAnalyzer(
 
         sinkForCall(callExpr)?.let { return it }
 
+        // Don't resolve/recurse past the depth bound. With maxDepth = 0 this makes the analysis
+        // cheap and strictly intra-procedural (NO cross-file resolveMethod) — used by the inspection.
+        if (depth >= maxDepth) return Footprint.unknown("Target passed onward (not followed at depth limit)")
+
         val callee = callExpr.resolveMethod() ?: return Footprint.unknown("Target passed to an unresolved method")
         if (callee.body == null) return Footprint.unknown("Target passed to opaque ${callee.name}() (no source)")
 

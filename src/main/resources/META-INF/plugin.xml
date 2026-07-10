@@ -110,6 +110,14 @@
 
         <localInspection language="JAVA"
                          groupPath="Java"
+                         groupName="Refactoring Aid"
+                         displayName="Fat parameter used as a thin DTO"
+                         enabledByDefault="true"
+                         level="WEAK WARNING"
+                         implementationClass="com.github.victorrentea.livecoding.footprint.FieldFootprintInspection"/>
+
+        <localInspection language="JAVA"
+                         groupPath="Java"
                          groupName="Lombok"
                          displayName="Replace boilerplate constructor with @RequiredArgsConstructor"
                          enabledByDefault="true"

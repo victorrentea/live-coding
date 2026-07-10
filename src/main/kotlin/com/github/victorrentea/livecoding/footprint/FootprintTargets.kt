@@ -30,9 +30,11 @@ object FootprintTargets {
     fun isTarget(psiClass: PsiClass): Boolean {
         psiClass.qualifiedName?.let { if (it in forcedFqns) return true }
         if (psiClass.isInterface || psiClass.isEnum || psiClass.isAnnotationType) return false
-        val instanceFields = psiClass.allFields.count { !it.hasModifierProperty(PsiModifier.STATIC) }
-        return instanceFields >= minInstanceFields
+        return instanceFieldCount(psiClass) >= minInstanceFields
     }
+
+    fun instanceFieldCount(psiClass: PsiClass): Int =
+        psiClass.allFields.count { !it.hasModifierProperty(PsiModifier.STATIC) }
 }
 
 /** True if [type] resolves to one of [fqns] (or a subclass of one) — matches one *specific* target type. */
