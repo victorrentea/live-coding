@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 1.0.29 - 2026-07-10
+
 - **Install / update without an IDE restart.** The plugin is now fully dynamic on all supported
   builds (2024.3+). The test-result sound/splash moved off the non-dynamic `testStatusListener`
   extension point to the `SMTRunnerEventsListener` message-bus topic; with no components anywhere,
