@@ -1,6 +1,8 @@
 package com.github.victorrentea.livecoding.footprint
 
 import com.intellij.openapi.progress.ProgressManager
+import com.intellij.psi.JavaTokenType
+import com.intellij.psi.PsiArrayAccessExpression
 import com.intellij.psi.PsiAssignmentExpression
 import com.intellij.psi.PsiCallExpression
 import com.intellij.psi.PsiCodeBlock
@@ -14,6 +16,7 @@ import com.intellij.psi.PsiMethodCallExpression
 import com.intellij.psi.PsiMethodReferenceExpression
 import com.intellij.psi.PsiParameter
 import com.intellij.psi.PsiParenthesizedExpression
+import com.intellij.psi.PsiPolyadicExpression
 import com.intellij.psi.PsiReferenceExpression
 import com.intellij.psi.PsiReturnStatement
 import com.intellij.psi.PsiType
@@ -99,12 +102,21 @@ class FieldFootprintAnalyzer(
                 if (matches(parent.type)) classify(parent, method, depth) else Footprint.EMPTY
             is PsiAssignmentExpression -> {
                 val lhs = parent.lExpression
-                if (lhs is PsiReferenceExpression && lhs.resolve() is PsiField) {
-                    Footprint.unknown("Stored into field ${lhs.referenceName} in ${method.name}() (escapes)")
+                when {
+                    lhs is PsiReferenceExpression && lhs.resolve() is PsiField ->
+                        Footprint.unknown("Stored into field ${lhs.referenceName} in ${method.name}() (escapes)")
+                    lhs is PsiArrayAccessExpression ->
+                        Footprint.unknown("Stored into an array element in ${method.name}() (escapes)")
+                    else -> Footprint.EMPTY // reassignment `y = target` is tracked via expandAliases()
+                }
+            }
+            // `"" + target` (string concatenation) implicitly calls target.toString() -> reads unknown fields.
+            is PsiPolyadicExpression ->
+                if (parent.operationTokenType == JavaTokenType.PLUS) {
+                    Footprint.unknown("Implicit toString() via string concatenation in ${method.name}()")
                 } else {
                     Footprint.EMPTY
                 }
-            }
             is PsiReturnStatement -> Footprint.unknown("Returned from ${method.name}() (escapes)")
             else -> Footprint.EMPTY // null-checks, ==, instanceof, ... : no field access
         }
@@ -200,10 +212,18 @@ class FieldFootprintAnalyzer(
         var guard = 0
         while (changed && guard++ < 6) {
             changed = false
+            // Local declared and initialized from the target: `T y = target;`
             for (local in PsiTreeUtil.collectElementsOfType(body, PsiLocalVariable::class.java)) {
                 if (local in tracked) continue
                 val init = local.initializer ?: continue
                 if (unwrapsToTracked(init, tracked) && tracked.add(local)) changed = true
+            }
+            // Local reassigned from the target: `y = target;` (flow-insensitive, conservative superset).
+            for (assign in PsiTreeUtil.collectElementsOfType(body, PsiAssignmentExpression::class.java)) {
+                val v = (assign.lExpression as? PsiReferenceExpression)?.resolve()
+                if (v !is PsiVariable || v is PsiField || v in tracked) continue
+                val rhs = assign.rExpression ?: continue
+                if (unwrapsToTracked(rhs, tracked) && tracked.add(v)) changed = true
             }
         }
     }
@@ -225,19 +245,18 @@ class FieldFootprintAnalyzer(
     }
 
     private fun getterField(name: String): String? = when {
-        name.length > 3 && name.startsWith("get") && name[3].isUpperCase() ->
-            name.substring(3).replaceFirstChar { it.lowercaseChar() }
-        name.length > 2 && name.startsWith("is") && name[2].isUpperCase() ->
-            name.substring(2).replaceFirstChar { it.lowercaseChar() }
+        name.length > 3 && name.startsWith("get") && name[3].isUpperCase() -> jbDecapitalize(name.substring(3))
+        name.length > 2 && name.startsWith("is") && name[2].isUpperCase() -> jbDecapitalize(name.substring(2))
         else -> null
     }
 
     private fun setterField(name: String): String? =
-        if (name.length > 3 && name.startsWith("set") && name[3].isUpperCase()) {
-            name.substring(3).replaceFirstChar { it.lowercaseChar() }
-        } else {
-            null
-        }
+        if (name.length > 3 && name.startsWith("set") && name[3].isUpperCase()) jbDecapitalize(name.substring(3)) else null
+
+    /** JavaBeans property name: a leading run of capitals is kept (getURL -> "URL"; getId -> "id"). */
+    private fun jbDecapitalize(s: String): String =
+        if (s.length > 1 && s[0].isUpperCase() && s[1].isUpperCase()) s
+        else s.replaceFirstChar { it.lowercaseChar() }
 
     private fun matches(type: PsiType?): Boolean = isTargetType(type, setOf(targetFqn))
 

@@ -280,37 +280,33 @@ class FieldFootprintEdgeCasesTest : LightJavaCodeInsightFixtureTestCase() {
         assertEquals(Verdict.WHOLE_OBJECT, fp.verdict)
     }
 
-    // ---- KNOWN BUGS (assert current behavior; see findings report) -------------------------
+    // ---- Previously-known bugs, now FIXED (1.0.28) -----------------------------------------
 
-    fun testKnownBugReassignmentAliasNotTracked() {
-        // KNOWN BUG: expandAliases only follows local *initializers*, not later `y = f` assignments,
-        // so reads through a re-assigned alias are missed. Correct reads would be {a}.
+    fun testReassignmentAliasIsTracked() {
+        // `y = f` (a later assignment, not just an initializer) is now followed by expandAliases,
+        // so reads through the re-assigned alias are collected.
         val fp = analyze(body("Fat y = null; y = f; String a = y.getA();"))
         assertEquals(Verdict.SOUND, fp.verdict)
-        assertEmpty(fp.paths)
+        assertEquals(setOf("a"), fp.paths)
     }
 
-    fun testKnownBugImplicitToStringViaConcatMissed() {
-        // KNOWN BUG: string concatenation `"" + f` calls f.toString() (often reads every field),
-        // but the operand is neither a call nor an escape, so it is ignored (verdict stays SOUND).
+    fun testImplicitToStringViaConcatIsUnknown() {
+        // `"x" + f` implicitly calls f.toString() (often reads every field) -> UNKNOWN,
+        // symmetric with the explicit f.toString() case below.
         val fp = analyze(body("String s = \"x\" + f; System.out.print(s);"))
-        assertEquals(Verdict.SOUND, fp.verdict)
-        assertEmpty(fp.paths)
+        assertEquals(Verdict.UNKNOWN, fp.verdict)
     }
 
-    fun testKnownBugArrayStoreEscapeMissed() {
-        // KNOWN BUG: storing the target into an array element escapes it, but the LHS is a
-        // PsiArrayAccessExpression (not a field reference), so it is ignored. Should be UNKNOWN.
+    fun testArrayStoreEscapeIsUnknown() {
+        // Storing the target into an array element escapes it -> UNKNOWN (not a false SOUND).
         val fp = analyze(body("Fat[] arr = new Fat[1]; arr[0] = f;"))
-        assertEquals(Verdict.SOUND, fp.verdict)
-        assertEmpty(fp.paths)
+        assertEquals(Verdict.UNKNOWN, fp.verdict)
     }
 
-    fun testKnownBugAcronymGetterDecapitalization() {
-        // KNOWN BUG: getURL() yields "uRL" instead of JavaBeans' "URL" (Introspector.decapitalize
-        // keeps an all-caps run). Harmless for the verdict, but the persisted path text is off.
+    fun testAcronymGetterUsesJavaBeansDecapitalization() {
+        // getURL() -> "URL" (JavaBeans keeps a leading all-caps run), not "uRL".
         val fp = analyze(body("String u = f.getURL();"))
-        assertEquals(setOf("uRL"), fp.paths)
+        assertEquals(setOf("URL"), fp.paths)
     }
 
     fun testExplicitToStringIsConservativelyUnknown() {
