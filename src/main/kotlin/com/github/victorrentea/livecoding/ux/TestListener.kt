@@ -1,42 +1,46 @@
 package com.github.victorrentea.livecoding.ux
 
 import com.github.victorrentea.livecoding.settings.AppSettingsState
-import com.intellij.execution.testframework.AbstractTestProxy
-import com.intellij.execution.testframework.TestStatusListener
+import com.intellij.execution.testframework.sm.runner.SMTRunnerEventsAdapter
+import com.intellij.execution.testframework.sm.runner.SMTestProxy
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.logger
 import java.io.BufferedInputStream
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 
-class TestListener : TestStatusListener() {
+/**
+ * Plays a pass/fail sound and shows a splash when a test run finishes.
+ *
+ * Subscribes to the SM test-runner message-bus topic (`SMTRunnerEventsListener.TEST_STATUS`) via
+ * `<projectListeners>`, instead of the `com.intellij.testStatusListener` extension point. That EP
+ * is non-dynamic on 2024.3 / 2025.1 and was the only thing forcing an IDE restart when the plugin
+ * is installed or updated; a message-bus listener is dynamic on all supported builds.
+ */
+class TestListener : SMTRunnerEventsAdapter() {
     companion object {
-        protected val log = logger<TestStatusListener>()
+        private val log = logger<TestListener>()
     }
-    override fun testSuiteFinished(root: AbstractTestProxy?) {
-        if (root == null) return
 
+    override fun onTestingFinished(testsRoot: SMTestProxy.SMRootTestProxy) {
+        val settings = AppSettingsState.getInstance()
+        val passed = testsRoot.isPassed || testsRoot.isIgnored
 
-        val passed = root.isPassed || root.isIgnored
-
-        if (passed) {
-            if (AppSettingsState.getInstance().playTestResultsSound)
-                playSound("pass.wav");
-            if (AppSettingsState.getInstance().showTestResultsSplash)
-                FadingOutSplash("pass")
-        } else {
-            if (AppSettingsState.getInstance().playTestResultsSound)
-                playSound("fail2.wav");
-            if (AppSettingsState.getInstance().showTestResultsSplash)
-                FadingOutSplash("fail")
+        if (settings.playTestResultsSound) {
+            playSound(if (passed) "pass.wav" else "fail2.wav")
         }
-//        println("Status : passed: " + root.hasPassedTests())
-//        println("Status : defect: " + root.isDefect)
-//        println("Status : interrupted: " + root.isInterrupted)
+        if (settings.showTestResultsSplash) {
+            // UI must run on the EDT; the SM runner may notify from a background thread.
+            ApplicationManager.getApplication().invokeLater {
+                FadingOutSplash(if (passed) "pass" else "fail")
+            }
+        }
     }
+
     private fun playSound(fileName: String) {
         TestListener::class.java.getResourceAsStream("/icons/$fileName").use {
-            if (it==null) {
+            if (it == null) {
                 log.error("Cannot open audio stream: $fileName")
                 return
             }

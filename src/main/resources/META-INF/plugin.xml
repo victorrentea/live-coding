@@ -72,7 +72,6 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <testStatusListener implementation="com.github.victorrentea.livecoding.ux.TestListener" />
         <codeInsight.inlayProvider language="JAVA" implementationClass="com.github.victorrentea.livecoding.complexity.CognitiveComplexityInlineHintsProvider"/>
 
         <!--<runConfigurationExtension implementation="com.github.victorrentea.livecoding.ux.TestListener" />-->
@@ -227,6 +226,10 @@
     <projectListeners>
         <listener class="com.github.victorrentea.livecoding.openfile.OpenFileSelectionListener"
                   topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+        <!-- Dynamic replacement for the non-dynamic com.intellij.testStatusListener EP: play a
+             sound/splash when a test run finishes, without forcing an IDE restart on install/update. -->
+        <listener class="com.github.victorrentea.livecoding.ux.TestListener"
+                  topic="com.intellij.execution.testframework.sm.runner.SMTRunnerEventsListener"/>
     </projectListeners>
 
 </idea-plugin>
