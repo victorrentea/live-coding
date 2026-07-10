@@ -4,6 +4,13 @@
 
 ## Unreleased
 
+- **Install / update without an IDE restart.** The plugin is now fully dynamic on all supported
+  builds (2024.3+). The test-result sound/splash moved off the non-dynamic `testStatusListener`
+  extension point to the `SMTRunnerEventsListener` message-bus topic; with no components anywhere,
+  the IDE can load, unload, and update the plugin without a restart.
+
+## 1.0.28 - 2026-07-10
+
 - New **Annotate field footprint** intention (Alt+Enter). On a parameter whose type is a "fat
   object" (a class with many instance fields), it statically walks the method's call graph and
   records which fields are read and written into the Javadoc as
