@@ -36,6 +36,7 @@ I am using it every week in the workshops and talks I deliver. More about me on 
   2. no inner "return",
   3. doesn't strip the host function of ALL of its complexity ()
 - **Annotate field footprint** Alt+Enter intention on a parameter whose type is a "fat object" (a class with many fields). It walks the method's call graph and records which fields are actually read and written, as `@param name reads {a, b.c} writes {d}` in the Javadoc — to guide extracting thin DTOs. Whole-object sinks (serialization, script engines, marshalling like `toXML`) are reported as `reads {ALL}`; opaque boundaries as `reads {?}`.
+- **Fat parameter used as a thin DTO** inspection (weak warning) that flags a fat-object parameter which only reads a few fields and never leaves the method — a thin-DTO candidate — using a cheap on-the-fly analysis (no cross-file resolution).
 
 <!-- Plugin description end -->
 ## Call for help

@@ -9,9 +9,14 @@
   records which fields are read and written into the Javadoc as
   `@param name reads {a, b.c} writes {d}` — to guide extracting thin DTOs. It is honest about
   blind spots: parameters reaching whole-object sinks (serialization, script engines, whole-object
-  marshalling like `toXML`) are annotated `reads {ALL}`, and opaque boundaries `reads {?}`, rather
-  than a misleadingly short list. Transitive analysis runs on demand behind a cancelable progress
-  bar; getters, chained paths (`a.getB().getC()` → `b.c`), casts, and setters are all handled.
+  marshalling like `toXML`, bound method references like `::toXML`) are annotated `reads {ALL}`,
+  and opaque boundaries `reads {?}`, rather than a misleadingly short list. Transitive analysis
+  runs on demand behind a cancelable progress bar; getters, chained paths (`a.getB().getC()` →
+  `b.c`), casts, setters, and method references are all handled.
+- New **Fat parameter used as a thin DTO** inspection (weak warning). Flags a fat-object parameter
+  that only reads a few fields and never propagates out of the method — a thin-DTO candidate —
+  using a cheap intra-procedural analysis (no cross-file resolution), so it is safe to run
+  on-the-fly. Run the intention on the same parameter for the full transitive footprint.
 
 ## 1.0.26 - 2026-07-09
 
