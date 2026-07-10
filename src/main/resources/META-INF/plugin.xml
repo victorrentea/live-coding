@@ -102,6 +102,12 @@
     <className>com.github.victorrentea.livecoding.lombok.Slf4jIntention</className>
 </intentionAction>-->
 
+        <intentionAction>
+            <language>JAVA</language>
+            <category>Java</category>
+            <className>com.github.victorrentea.livecoding.footprint.AnnotateFieldFootprintIntention</className>
+        </intentionAction>
+
         <localInspection language="JAVA"
                          groupPath="Java"
                          groupName="Lombok"

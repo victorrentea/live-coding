@@ -35,6 +35,7 @@ I am using it every week in the workshops and talks I deliver. More about me on 
   1. they have a single return value,
   2. no inner "return",
   3. doesn't strip the host function of ALL of its complexity ()
+- **Annotate field footprint** Alt+Enter intention on a parameter whose type is a "fat object" (a class with many fields). It walks the method's call graph and records which fields are actually read and written, as `@param name reads {a, b.c} writes {d}` in the Javadoc — to guide extracting thin DTOs. Whole-object sinks (serialization, script engines, marshalling like `toXML`) are reported as `reads {ALL}`; opaque boundaries as `reads {?}`.
 
 <!-- Plugin description end -->
 ## Call for help

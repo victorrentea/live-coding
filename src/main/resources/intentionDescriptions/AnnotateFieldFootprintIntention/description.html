@@ -1,0 +1,17 @@
+<html>
+<body>
+Computes which fields of a "fat object" parameter are actually read and written across the
+method's call graph, and records the result in the Javadoc as
+<code>@param name reads {a, b, c} writes {d}</code> &mdash; to guide extraction of thin DTOs.
+<p>
+The analysis is transitive and honest about blind spots: parameters that reach whole-object
+sinks (serialization, a script engine, whole-object marshalling like <code>toXML</code>) are
+annotated <code>reads {ALL}</code>; opaque boundaries are annotated <code>reads {?}</code>.
+</p>
+<p>
+Offered on any parameter whose type declares enough instance fields. Invoke it explicitly
+(Alt+Enter); it runs behind a cancelable progress bar because the transitive analysis is too
+expensive to run on-the-fly.
+</p>
+</body>
+</html>

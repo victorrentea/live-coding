@@ -4,6 +4,15 @@
 
 ## Unreleased
 
+- New **Annotate field footprint** intention (Alt+Enter). On a parameter whose type is a "fat
+  object" (a class with many instance fields), it statically walks the method's call graph and
+  records which fields are read and written into the Javadoc as
+  `@param name reads {a, b.c} writes {d}` — to guide extracting thin DTOs. It is honest about
+  blind spots: parameters reaching whole-object sinks (serialization, script engines, whole-object
+  marshalling like `toXML`) are annotated `reads {ALL}`, and opaque boundaries `reads {?}`, rather
+  than a misleadingly short list. Transitive analysis runs on demand behind a cancelable progress
+  bar; getters, chained paths (`a.getB().getC()` → `b.c`), casts, and setters are all handled.
+
 ## 1.0.26 - 2026-07-09
 
 - Zoom the rendered Markdown preview with **Ctrl/Cmd + mouse wheel** (Cmd/Ctrl + 0 resets to 100%).
