@@ -47,6 +47,7 @@ jobs:
       # Update Unreleased section with the current release note
       - name: Patch Changelog
         if: ${{ steps.properties.outputs.changelog != '' }}
+        continue-on-error: true # cosmetic housekeeping; must never block the actual publish
         run: |
           ./gradlew patchChangelog --release-note "$(cat << 'EOM'
           ${{ steps.properties.outputs.changelog }}
@@ -68,6 +69,7 @@ jobs:
       # Create pull request
       - name: Create Pull Request
         if: ${{ steps.properties.outputs.changelog != '' }}
+        continue-on-error: true # cosmetic; publish already happened by this point
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
