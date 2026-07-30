@@ -16,7 +16,7 @@ I am using it every week in the workshops and talks I deliver. More about me on 
 - Inspection to detect `if` with _anemic_ or missing else that could be flipped to reduce function complexity ('Introduce Guard' refactoring)
 
 ### UX Features
-- **Copy Git Coordinates** menu entry under Git> to quickly copy the remote git URL + branch to clipboard
+- **Copy Git Coordinates** menu entry under Git> to quickly copy the remote git URL to clipboard (plus ` - branch: <name>` when you're not on main/master)
 - **Screen Effects**: 
   - Shake Screen (`F7`)
   - Broken Glass (`F8`)
