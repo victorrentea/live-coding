@@ -30,6 +30,28 @@ live-coding/presentation UX. New code is **Kotlin**; a lot of older code is Java
 - Guard modal progress with `ApplicationManager.getApplication().isUnitTestMode` (run the computable directly in tests).
 - JavaBeans property name from a getter: keep a leading all-caps run (`getURL()` → `URL`, `getId()` → `id`), don't blindly lowercase the first char.
 
+## Dynamic unload (don't leak the plugin classloader)
+
+A dynamic-safe `plugin.xml` is only half the job: *"Restart advised — some plugins didn't unload
+fully"* is a **runtime** classloader leak, not an EP problem. Anything of ours left attached to an
+object that outlives the plugin pins the old classloader.
+
+- **Never register a listener on a platform-owned object without detaching it.** The offender in
+  1.0.30 was `ChapterStartup` doing `WindowManager.getInstance().getFrame(project).addWindowFocusListener(this)` —
+  the IDE frame outlives the plugin, so every update left the previous classloader alive, and the
+  zombie listener then threw `ClassCastException: ChapterService cannot be cast to ChapterService`
+  (two classloaders) on each focus loss. Fix pattern: put the listener in a plugin **service**
+  implementing `Disposable` and remove it in `dispose()` — plugin unload disposes plugin services.
+- Listeners on a `JFrame`/component **we create and dispose ourselves** (the animation overlays,
+  `FadingOutSplash`) are fine — they die with the frame.
+- Prefer `ProjectActivity` over the deprecated `StartupActivity` (the latter logs a *"Migrate … to
+  ProjectActivity"* warning).
+- A fix for this only takes effect **after** the fixed version is loaded: the update that ships it
+  still shows "Restart advised", because the *previous* version's listener is the one leaking.
+- To diagnose: grep `idea.log` for `DynamicPlugins`, `Plugin to blame`, and `PluginClassLoader @` —
+  the ClassCastException naming the same class twice is the giveaway, and its stack trace points
+  straight at the leaked listener.
+
 ## Testing conventions
 
 - `LightJavaCodeInsightFixtureTestCase`, **JUnit3-style `testXxx` method names** (no `@Test`; backtick names are NOT discovered).
