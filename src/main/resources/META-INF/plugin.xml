@@ -81,6 +81,8 @@
        <!--<editorFactoryListener implementation="com.github.victorrentea.livecoding.complexity.ComplEFL" />-->
         <!--<postStartupActivity implementation="com.github.victorrentea.livecoding.complexity.ComplexityRendererStartup" />-->
         <postStartupActivity implementation="com.github.victorrentea.livecoding.ux.chapter.ChapterStartup" />
+        <!-- Owns the IDE-frame focus listener so it is detached on plugin unload (see ChapterFocusTracker). -->
+        <projectService serviceImplementation="com.github.victorrentea.livecoding.ux.chapter.ChapterFocusTracker" />
 
         <applicationConfigurable parentId="tools" instance="com.github.victorrentea.livecoding.settings.SettingsConfigurable"
                                  id="com.github.victorrentea.livecoding.settings.SettingsConfigurable"

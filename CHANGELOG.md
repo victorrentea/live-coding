@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+- **Fixed "Restart advised — some plugins didn't unload fully" on update.** The chapter feature
+  attached a focus listener to the IDE's own window and never detached it, so the previous
+  plugin's classloader stayed alive across an update (and the stale listener then failed with a
+  `ClassCastException` against the newly loaded `ChapterService`). The listener now lives in a
+  project-level service that removes it on dispose. `ChapterStartup` also moved from the
+  deprecated `StartupActivity` to `ProjectActivity`.
 - **Copy Git Coordinates: shorter, paste-friendly format.** Now copies just the remote URL
   (`https://github.com/acme/demo.git`), appending ` - branch: <name>` only when you are on a
   branch other than `main`/`master`.
