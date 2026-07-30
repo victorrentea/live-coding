@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 1.0.30 - 2026-07-30
+
 - **Copy Git Coordinates: shorter, paste-friendly format.** Now copies just the remote URL
   (`https://github.com/acme/demo.git`), appending ` - branch: <name>` only when you are on a
   branch other than `main`/`master`.
