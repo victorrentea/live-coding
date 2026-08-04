@@ -34,6 +34,8 @@ class OpenFileReporter : Disposable {
     private var appActive = false
     private var pending: ScheduledFuture<*>? = null
     private var lastSentKey: String? = null
+    private var consecutiveFailures = 0
+    private var lastAttemptMillis = 0L
 
     /** The IDE window gained focus — start watching its currently selected file. */
     fun ideActivated(project: Project?) {
@@ -57,7 +59,10 @@ class OpenFileReporter : Disposable {
 
     /** The active file changed (tab switch / open) or a window was focused. (Re)start the dwell. */
     fun candidateChanged(project: Project, file: VirtualFile?) {
-        if (!AppSettingsState.getInstance().reportOpenFileToAddon) return
+        if (!AppSettingsState.getInstance().reportOpenFileToAddon) {
+            synchronized(lock) { consecutiveFailures = 0 }  // a manual re-enable deserves a fresh try
+            return
+        }
         synchronized(lock) {
             pending?.cancel(false)
             pending = if (file == null) null
@@ -100,6 +105,19 @@ class OpenFileReporter : Disposable {
     }
 
     private fun post(payload: Payload) {
+        // No separate liveness probe: a connect to 127.0.0.1 with nothing
+        // listening is refused instantly (ECONNREFUSED, not a timeout), so the
+        // POST we were going to send anyway IS the check. After a few refusals
+        // we go quiet, retrying at most once every BACKOFF_MILLIS — enough to
+        // recover if the add-on starts after the IDE, quiet enough to be
+        // invisible on a machine that has no add-on at all.
+        val now = System.currentTimeMillis()
+        synchronized(lock) {
+            if (consecutiveFailures >= FAILURES_BEFORE_BACKOFF &&
+                now - lastAttemptMillis < BACKOFF_MILLIS) return
+            lastAttemptMillis = now
+        }
+
         val url = AppSettingsState.getInstance().addonReportUrl
         val json = buildString {
             append('{')
@@ -117,8 +135,13 @@ class OpenFileReporter : Disposable {
                     request.write(json)
                     request.readString() // complete the round-trip; ignore the body
                 }
+            synchronized(lock) { consecutiveFailures = 0 }
             log.debug("reported open file to add-on: ${payload.file}")
         } catch (e: Exception) {
+            val failures = synchronized(lock) { ++consecutiveFailures }
+            if (failures == FAILURES_BEFORE_BACKOFF) {
+                log.info("add-on unreachable at $url; backing off to one attempt every 5 minutes")
+            }
             log.debug("failed to report open file to add-on at $url: ${e.message}")
         }
     }
@@ -134,6 +157,8 @@ class OpenFileReporter : Disposable {
 
     companion object {
         private const val DWELL_SECONDS = 5L
+        private const val FAILURES_BEFORE_BACKOFF = 3
+        private const val BACKOFF_MILLIS = 5 * 60 * 1000L
 
         fun getInstance(): OpenFileReporter =
             ApplicationManager.getApplication().getService(OpenFileReporter::class.java)
