@@ -137,6 +137,10 @@ class OpenFileReporter : Disposable {
                 }
             synchronized(lock) { consecutiveFailures = 0 }
             log.debug("reported open file to add-on: ${payload.file}")
+        } catch (e: HttpRequests.HttpStatusException) {
+            // The add-on answered — it's reachable, an error status just says nothing about
+            // that. Leave the breaker state untouched: neither advanced nor reset.
+            log.debug("add-on returned an error status for $url: ${e.statusCode}")
         } catch (e: Exception) {
             val failures = synchronized(lock) { ++consecutiveFailures }
             if (failures == FAILURES_BEFORE_BACKOFF) {
