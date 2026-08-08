@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 1.0.31 - 2026-07-30
+
 - **Fixed "Restart advised — some plugins didn't unload fully" on update.** The chapter feature
   attached a focus listener to the IDE's own window and never detached it, so the previous
   plugin's classloader stayed alive across an update (and the stale listener then failed with a
