@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 1.0.32 - 2026-08-12
+
 - **New "Copy Nice GitHub url" action**, in the Git menu right under the GitHub submenu. It copies
   the GitHub link to the selected file on the *current branch*
   (`https://github.com/acme/demo/blob/main/README.md`), instead of the commit-SHA-pinned link that
