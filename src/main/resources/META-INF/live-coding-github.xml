@@ -1,0 +1,14 @@
+<!-- Loaded only when the bundled GitHub plugin is enabled: the action is anchored relative to its menu. -->
+<idea-plugin>
+    <actions>
+        <action id="LiveCoding.CopyNiceGitHubUrl"
+                class="com.github.victorrentea.livecoding.ux.CopyNiceGitHubUrl"
+                text="Copy Nice GitHub url"
+                description="Copy the GitHub link to the selected file on the current branch (not pinned to a commit SHA)"
+                icon="AllIcons.Vcs.Vendors.Github">
+            <!-- GitRepositoryActions is reused by the Git main menu, the Git context submenu and the
+                 branch widget, so the action shows up right under the GitHub submenu in all of them. -->
+            <add-to-group group-id="GitRepositoryActions" anchor="after" relative-to-action="GitHub.MainMenu"/>
+        </action>
+    </actions>
+</idea-plugin>

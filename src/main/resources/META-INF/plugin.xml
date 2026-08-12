@@ -9,6 +9,7 @@
     <depends>com.intellij.java</depends>
     <depends>Git4Idea</depends>
     <depends>org.intellij.plugins.markdown</depends>
+    <depends optional="true" config-file="live-coding-github.xml">org.jetbrains.plugins.github</depends>
 <!--<applicationListeners>
     <listener class="com.github.victorrentea.livecoding.ux.TestListener" topic="com.intellij.execution.testframework.TestStatusListener"/>
 </applicationListeners>-->

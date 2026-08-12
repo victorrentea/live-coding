@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+- **New "Copy Nice GitHub url" action**, in the Git menu right under the GitHub submenu. It copies
+  the GitHub link to the selected file on the *current branch*
+  (`https://github.com/acme/demo/blob/main/README.md`), instead of the commit-SHA-pinned link that
+  *GitHub > Open in Browser* produces — so the link stays valid and readable after further commits.
+  Works with https/ssh/scp-style remotes and GitHub Enterprise hosts; falls back to the commit SHA
+  on a detached HEAD, and to `/tree/<branch>` for directories and the repository root.
 - **Fixed "Restart advised — some plugins didn't unload fully" on update.** The chapter feature
   attached a focus listener to the IDE's own window and never detached it, so the previous
   plugin's classloader stayed alive across an update (and the stale listener then failed with a

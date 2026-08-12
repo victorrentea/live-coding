@@ -17,6 +17,7 @@ I am using it every week in the workshops and talks I deliver. More about me on 
 
 ### UX Features
 - **Copy Git Coordinates** menu entry under Git> to quickly copy the remote git URL to clipboard (plus ` - branch: <name>` when you're not on main/master)
+- **Copy Nice GitHub url** menu entry under Git>, right below the GitHub submenu: copies the GitHub link to the selected file on the *current branch* (`.../blob/main/README.md`) instead of the commit-SHA-pinned link that "GitHub > Open in Browser" gives you
 - **Screen Effects**: 
   - Shake Screen (`F7`)
   - Broken Glass (`F8`)
