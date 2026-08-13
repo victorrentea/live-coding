@@ -4,6 +4,8 @@
 
 ## Unreleased
 
+## 1.0.33 - 2026-08-13
+
 - **New live LLM token counter in the status bar.** Shows how many tokens the file in the editor
   costs an LLM (`2,500 tokens (GPT)`), recomputed while you type; with a selection it shows
   `selection / file`. Click the widget to switch model family — GPT-5/GPT-4o (`o200k_base`) and
