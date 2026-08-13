@@ -33,6 +33,11 @@
             <keyboard-shortcut first-keystroke="shift F8" keymap="$default"/>
         </action>
 
+        <action id="LiveCoding.ToggleTokenHighlighting"
+                class="com.github.victorrentea.livecoding.tokens.ToggleTokenHighlightingAction"
+                text="Highlight LLM Token Boundaries"
+                description="Paint alternating backgrounds over each token the LLM tokenizer produces"/>
+
 <!--
         <action class="com.github.victorrentea.livecoding.AnalyzeCognitiveComplexityAction" text="Analyze Cognitive Complexity">
             <keyboard-shortcut first-keystroke="alt O" keymap="$default"/>
@@ -93,6 +98,12 @@
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.settings.AppSettingsState"/>
 
         <applicationService serviceImplementation="com.github.victorrentea.livecoding.openfile.OpenFileReporter"/>
+
+        <!-- Live LLM token count in the status bar (+ optional per-token highlighting in the editor) -->
+        <projectService serviceImplementation="com.github.victorrentea.livecoding.tokens.TokenCountService"/>
+        <statusBarWidgetFactory id="LiveCoding.TokenCount"
+                                implementation="com.github.victorrentea.livecoding.tokens.TokenCountWidgetFactory"
+                                order="after Encoding"/>
 
         <annotator language="JAVA" implementationClass="com.github.victorrentea.livecoding.lombok.Slf4jQuickFixAnnotator"/>
 
