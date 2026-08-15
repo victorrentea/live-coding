@@ -109,12 +109,12 @@ class TokenCountService(private val project: Project) : Disposable {
         display = when {
             total == null || family == null -> null
             selected != null -> TokenCountDisplay(
-                "${prefix(family)}${numberFormat.format(selected)} / ${numberFormat.format(total)} tokens (${family.shortLabel})",
+                "${prefix(family)}${numberFormat.format(selected)} / ${numberFormat.format(total)} tok (${family.shortLabel})",
                 "Tokens in the selection / in the whole file.\n${family.displayName}: ${family.note}"
             )
 
             else -> TokenCountDisplay(
-                "${prefix(family)}${numberFormat.format(total)} tokens (${family.shortLabel})",
+                "${prefix(family)}${numberFormat.format(total)} tok (${family.shortLabel})",
                 "Tokens in this file.\n${family.displayName}: ${family.note}\nClick to switch model or toggle highlighting."
             )
         }

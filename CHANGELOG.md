@@ -4,8 +4,8 @@
 
 ## Unreleased
 
-- Token counter widget: a two-coins icon in front of the count, so the status bar says at a glance
-  that the number is money, not a paint setting.
+- Token counter widget: shorter label — `1,678 tok (GPT)` instead of `1,678 tokens (GPT)`, so it
+  takes less room in the status bar.
 
 ## 1.0.33 - 2026-08-13
 

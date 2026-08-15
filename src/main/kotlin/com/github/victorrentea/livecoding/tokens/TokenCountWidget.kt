@@ -10,15 +10,13 @@ import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
 import com.intellij.openapi.wm.impl.status.EditorBasedWidget
 import com.github.victorrentea.livecoding.settings.SettingsConfigurable
-import javax.swing.Icon
 
 /**
- * Status bar widget: "2,500 tokens (GPT)". Clicking it opens the model picker and the highlighting toggle.
+ * Status bar widget: "2,500 tok (GPT)". Clicking it opens the model picker and the highlighting toggle.
  */
 class TokenCountWidget(project: Project) :
     EditorBasedWidget(project),
@@ -35,10 +33,7 @@ class TokenCountWidget(project: Project) :
         service.refresh()
     }
 
-    override fun getSelectedValue() = service.display?.text ?: "-- tokens"
-
-    /** Two coins: the widget counts what an LLM call will be billed for, so it is money, not paint. */
-    override fun getIcon(): Icon = COINS
+    override fun getSelectedValue() = service.display?.text ?: "-- tok"
 
     override fun getTooltipText() = service.display?.tooltip ?: "LLM token count of the current file"
 
@@ -88,8 +83,5 @@ class TokenCountWidget(project: Project) :
 
     companion object {
         const val ID = "LiveCoding.TokenCount"
-
-        /** `coins_dark.svg` sits next to it; the platform picks the variant per theme. */
-        private val COINS: Icon = IconLoader.getIcon("/icons/coins.svg", TokenCountWidget::class.java)
     }
 }
