@@ -1,5 +1,6 @@
 package com.github.victorrentea.livecoding.settings
 
+import com.github.victorrentea.livecoding.tokens.TokenizerFamily
 import com.github.victorrentea.livecoding.ux.BackgroundImage
 import com.github.victorrentea.livecoding.ux.BackgroundMood
 import com.intellij.openapi.application.ApplicationManager
@@ -28,6 +29,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
 
     var reportOpenFileToAddon = false
     var addonReportUrl = "http://127.0.0.1:55123/intellij/file-opened"
+
+    var tokenizerFamily = TokenizerFamily.GPT
+    var highlightTokens = false
 
     var unzippedImagedPaths = mutableMapOf<BackgroundImage, String>()
 

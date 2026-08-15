@@ -29,6 +29,7 @@ I am using it every week in the workshops and talks I deliver. More about me on 
   - Geek (`Ctrl-Alt-9`/`Command-Option-9`)
   - Clear (`Ctrl-Alt-0`/`Command-Option-0`)
 - **Chapter Title** toolbar button to set the current section title
+- **Live LLM Token Count** in the status bar: how many tokens the open file costs an LLM, updated as you type (with a selection: `selection / file`). Click it to pick the model family — GPT-5/GPT-4o and GPT-4/3.5 use OpenAI's exact vocabularies, bundled offline (your code never leaves the IDE); Claude and Gemini are calibrated estimates, marked `~`, since those vocabularies aren't public. The same popup toggles **token highlighting** — alternating background stripes over every token, so your audience can see where the tokenizer splits the code.
 ### Refactoring Aid
 - **Declare new variable here** Inspection and Fix for local variables reassigned in the same method to unrelated new values
 - **Display cognitive complexity of methods** Inspection, rendering it after the function name

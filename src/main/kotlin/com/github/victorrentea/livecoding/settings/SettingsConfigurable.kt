@@ -1,6 +1,9 @@
 package com.github.victorrentea.livecoding.settings
 
+import com.github.victorrentea.livecoding.tokens.TokenCountService
+import com.github.victorrentea.livecoding.tokens.TokenHighlighter
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.ProjectManager
 import javax.swing.JComponent
 
 
@@ -19,6 +22,8 @@ class SettingsConfigurable: Configurable {
         if (mySettingsComponent!!.playTestResultsSound != settings.playTestResultsSound) return true
         if (mySettingsComponent!!.reportOpenFileToAddon != settings.reportOpenFileToAddon) return true
         if (mySettingsComponent!!.addonReportUrl != settings.addonReportUrl) return true
+        if (mySettingsComponent!!.tokenizerFamily != settings.tokenizerFamily) return true
+        if (mySettingsComponent!!.highlightTokens != settings.highlightTokens) return true
         return false
     }
 
@@ -29,6 +34,11 @@ class SettingsConfigurable: Configurable {
         settings.playTestResultsSound = mySettingsComponent!!.playTestResultsSound
         settings.reportOpenFileToAddon = mySettingsComponent!!.reportOpenFileToAddon
         settings.addonReportUrl = mySettingsComponent!!.addonReportUrl
+        settings.tokenizerFamily = mySettingsComponent!!.tokenizerFamily
+        settings.highlightTokens = mySettingsComponent!!.highlightTokens
+        // The status bar and the editor stripes must follow the new settings right away.
+        ProjectManager.getInstance().openProjects.forEach { TokenCountService.getInstance(it).refresh() }
+        if (!settings.highlightTokens) TokenHighlighter.clearAll()
     }
 
     override fun getDisplayName() = "Live-Coding"
@@ -43,6 +53,8 @@ class SettingsConfigurable: Configurable {
         mySettingsComponent!!.playTestResultsSound = settings.playTestResultsSound
         mySettingsComponent!!.reportOpenFileToAddon = settings.reportOpenFileToAddon
         mySettingsComponent!!.addonReportUrl = settings.addonReportUrl
+        mySettingsComponent!!.tokenizerFamily = settings.tokenizerFamily
+        mySettingsComponent!!.highlightTokens = settings.highlightTokens
     }
     override fun getPreferredFocusedComponent(): JComponent {
         return mySettingsComponent!!.getPreferredFocusedComponent();

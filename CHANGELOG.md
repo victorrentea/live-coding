@@ -4,6 +4,21 @@
 
 ## Unreleased
 
+## 1.0.34 - 2026-08-15
+
+- Token counter widget: shorter label — `1,678 tok (GPT)` instead of `1,678 tokens (GPT)`, so it
+  takes less room in the status bar.
+
+## 1.0.33 - 2026-08-13
+
+- **New live LLM token counter in the status bar.** Shows how many tokens the file in the editor
+  costs an LLM (`2,500 tokens (GPT)`), recomputed while you type; with a selection it shows
+  `selection / file`. Click the widget to switch model family — GPT-5/GPT-4o (`o200k_base`) and
+  GPT-4/3.5 (`cl100k_base`) are counted with OpenAI's exact vocabularies, bundled offline (nothing
+  is ever sent anywhere); Claude and Gemini are shown as calibrated estimates (`~`) because those
+  vocabularies are not public. The same popup toggles **token highlighting**: alternating
+  background stripes over each token, so an audience can *see* where the tokenizer splits code —
+  also available as the bindable action *Highlight LLM Token Boundaries*.
 - **New "Copy Nice GitHub url" action**, in the Git menu right under the GitHub submenu. It copies
   the GitHub link to the selected file on the *current branch*
   (`https://github.com/acme/demo/blob/main/README.md`), instead of the commit-SHA-pinned link that
