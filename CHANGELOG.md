@@ -4,6 +4,9 @@
 
 ## Unreleased
 
+- Token counter widget: a two-coins icon in front of the count, so the status bar says at a glance
+  that the number is money, not a paint setting.
+
 ## 1.0.33 - 2026-08-13
 
 - **New live LLM token counter in the status bar.** Shows how many tokens the file in the editor
