@@ -9,6 +9,9 @@
     <depends>com.intellij.java</depends>
     <depends>Git4Idea</depends>
     <depends>org.intellij.plugins.markdown</depends>
+    <!-- The terminal tool window, so Wispr Relay can be handed a specific tab
+         instead of pasting at whatever holds the caret. See RelayTerminalService. -->
+    <depends>org.jetbrains.plugins.terminal</depends>
     <depends optional="true" config-file="live-coding-github.xml">org.jetbrains.plugins.github</depends>
 <!--<applicationListeners>
     <listener class="com.github.victorrentea.livecoding.ux.TestListener" topic="com.intellij.execution.testframework.TestStatusListener"/>
@@ -78,6 +81,10 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Wispr Relay: a loopback listener the relay hands a dictation to, so
+             it lands in the terminal tab it was pointed at instead of wherever
+             the caret happens to be. See RelayTerminalService. -->
+        <postStartupActivity implementation="com.github.victorrentea.livecoding.relay.RelayTerminalStarter"/>
         <codeInsight.inlayProvider language="JAVA" implementationClass="com.github.victorrentea.livecoding.complexity.CognitiveComplexityInlineHintsProvider"/>
 
         <!--<runConfigurationExtension implementation="com.github.victorrentea.livecoding.ux.TestListener" />-->
