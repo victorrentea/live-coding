@@ -12,6 +12,25 @@ live-coding/presentation UX. New code is **Kotlin**; a lot of older code is Java
 - Marketplace: https://plugins.jetbrains.com/plugin/18087-live-coding-toolkit (numeric id **18087**).
 - Package layout: `com.github.victorrentea.livecoding.<feature>` (e.g. `footprint`, `lombok`, `assertj`, `extracthints`).
 
+## Branching: main only
+
+**Work directly on `main`.** No feature branches in this repo, ever — commit and
+push there.
+
+Learned the expensive way on 2026-08-17: the terminal-delivery feature was built
+on the existing `fix/dynamic-plugin-1.0.24` branch and 1.0.35 was published to the
+marketplace from it, specifically to avoid triggering `build.yml`. The result was
+that the marketplace served 1.0.35 while `main` still said 1.0.34, and the two
+branches had diverged in both directions — the public source of truth was behind
+the binary people were actually running.
+
+**A push to `main` cutting a draft release is not a reason to avoid `main`.** The
+draft does not publish anything by itself; publishing needs
+`gh release edit v<ver> --draft=false`. Leave it or delete it.
+
+**If a published artifact no longer matches the source, republish the version.**
+Do not leave the marketplace and the repo disagreeing to save a step.
+
 ## Stack / build / run
 
 - IntelliJ Platform Gradle Plugin **2.16.0**, Kotlin **2.1.0**, target **IC 2025.1**, `pluginSinceBuild=243`, JDK **21**. Version + platform live in `gradle.properties`.
