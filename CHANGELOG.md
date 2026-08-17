@@ -4,6 +4,16 @@
 
 ## Unreleased
 
+
+### Added
+- **Wispr Relay can deliver a dictation into one specific terminal tab.** The relay
+  used to address the IDE by process id and paste with Cmd+V, which goes wherever
+  the caret is: measured, a delivery with the caret in the editor pasted into the
+  source file and pressed Enter, and one with the caret in a second terminal tab
+  landed in the wrong terminal — both reported as delivered. A loopback listener
+  now hands the line to the tab the relay was pointed at, via `sendCommandToExecute`.
+  No window is activated and no focus moves. Loopback-only and gated on a per-run
+  secret, since what it does is type a line into a shell and press Enter.
 ## 1.0.34 - 2026-08-15
 
 - Token counter widget: shorter label — `1,678 tok (GPT)` instead of `1,678 tokens (GPT)`, so it
