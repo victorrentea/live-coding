@@ -8,7 +8,7 @@
 
 ### Added
 
-- **Wispr Relay can deliver a dictation into one specific terminal tab.** The relay
+- **Walkie Talkie can deliver a dictation into one specific terminal tab.** The relay
   used to address the IDE by process id and paste with Cmd+V, which goes wherever
   the caret is: measured, a delivery with the caret in the editor pasted into the
   source file and pressed Enter, and one with the caret in a second terminal tab

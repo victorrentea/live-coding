@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * Lets Wispr Relay deliver a dictation into **one specific** terminal tool
+ * Lets Walkie Talkie deliver a dictation into **one specific** terminal tool
  * window tab.
  *
  * The relay can be pointed at a terminal and will type every later dictation
@@ -95,9 +95,9 @@ class RelayTerminalService : Disposable {
             server = http
 
             publish(http.address.port, token)
-            log.info("wispr-relay bridge listening on ${http.address.port}")
+            log.info("walkie-talkie bridge listening on ${http.address.port}")
         } catch (e: Exception) {
-            log.warn("could not start the wispr-relay bridge", e)
+            log.warn("could not start the walkie-talkie bridge", e)
         }
     }
 
@@ -110,7 +110,7 @@ class RelayTerminalService : Disposable {
      * focused. The relay uses the same `/ping` answer either way.
      */
     private fun publish(port: Int, token: String) {
-        val dir = Path.of(System.getProperty("user.home"), ".wispr-relay", "ide")
+        val dir = Path.of(System.getProperty("user.home"), ".walkie-talkie", "ide")
         Files.createDirectories(dir)
         val pid = ProcessHandle.current().pid()
         val file = dir.resolve("intellij-$pid.json")
