@@ -18,7 +18,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.PosixFilePermissions
 import java.security.SecureRandom
+import com.intellij.util.concurrency.AppExecutorUtil
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -219,10 +221,31 @@ class RelayTerminalService : Disposable {
 
         // Straight into that terminal's pty: no window is activated, no focus
         // moves, the caret stays where Victor left it, and his clipboard stays
-        // his own. It submits, which is the single Enter every other delivery
-        // path ends with — and why the relay flattens the message to one line
-        // before it ever gets here.
-        widget.sendCommandToExecute(line)
+        // his own. The relay flattens the message to one line before it ever
+        // gets here, so this writes exactly one.
+        //
+        // **The Return is written by hand, as `\r`, instead of letting
+        // `sendCommandToExecute` append one.** That appends `\n` — and in a TUI
+        // in raw mode `\n` is not Enter, it is *insert a newline*, the very
+        // convention Claude Code uses for a multi-line prompt. The dictation then
+        // sits in the prompt until Victor presses Return himself, which is
+        // exactly what he reported. The tty paths never had it: tmux's
+        // `send-keys Enter` and Terminal.app's `do script` press a real Return.
+        //
+        // **And as a second write, a beat later**, for the other half: a TUI that
+        // reads `text\r` in one chunk treats the whole thing as a paste and keeps
+        // the Return as text. A separate write is a keypress — which is why the
+        // tmux path has always been two calls.
+        val tty = widget.ttyConnector
+        if (tty == null) {
+            // No connector to write to (a widget still starting up). The old
+            // route is worse at submitting but better than dropping the line.
+            widget.sendCommandToExecute(line)
+        } else {
+            tty.write(line)
+            AppExecutorUtil.getAppScheduledExecutorService().schedule(
+                { runCatching { tty.write("\r") } }, 120, TimeUnit.MILLISECONDS)
+        }
         respond(exchange, 200, """{"ok":true,"name":${quote(ref.name)}}""")
     }
 
