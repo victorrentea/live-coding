@@ -4,6 +4,16 @@
 
 ## Unreleased
 
+### Fixed
+
+- **A dictation delivered into an IntelliJ terminal now ends with a real Return.**
+  `sendCommandToExecute` appends `\n`, and in a TUI in raw mode `\n` is not Enter —
+  it is *insert a newline*, which is exactly the convention Claude Code uses for a
+  multi-line prompt. So every dictated sentence landed in the prompt and sat there
+  until it was submitted by hand. The Return is now written to the tty as `\r`, as
+  a second write a beat later so the TUI reads it as a keypress rather than as part
+  of a paste.
+
 ## 1.0.35 - 2026-08-17
 
 ### Added
