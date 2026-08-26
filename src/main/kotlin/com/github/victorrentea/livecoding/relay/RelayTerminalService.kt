@@ -9,7 +9,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
+import com.intellij.terminal.JBTerminalWidget
 import com.intellij.terminal.ui.TerminalWidget
+import com.jediterm.terminal.TtyConnector
 import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 import java.awt.KeyboardFocusManager
 import java.net.InetAddress
@@ -141,6 +143,7 @@ class RelayTerminalService : Disposable {
                 // failed: silently, with the relay falling back to the paste
                 // path this whole class exists to retire.
                 "/ping" -> onEdt { ping(exchange) }
+                "/state" -> onEdt { state(exchange) }
                 "/bind" -> onEdt { bind(exchange) }
                 "/send" -> onEdt { send(exchange) }
                 "/unbind" -> {
@@ -195,9 +198,55 @@ class RelayTerminalService : Disposable {
         // From it the relay resolves a tty and asks the question it already asks
         // of a Terminal.app tab: is a shell sitting at a prompt? A dictation
         // typed at a prompt is not a prompt, it is a command.
-        val pid = runCatching { widget.ttyConnector?.let { shellPid(it) } }.getOrNull()
+        val connector = connectorOf(widget)
+        val pid = runCatching { connector?.let { shellPid(it) } }.getOrNull()
+        // **The directory, asked of the IDE rather than of the process.** A pid
+        // is not always there to ask: this IDE runs its terminal in a backend
+        // process, so the connector is a `BackendTtyConnector` with no `Process`
+        // behind it and `shellPID` is null however hard it is reflected over.
+        // The widget still knows where its shell is, and that is the whole of
+        // what the relay wants the pid for — the folder on the chip beside the
+        // cursor. (The shell guard genuinely needs the pid and stays off without
+        // it; `commandRunning` is reported so it can be judged from data rather
+        // than from a guess.)
+        //
+        // Both are read reflectively: they are default methods added to
+        // `TerminalWidget` after the platform version this plugin compiles
+        // against, and calling them directly would trade a null on old IDEs for
+        // a plugin that does not build at all.
+        val cwd = call(widget, "getCurrentDirectory") as? String
+        log.info("bind #$id ${widget.javaClass.name} connector=${connector?.javaClass?.name} " +
+                 "shellPID=$pid cwd=$cwd")
         respond(exchange, 200,
-            """{"ok":true,"id":$id,"name":${quote(name)},"shellPID":${pid ?: "null"}}""")
+            """{"ok":true,"id":$id,"name":${quote(name)},"shellPID":${pid ?: "null"},""" +
+            """"cwd":${cwd?.let { quote(it) } ?: "null"}}""")
+    }
+
+    /**
+     * Where a bound terminal is **now**, and whether anything is running in it.
+     *
+     * The relay re-reads the folder every few seconds because Victor `cd`s
+     * between repos inside one session, and a chip still naming the folder he
+     * bound in an hour ago says the words are going somewhere they are not.
+     * `bind` answers this once; this answers it again without rebinding.
+     */
+    private fun state(exchange: HttpExchange) {
+        val id = idParam(exchange)
+            ?: return respond(exchange, 400, """{"ok":false,"error":"expected ?id=N"}""")
+        val ref = bound[id]
+            ?: return respond(exchange, 404, """{"ok":false,"error":"that terminal is gone"}""")
+        if (ref.widget !in TerminalToolWindowManager.getInstance(ref.project).terminalWidgets) {
+            bound.remove(id)
+            return respond(exchange, 404, """{"ok":false,"error":"that terminal is gone"}""")
+        }
+        // **`getCurrentDirectory` only.** `isCommandRunning` was read here too,
+        // as a candidate shell guard for targets with no pid, and it asks the
+        // platform a question that needs a read action: every call logged a
+        // `softAssertNoReadAccess` stack trace into idea.log. A guard is not
+        // worth a Throwable per bind, and the folder is what the relay came for.
+        val cwd = call(ref.widget, "getCurrentDirectory") as? String
+        respond(exchange, 200,
+            """{"ok":true,"cwd":${cwd?.let { quote(it) } ?: "null"}}""")
     }
 
     private fun send(exchange: HttpExchange) {
@@ -236,7 +285,7 @@ class RelayTerminalService : Disposable {
         // reads `text\r` in one chunk treats the whole thing as a paste and keeps
         // the Return as text. A separate write is a keypress — which is why the
         // tmux path has always been two calls.
-        val tty = widget.ttyConnector
+        val tty = connectorOf(widget)
         if (tty == null) {
             // No connector to write to (a widget still starting up). The old
             // route is worse at submitting but better than dropping the line.
@@ -284,6 +333,35 @@ class RelayTerminalService : Disposable {
      * soft is therefore the correct shape, and reflection is what failing soft
      * costs.
      */
+    /** A no-arg call by name, for platform API newer than we compile against. */
+    private fun call(target: Any, method: String): Any? = runCatching {
+        target.javaClass.methods.firstOrNull { it.name == method && it.parameterCount == 0 }
+            ?.also { it.isAccessible = true }
+            ?.invoke(target)
+    }.getOrNull()
+
+    /**
+     * The connector behind a terminal tab, **whichever route created the tab**.
+     *
+     * `TerminalWidget.getTtyConnector()` reads a `TtyConnectorAccessor` that is
+     * only populated when the tab was connected through the new-widget API.
+     * Measured on this Mac (IntelliJ 2026.2, `terminalEngine=CLASSIC`): a normal
+     * terminal tab answers **null** there, and null cost two things at once —
+     * `bind` reported `shellPID: null`, so the chip beside the cursor fell back
+     * to the app's name and the shell guard was off, and `send` fell into the
+     * `sendCommandToExecute` branch, which appends `\n`. In a TUI in raw mode
+     * `\n` is not Enter, so every dictation sat unsent in the prompt — the
+     * exact symptom the `\r` write was added to fix, in a build that already
+     * had the fix.
+     *
+     * The classic widget underneath is still a JediTerm one and still holds a
+     * real `ProcessTtyConnector`, which is both the thing to write `\r` to and
+     * the only object here that knows the shell's `Process`.
+     */
+    private fun connectorOf(widget: TerminalWidget): TtyConnector? =
+        widget.ttyConnector
+            ?: runCatching { JBTerminalWidget.asJediTermWidget(widget)?.processTtyConnector }.getOrNull()
+
     private fun shellPid(connector: Any): Long? = runCatching {
         // A getter first — JediTerm's ProcessTtyConnector exposes one and a
         // public method is the part of a class least likely to move.
