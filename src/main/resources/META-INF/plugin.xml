@@ -85,6 +85,14 @@
              it lands in the terminal tab it was pointed at instead of wherever
              the caret happens to be. See RelayTerminalService. -->
         <postStartupActivity implementation="com.github.victorrentea.livecoding.relay.RelayTerminalStarter"/>
+        <!-- A *.drawio.png carries the diagram inside the PNG, so the image viewer can only
+             show it. Type it natively so opening one hands it to draw.io Desktop instead. -->
+        <fileType name="Draw.io PNG"
+                  implementationClass="com.github.victorrentea.livecoding.drawio.DrawioPngFileType"
+                  fieldName="INSTANCE"
+                  patterns="*.drawio.png"/>
+        <notificationGroup id="Live-Coding" displayType="BALLOON"/>
+
         <codeInsight.inlayProvider language="JAVA" implementationClass="com.github.victorrentea.livecoding.complexity.CognitiveComplexityInlineHintsProvider"/>
 
         <!--<runConfigurationExtension implementation="com.github.victorrentea.livecoding.ux.TestListener" />-->

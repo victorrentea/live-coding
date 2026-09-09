@@ -4,6 +4,17 @@
 
 ## Unreleased
 
+## 1.0.36 - 2026-09-09
+
+### Added
+
+- **`*.drawio.png` files open in the draw.io Desktop app.** A diagram exported from draw.io as PNG
+  keeps its source embedded in the image, so the IDE image viewer could only ever show a read-only
+  picture of it — editing meant leaving the IDE and finding the file by hand. Those files are now
+  typed as a native file type, which makes the platform hand them to draw.io (on macOS by bundle id,
+  so it does not depend on what `.png` is associated with) rather than open a preview tab. Plain
+  `.png` files, and the XML-only `.drawio` sources, keep the behaviour they had.
+
 ### Fixed
 
 - **A dictation delivered into an IntelliJ terminal now ends with a real Return.**
