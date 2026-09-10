@@ -201,14 +201,15 @@ class RelayTerminalService : Disposable {
         val connector = connectorOf(widget)
         val pid = runCatching { connector?.let { shellPid(it) } }.getOrNull()
         // **The directory, asked of the IDE rather than of the process.** A pid
-        // is not always there to ask: this IDE runs its terminal in a backend
-        // process, so the connector is a `BackendTtyConnector` with no `Process`
-        // behind it and `shellPID` is null however hard it is reflected over.
-        // The widget still knows where its shell is, and that is the whole of
-        // what the relay wants the pid for — the folder on the chip beside the
-        // cursor. (The shell guard genuinely needs the pid and stays off without
-        // it; `commandRunning` is reported so it can be judged from data rather
-        // than from a guess.)
+        // is not always there to ask — a widget still starting up has no
+        // connector at all — and the folder is the one thing the pid was wanted
+        // for on screen: the chip beside the cursor. The widget knows it
+        // without any of the reflection above.
+        //
+        // It said the pid was *unobtainable here* until 2026-09-10, because the
+        // connector on this IDE is a `BackendTtyConnector`. It is: that class is
+        // a proxy, `shellPid` unwraps it now, and IntelliJ targets are guarded
+        // like every other one.
         //
         // Both are read reflectively: they are default methods added to
         // `TerminalWidget` after the platform version this plugin compiles
@@ -253,7 +254,7 @@ class RelayTerminalService : Disposable {
         val body = exchange.requestBody.readAllBytes().decodeToString()
         val id = Regex(""""id"\s*:\s*(\d+)""").find(body)?.groupValues?.get(1)?.toIntOrNull()
         val line = Regex(""""line"\s*:\s*"((?:[^"\\]|\\.)*)"""").find(body)?.groupValues?.get(1)
-            ?.replace("\\\"", "\"")?.replace("\\\\", "\\")
+            ?.let { unescapeJson(it) }
         if (id == null || line.isNullOrEmpty()) {
             return respond(exchange, 400, """{"ok":false,"error":"expected {id, line}"}""")
         }
@@ -363,22 +364,100 @@ class RelayTerminalService : Disposable {
             ?: runCatching { JBTerminalWidget.asJediTermWidget(widget)?.processTtyConnector }.getOrNull()
 
     private fun shellPid(connector: Any): Long? = runCatching {
+        // **The proxy first, or there is no process to find.** Since 2026.2 a
+        // local terminal tab is created by `BackendTerminalRunner`, which builds
+        // the ordinary `PtyProcessTtyConnector` and then wraps it in
+        // `com.jetbrains.rdserver.terminal.BackendTtyConnector` — a
+        // `ProxyTtyConnector`, whose whole content is a `getConnector()`
+        // returning the real one. Nothing in *its* class hierarchy is called
+        // `getProcess`, so the two searches below found nothing and every
+        // IntelliJ target came back `shellPID=null`, i.e. unguarded, with the
+        // relay flashing `⚠️ no shell guard` as the only answer to ⌘⌃B.
+        //
+        // Unwrapped by name rather than against `ProxyTtyConnector`: that
+        // interface lives in the terminal plugin and the wrapper in a
+        // remote-dev module, and this plugin compiles against neither. Same
+        // bargain as everything else here — a rename costs a null, not a build.
+        val target = unwrapProxy(connector)
         // A getter first — JediTerm's ProcessTtyConnector exposes one and a
         // public method is the part of a class least likely to move.
-        generateSequence(connector.javaClass) { it.superclass }
+        generateSequence(target.javaClass) { it.superclass }
             .flatMap { it.declaredMethods.asSequence() }
             .firstOrNull { it.name == "getProcess" && it.parameterCount == 0 }
             ?.also { it.isAccessible = true }
-            ?.invoke(connector)
+            ?.invoke(target)
             ?.let { return (it as? Process)?.pid() }
 
-        generateSequence(connector.javaClass) { it.superclass }
+        generateSequence(target.javaClass) { it.superclass }
             .flatMap { it.declaredFields.asSequence() }
             .firstOrNull { it.name == "myProcess" || it.name == "process" }
             ?.also { it.isAccessible = true }
-            ?.get(connector)
+            ?.get(target)
             ?.let { (it as? Process)?.pid() }
     }.onFailure { log.info("no shell pid from ${connector.javaClass.name}: ${it.message}") }.getOrNull()
+
+    /** The connector a chain of proxies is standing in front of.
+     *
+     * Bounded rather than `while (true)`: this walks objects the platform owns,
+     * and a connector that answered `getConnector()` with itself — or with a
+     * ring of two — would otherwise hang the EDT, which every bind here runs on.
+     * Three links is already two more than anything observed. */
+    private fun unwrapProxy(connector: Any): Any {
+        var target = connector
+        repeat(3) {
+            val inner = call(target, "getConnector") ?: return target
+            if (inner === target || inner !is TtyConnector) return target
+            target = inner
+        }
+        return target
+    }
+
+    /**
+     * JSON's string escapes, all of them — and the two that were missing cost a
+     * feature.
+     *
+     * This used to be `replace("\\\"", "\"")` then `replace("\\\\", "\\")`, which
+     * handles a quote and a backslash and silently passes **`\n` through as two
+     * characters**. That was invisible for as long as a dictation was one line:
+     * since 2026-09-07 the relay sends the words, a blank line, then one
+     * bracketed clause per line — so every delivery into an IntelliJ terminal
+     * has arrived since as a single run-on line with a literal `\n\n` sitting in
+     * the middle of it, where VS Code's extension, which calls `JSON.parse`, has
+     * been getting the real thing. Measured end to end on 2026-09-10, reading
+     * back the exact bytes the pty received.
+     *
+     * The old pair was also wrong in the order it ran: `\\"` unescapes to `\"`
+     * under the first pass and then to a bare quote under the second. One
+     * left-to-right scan cannot make that mistake, which is the other reason
+     * this is a loop rather than a longer chain of `replace`s.
+     */
+    private fun unescapeJson(s: String): String {
+        val out = StringBuilder(s.length)
+        var i = 0
+        while (i < s.length) {
+            val c = s[i]
+            if (c != '\\' || i + 1 >= s.length) { out.append(c); i++; continue }
+            when (val e = s[i + 1]) {
+                'n' -> { out.append('\n'); i += 2 }
+                'r' -> { out.append('\r'); i += 2 }
+                't' -> { out.append('\t'); i += 2 }
+                'b' -> { out.append('\b'); i += 2 }
+                'f' -> { out.append('\u000C'); i += 2 }
+                '"', '\\', '/' -> { out.append(e); i += 2 }
+                'u' -> {
+                    val hex = s.drop(i + 2).take(4)
+                    val code = hex.toIntOrNull(16)
+                    if (hex.length == 4 && code != null) { out.append(code.toChar()); i += 6 }
+                    // Not an escape we understand: keep both characters rather
+                    // than swallow them. A line that arrives slightly odd beats a
+                    // line that arrives short.
+                    else { out.append(c); i++ }
+                }
+                else -> { out.append(c); i++ }
+            }
+        }
+        return out.toString()
+    }
 
     private fun quote(s: String) =
         "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", " ") + "\""
