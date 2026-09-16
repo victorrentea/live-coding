@@ -4,6 +4,24 @@
 
 ## Unreleased
 
+## 1.0.38 - 2026-09-16
+
+### Fixed
+
+- **Compatible again with IntelliJ IDEA 2026.3.** The settings panel of the *Cognitive Complexity
+  Hint* inlay provider was still built with UI DSL v1 (`com.intellij.ui.layout.panel`), which was
+  removed in build 263 — opening it there would have thrown `NoSuchClassError`. The panel has no
+  settings to show, so it is now a plain empty `JPanel` and the removed API is gone from the plugin
+  entirely. This is what the Marketplace's verifier flagged when it capped 1.0.37 at `262.*`; the
+  other finding in that report (`com.intellij.dvcs.repo` "not found" through Git4Idea) no longer
+  reproduces on the current 2026.3 EAP and was a verifier resolution gap, not a real breakage.
+
+### Changed
+
+- The local/CI plugin verification set now also includes the newest EAP of the current major, so a
+  break against the next IDE shows up in `./gradlew verifyPlugin` instead of in a Marketplace
+  rejection mail.
+
 ## 1.0.37 - 2026-09-11
 
 ### Added

@@ -7,7 +7,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.DumbService
 import com.intellij.psi.*
-import com.intellij.ui.layout.panel
 import javax.swing.JPanel
 
 class CognitiveComplexityInlineHintsProvider: InlayHintsProvider<NoSettings> {
@@ -55,9 +54,10 @@ class CognitiveComplexityInlineHintsProvider: InlayHintsProvider<NoSettings> {
 
         override fun createComponent(listener: ChangeListener): JPanel {
             reset()
-            val panel = panel {
-            }
-            return panel
+            // UI DSL v1 (com.intellij.ui.layout.panel) was removed in 2026.3 (263) and
+            // building the panel with it throws NoSuchClassError there. There is nothing
+            // to configure, so hand back a plain empty panel instead.
+            return JPanel()
         }
 
         override fun reset() {

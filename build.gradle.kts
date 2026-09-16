@@ -1,5 +1,7 @@
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -95,6 +97,15 @@ intellijPlatform {
         )
         ides {
             recommended()
+            // The Marketplace also verifies against the newest EAP; 2026.3 (263) is what
+            // got 1.0.37 capped at 262.*, so keep the latest EAP of the current major in
+            // the local/CI verification set instead of discovering it from a rejection mail.
+            select {
+                types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
+                channels = listOf(ProductRelease.Channel.EAP)
+                sinceBuild = "263"
+                untilBuild = "263.*"
+            }
         }
     }
 }
