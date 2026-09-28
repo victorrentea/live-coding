@@ -383,7 +383,13 @@ class RelayTerminalService : Disposable {
         val exec = AppExecutorUtil.getAppScheduledExecutorService()
         val opening = line.lineSequence().first().filterNot { it.isWhitespace() }.take(20)
         fun screen(): String? = runCatching {
-            JBTerminalWidget.asJediTermWidget(widget)?.terminalTextBuffer?.screenLines
+            val buf = JBTerminalWidget.asJediTermWidget(widget)?.terminalTextBuffer ?: return@runCatching null
+            buf.lock()
+            try {
+                (0 until buf.height).joinToString("\n") { buf.getLine(it).text }
+            } finally {
+                buf.unlock()
+            }
         }.getOrNull()
         fun stillInPrompt(text: String): Boolean {
             val squashed = text.filterNot { it.isWhitespace() }
