@@ -298,10 +298,7 @@ class RelayTerminalService : Disposable {
             widget.sendCommandToExecute(line)
         } else {
             tty.write(line)
-            if (submit) {
-                AppExecutorUtil.getAppScheduledExecutorService().schedule(
-                    { runCatching { tty.write("\r") } }, 120, TimeUnit.MILLISECONDS)
-            }
+            if (submit) submitAfterPaste(widget, tty, line)
         }
         respond(exchange, 200, """{"ok":true,"name":${quote(ref.name)}}""")
     }
@@ -366,6 +363,48 @@ class RelayTerminalService : Disposable {
      * real `ProcessTtyConnector`, which is both the thing to write `\r` to and
      * the only object here that knows the shell's `Process`.
      */
+    /**
+     * **The Return, 0.5 s after the text, and again while the sentence is still
+     * in the prompt box** (2026-09-28). Claude Code 2.1.283 folds a key that
+     * lands within ~150 ms of a large chunk into the paste, and a Return inside
+     * a paste is a newline: the `\r` at 120 ms became a blank line under the
+     * sentence, which sat unsent — Victor's screenshot from Terminal.app, where
+     * even 0.5 s was folded once. So after the first `\r` the screen is read
+     * back and, while the sentence's opening is still after the last `❯` — or
+     * Claude Code's *review and press Enter to send* hint is up — another `\r`
+     * goes, up to two, 0.5 s apart. A submitted sentence is echoed with `>` and
+     * the box is empty, so no Return lands on an empty prompt.
+     *
+     * A widget whose screen cannot be read (no JediTerm underneath) gets one
+     * blind second Return at 1.5 s instead: the cost is an Enter on an empty
+     * prompt when the first one worked, which in Claude Code is nothing.
+     */
+    private fun submitAfterPaste(widget: TerminalWidget, tty: TtyConnector, line: String) {
+        val exec = AppExecutorUtil.getAppScheduledExecutorService()
+        val opening = line.lineSequence().first().filterNot { it.isWhitespace() }.take(20)
+        fun screen(): String? = runCatching {
+            JBTerminalWidget.asJediTermWidget(widget)?.terminalTextBuffer?.screenLines
+        }.getOrNull()
+        fun stillInPrompt(text: String): Boolean {
+            val squashed = text.filterNot { it.isWhitespace() }
+            val prompt = squashed.lastIndexOf('❯')
+            if (prompt < 0 || opening.isEmpty()) return false
+            val after = squashed.substring(prompt + 1)
+            return after.contains(opening) || after.contains("invisiblecharacter", ignoreCase = true)
+                || after.contains("pressEntertosend", ignoreCase = true)
+        }
+        fun press(n: Int) {
+            runCatching { tty.write("\r") }
+            if (n >= 3) return
+            exec.schedule({
+                val text = screen()
+                if (text == null) { if (n == 1) press(2) }        // blind second Return, once
+                else if (stillInPrompt(text)) press(n + 1)
+            }, if (screen() == null) 1000 else 500, TimeUnit.MILLISECONDS)
+        }
+        exec.schedule({ press(1) }, 500, TimeUnit.MILLISECONDS)
+    }
+
     private fun connectorOf(widget: TerminalWidget): TtyConnector? =
         widget.ttyConnector
             ?: runCatching { JBTerminalWidget.asJediTermWidget(widget)?.processTtyConnector }.getOrNull()
