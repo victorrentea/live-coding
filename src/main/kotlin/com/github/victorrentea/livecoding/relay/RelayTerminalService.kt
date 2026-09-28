@@ -286,6 +286,11 @@ class RelayTerminalService : Disposable {
         // reads `text\r` in one chunk treats the whole thing as a paste and keeps
         // the Return as text. A separate write is a keypress — which is why the
         // tmux path has always been two calls.
+        //
+        // **`"submit": false` leaves the Return to Victor** (2026-09-28): the
+        // relay's bound delivery types the words and stops; he sends them when
+        // he is done. Absent (an older relay), the Return is pressed as before.
+        val submit = Regex(""""submit"\s*:\s*false""").find(body) == null
         val tty = connectorOf(widget)
         if (tty == null) {
             // No connector to write to (a widget still starting up). The old
@@ -293,8 +298,10 @@ class RelayTerminalService : Disposable {
             widget.sendCommandToExecute(line)
         } else {
             tty.write(line)
-            AppExecutorUtil.getAppScheduledExecutorService().schedule(
-                { runCatching { tty.write("\r") } }, 120, TimeUnit.MILLISECONDS)
+            if (submit) {
+                AppExecutorUtil.getAppScheduledExecutorService().schedule(
+                    { runCatching { tty.write("\r") } }, 120, TimeUnit.MILLISECONDS)
+            }
         }
         respond(exchange, 200, """{"ok":true,"name":${quote(ref.name)}}""")
     }
