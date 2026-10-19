@@ -146,6 +146,7 @@ class RelayTerminalService : Disposable {
                 "/state" -> onEdt { state(exchange) }
                 "/bind" -> onEdt { bind(exchange) }
                 "/send" -> onEdt { send(exchange) }
+                "/caret" -> onEdt { caret(exchange) }
                 "/unbind" -> {
                     idParam(exchange)?.let { bound.remove(it) }
                     respond(exchange, 200, """{"ok":true}""")
@@ -175,6 +176,66 @@ class RelayTerminalService : Disposable {
     private fun ping(exchange: HttpExchange) {
         val focused = KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow != null
         respond(exchange, 200, """{"ok":true,"app":"intellij","focused":$focused}""")
+    }
+
+    /**
+     * **Where the caret is, on screen** (2026-10-19) — the relay pins it while
+     * Victor dictates at the caret, as it does in VS Code and Terminal.app.
+     *
+     * From outside, Accessibility answers for IntelliJ's editor but not for its
+     * terminal: JediTerm's panel is a focused component with **no role and no
+     * caret bounds** (the relay's log, every IntelliJ terminal sentence that
+     * morning). In here the panel knows its cursor cell — it is what places the
+     * input-method pop-up. Answers the caret's rectangle in AWT screen
+     * coordinates (points, y down from the top of the main display — the space
+     * Accessibility uses), `h` the line height; 404 when this process does not
+     * hold the keyboard or its caret is scrolled out of sight.
+     */
+    private fun caret(exchange: HttpExchange) {
+        val owner = KeyboardFocusManager.getCurrentKeyboardFocusManager().focusOwner
+            ?: return respond(exchange, 404, """{"ok":false,"error":"no focus owner"}""")
+        if (!owner.isShowing) return respond(exchange, 404, """{"ok":false,"error":"focus owner not showing"}""")
+        val found = caretRect(owner)
+            ?: return respond(exchange, 404,
+                """{"ok":false,"error":${quote("no caret in ${owner.javaClass.simpleName}")}}""")
+        val (r, kind) = found
+        // A caret scrolled out of its viewport is not on screen, whatever its coordinates say.
+        val shown = ((owner as? javax.swing.JComponent)?.visibleRect ?: java.awt.Rectangle(owner.size))
+            .also { val o = owner.locationOnScreen; it.translate(o.x, o.y) }
+        if (!shown.intersects(java.awt.Rectangle(r.x, r.y, maxOf(r.width, 1), maxOf(r.height, 1)))) {
+            return respond(exchange, 404, """{"ok":false,"error":"caret out of view ($kind)"}""")
+        }
+        respond(exchange, 200,
+            """{"ok":true,"x":${r.x},"y":${r.y},"w":${r.width},"h":${r.height},"kind":"$kind"}""")
+    }
+
+    private fun caretRect(owner: java.awt.Component): Pair<java.awt.Rectangle, String>? {
+        // The editor — and the reworked terminal, which is an editor too.
+        com.intellij.openapi.editor.EditorFactory.getInstance().allEditors
+            .firstOrNull { it.contentComponent === owner }?.let { editor ->
+                val p = editor.visualPositionToXY(editor.caretModel.visualPosition)
+                val o = editor.contentComponent.locationOnScreen
+                return java.awt.Rectangle(o.x + p.x, o.y + p.y, 2, editor.lineHeight) to "editor"
+            }
+        // The classic terminal: JediTerm's IME location is the cursor cell's
+        // bottom-left (`(coordY + 1) × charHeight`), zero-sized, so the cell's
+        // own size comes from the panel's `myCharSize`.
+        if (owner is com.jediterm.terminal.ui.TerminalPanel) {
+            val at = owner.inputMethodRequests?.getTextLocation(null) ?: return null
+            val cell = runCatching {
+                generateSequence<Class<*>>(owner.javaClass) { it.superclass }
+                    .mapNotNull { c -> c.declaredFields.firstOrNull { it.name == "myCharSize" } }
+                    .first().also { it.isAccessible = true }.get(owner) as java.awt.Dimension
+            }.getOrNull()
+            val h = cell?.height?.takeIf { it > 0 } ?: owner.getFontMetrics(owner.font).height
+            return java.awt.Rectangle(at.x, at.y - h, cell?.width ?: 2, h) to "terminal"
+        }
+        if (owner is javax.swing.text.JTextComponent) {
+            val r = runCatching { owner.modelToView2D(owner.caretPosition)?.bounds }.getOrNull() ?: return null
+            val o = owner.locationOnScreen
+            return java.awt.Rectangle(o.x + r.x, o.y + r.y, maxOf(r.width, 2), r.height) to "text"
+        }
+        return null
     }
 
     /** Point me at the terminal that is selected right now. */

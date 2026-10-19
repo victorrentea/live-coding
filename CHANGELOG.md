@@ -4,6 +4,10 @@
 
 ## Unreleased
 
+### Added
+
+- Walkie Talkie bridge: `GET /caret` answers where the caret is on screen (editor, classic terminal, text fields), so the relay can point at it while dictating into an IntelliJ terminal.
+
 ## 1.0.38 - 2026-09-16
 
 ### Fixed
