@@ -2,7 +2,15 @@
 
 # live-coding Changelog
 
-## Unreleased
+## 1.0.39 - 2026-10-26
+
+### Changed
+
+- **Token counter in the status bar** now looks like its VS Code twin: Clawd (the Claude Code
+  mascot) followed by the bare count - `🦀 1,935` instead of `1,935 tok (GPT)`. **Clicking it toggles
+  the token-boundary highlighting** directly; the model-family popup is gone. The family (GPT-5/4o,
+  GPT-4/3.5, Claude, Gemini) and the `~` estimate marker moved to the tooltip, and the family is
+  picked in *Settings › Tools › Live-Coding*.
 
 ### Added
 

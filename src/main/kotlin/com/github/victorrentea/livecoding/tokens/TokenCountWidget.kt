@@ -1,85 +1,60 @@
 package com.github.victorrentea.livecoding.tokens
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
-import com.intellij.openapi.options.ShowSettingsUtil
-import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.DumbAwareToggleAction
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.JBPopup
-import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.wm.CustomStatusBarWidget
 import com.intellij.openapi.wm.StatusBar
-import com.intellij.openapi.wm.StatusBarWidget
-import com.intellij.openapi.wm.impl.status.EditorBasedWidget
-import com.github.victorrentea.livecoding.settings.SettingsConfigurable
+import com.intellij.openapi.wm.impl.status.TextPanel
+import com.intellij.ui.ClickListener
+import java.awt.event.MouseEvent
+import javax.swing.JComponent
 
 /**
- * Status bar widget: "2,500 tok (GPT)". Clicking it opens the model picker and the highlighting toggle.
+ * Status bar widget: Clawd + the token count of the current file, e.g. "🦀 1,935" - the same look as
+ * the token counter in the VS Code setup. A click toggles the per-token highlighting in the editor;
+ * the model family lives in Settings › Tools › Live-Coding.
  */
-class TokenCountWidget(project: Project) :
-    EditorBasedWidget(project),
-    StatusBarWidget.MultipleTextValuesPresentation {
+class TokenCountWidget(private val project: Project) : CustomStatusBarWidget {
 
     private val service get() = TokenCountService.getInstance(project)
 
+    private val panel = TextPanel.WithIconAndArrows().apply {
+        icon = LiveCodingIcons.Clawd
+    }
+
+    private val clickListener = object : ClickListener() {
+        override fun onClick(event: MouseEvent, clickCount: Int): Boolean {
+            if (event.button != MouseEvent.BUTTON1) return false
+            service.highlightTokens = !service.highlightTokens
+            return true
+        }
+    }
+
+    init {
+        clickListener.installOn(panel)
+        refresh()
+    }
+
     override fun ID() = ID
 
-    override fun getPresentation(): StatusBarWidget.WidgetPresentation = this
+    override fun getComponent(): JComponent = panel
 
     override fun install(statusBar: StatusBar) {
-        super.install(statusBar)
         service.refresh()
     }
 
-    override fun getSelectedValue() = service.display?.text ?: "-- tok"
-
-    override fun getTooltipText() = service.display?.tooltip ?: "LLM token count of the current file"
-
-    override fun getPopup(): JBPopup {
-        val group = DefaultActionGroup()
-        TokenizerFamily.values().forEach { group.add(SelectFamilyAction(it)) }
-        group.addSeparator()
-        group.add(ToggleHighlightingAction())
-        group.addSeparator()
-        group.add(OpenSettingsAction())
-        return JBPopupFactory.getInstance().createActionGroupPopup(
-            "Count Tokens For",
-            group,
-            SimpleDataContext.getProjectContext(project),
-            JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-            true
-        )
+    /** Pull the latest count from the service into the label. Called by the service after each recount. */
+    fun refresh() {
+        val display = service.display
+        panel.text = display?.text ?: "--"
+        panel.toolTipText = display?.tooltip ?: "LLM token count of the current file"
+        panel.revalidate()
+        panel.repaint()
     }
 
-    private inner class SelectFamilyAction(private val family: TokenizerFamily) :
-        DumbAwareToggleAction(family.displayName, family.note, null) {
-        override fun getActionUpdateThread() = ActionUpdateThread.EDT
-        override fun isSelected(e: AnActionEvent) = service.family == family
-        override fun setSelected(e: AnActionEvent, state: Boolean) {
-            service.family = family
-        }
-    }
+    /** What the status bar shows right now - "1,935" or "12 / 1,935" when there is a selection. */
+    val text: String get() = panel.text ?: ""
 
-    private inner class ToggleHighlightingAction : DumbAwareToggleAction(
-        "Highlight Token Boundaries",
-        "Paint alternating backgrounds over each token in the editor",
-        null
-    ) {
-        override fun getActionUpdateThread() = ActionUpdateThread.EDT
-        override fun isSelected(e: AnActionEvent) = service.highlightTokens
-        override fun setSelected(e: AnActionEvent, state: Boolean) {
-            service.highlightTokens = state
-        }
-    }
-
-    private inner class OpenSettingsAction :
-        DumbAwareAction("Token Counter Settings...", "Open the Live-Coding settings", null) {
-        override fun actionPerformed(e: AnActionEvent) {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)
-        }
-    }
+    override fun dispose() = clickListener.uninstall(panel)
 
     companion object {
         const val ID = "LiveCoding.TokenCount"

@@ -109,24 +109,28 @@ class TokenCountService(private val project: Project) : Disposable {
         display = when {
             total == null || family == null -> null
             selected != null -> TokenCountDisplay(
-                "${prefix(family)}${numberFormat.format(selected)} / ${numberFormat.format(total)} tok (${family.shortLabel})",
-                "Tokens in the selection / in the whole file.\n${family.displayName}: ${family.note}"
+                "${numberFormat.format(selected)} / ${numberFormat.format(total)}",
+                "${approx(family)}${numberFormat.format(selected)} tokens in the selection, " +
+                    "${numberFormat.format(total)} in the whole file.\n${family.displayName}: ${family.note}\n$CLICK_HINT"
             )
 
             else -> TokenCountDisplay(
-                "${prefix(family)}${numberFormat.format(total)} tok (${family.shortLabel})",
-                "Tokens in this file.\n${family.displayName}: ${family.note}\nClick to switch model or toggle highlighting."
+                numberFormat.format(total),
+                "${approx(family)}${numberFormat.format(total)} tokens in this file.\n${family.displayName}: ${family.note}\n$CLICK_HINT"
             )
         }
-        WindowManager.getInstance().getStatusBar(project)?.updateWidget(TokenCountWidget.ID)
+        val statusBar = WindowManager.getInstance().getStatusBar(project) ?: return
+        (statusBar.getWidget(TokenCountWidget.ID) as? TokenCountWidget)?.refresh()
     }
 
-    private fun prefix(family: TokenizerFamily) = if (family.approximate) "~" else ""
+    private fun approx(family: TokenizerFamily) = if (family.approximate) "~" else ""
 
     override fun dispose() = TokenHighlighter.clearAll()
 
     companion object {
         private const val TYPING_DELAY_MS = 400
+        private const val CLICK_HINT =
+            "Click to toggle token-boundary highlighting in the editor. Model: Settings \u203a Tools \u203a Live-Coding."
 
         fun getInstance(project: Project): TokenCountService = project.getService(TokenCountService::class.java)
     }
