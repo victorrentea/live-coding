@@ -2,6 +2,10 @@
 
 # live-coding Changelog
 
+## Unreleased
+
+## Unreleased
+
 ## 1.0.39 - 2026-10-26
 
 ### Changed
