@@ -56,6 +56,12 @@
             <add-to-group group-id="MainToolBar"  relative-to-action="SearchEverywhere" anchor="before"/>
         </group>
 
+        <!-- One click for File | Reload All from Disk, for when an agent edits files faster than the VFS notices -->
+        <group id="LiveCoding.ReloadFromDisk" text="Reload All from Disk">
+            <reference ref="Synchronize"/>
+            <add-to-group group-id="MainToolbarRight" anchor="first"/>
+        </group>
+
        <!-- <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action"
                 text="Toggle Lonely Background Mood">
             <keyboard-shortcut first-keystroke="control alt 6" keymap="$default"/>

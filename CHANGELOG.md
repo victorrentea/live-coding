@@ -4,7 +4,12 @@
 
 ## Unreleased
 
-## Unreleased
+## 1.0.40 - 2026-10-28
+
+### Added
+
+- **Reload All from Disk button** at the right of the main toolbar - one click instead of
+  `File | Reload All from Disk`, for when an AI agent changes files faster than the IDE notices.
 
 ## 1.0.39 - 2026-10-26
 
