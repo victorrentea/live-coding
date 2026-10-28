@@ -59,7 +59,7 @@
         <!-- One click for File | Reload All from Disk, for when an agent edits files faster than the VFS notices -->
         <group id="LiveCoding.ReloadFromDisk" text="Reload All from Disk">
             <reference ref="Synchronize"/>
-            <add-to-group group-id="MainToolbarRight" anchor="first"/>
+            <add-to-group group-id="MainToolbarLeft" anchor="before" relative-to-action="main.toolbar.Project"/>
         </group>
 
        <!-- <action class="com.github.victorrentea.livecoding.ux.BackgroundMood4Action"

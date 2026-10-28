@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.0.41 - 2026-10-28
+
+### Changed
+
+- The **Reload All from Disk** button moved to the far left of the main toolbar, before the project name.
+
 ## 1.0.40 - 2026-10-28
 
 ### Added
