@@ -110,3 +110,8 @@ set -a; . ./secrets.env; set +a
 - Some past releases were published **manually** (no matching GitHub release), so the CI release path goes stale — verify it end-to-end, or just use the local path above.
 - To move `main` forward without disturbing the working checkout (e.g. a running sandbox / agent): FF via an isolated worktree —
   `git worktree add -B main /tmp/x origin/main && git -C /tmp/x merge --ff-only <branch> && git -C /tmp/x push origin main && git worktree remove /tmp/x --force`.
+
+## Memoria lui Claude
+
+Memoria generală (cine e Victor, cum vrea să lucrezi) e în repo-ul privat `victorrentea/assistant`.
+Într-o sesiune din cloud, atașează-l la sesiune și urmează-i `CLAUDE.md`-ul. Pe Mac se încarcă singură.
