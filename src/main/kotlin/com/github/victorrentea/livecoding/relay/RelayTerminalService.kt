@@ -81,6 +81,20 @@ class RelayTerminalService : Disposable {
      * so there is no reason to reduce a live object to a string. */
     private data class TerminalRef(val project: Project, val widget: TerminalWidget, val name: String)
 
+    /**
+     * **A chat input, as a target** (2026-11-03). An AI assistant's chat tool
+     * window takes prompts in a multi-line text field, and Victor wants to dictate
+     * into it from across the room the way he dictates into a bound terminal —
+     * delivered without the IDE in front, and **submitted**: a paste at the caret
+     * leaves the words in the box until somebody presses Enter.
+     *
+     * The tool window's id is kept beside the field because a chat rebuilds its
+     * input when a new conversation starts; the field is re-found inside the same
+     * tool window when the one bound has left the screen.
+     */
+    private data class ChatRef(val project: Project, val toolWindowId: String, var input: javax.swing.text.JTextComponent, val name: String)
+    private val chats = ConcurrentHashMap<Int, ChatRef>()
+
     fun start() {
         // One listener per IDE process, however many projects are open.
         if (!started.compareAndSet(false, true)) return
@@ -148,7 +162,7 @@ class RelayTerminalService : Disposable {
                 "/send" -> onEdt { send(exchange) }
                 "/caret" -> onEdt { caret(exchange) }
                 "/unbind" -> {
-                    idParam(exchange)?.let { bound.remove(it) }
+                    idParam(exchange)?.let { bound.remove(it); chats.remove(it) }
                     respond(exchange, 200, """{"ok":true}""")
                 }
                 else -> respond(exchange, 404, """{"ok":false}""")
@@ -242,6 +256,22 @@ class RelayTerminalService : Disposable {
     private fun bind(exchange: HttpExchange) {
         val project = focusedProject()
             ?: return respond(exchange, 409, """{"ok":false,"error":"no open project"}""")
+        // **The chat, when that is where the keyboard is.** The relay's ⌘⌃B is
+        // pressed while looking at what should receive the words; a caret in a
+        // chat's input means the chat, not the terminal tab behind it.
+        // `kind: "chat"` tells the relay there is no shell to guard.
+        // `?target=chat`: the first chat input showing in any tool window, whatever
+        // holds the keyboard — how a script exercises this without anybody's mouse.
+        val forced = exchange.requestURI.query?.split('&')?.contains("target=chat") == true
+        val owner = KeyboardFocusManager.getCurrentKeyboardFocusManager().focusOwner
+        (chatAt(project, owner) ?: if (forced) anyChat(project) else null)?.let { (toolWindowId, input, name) ->
+            val id = nextId.getAndIncrement()
+            chats[id] = ChatRef(project, toolWindowId, input, name)
+            log.info("bind #$id chat in tool window $toolWindowId (${input.javaClass.name})")
+            return respond(exchange, 200,
+                """{"ok":true,"id":$id,"kind":"chat","name":${quote(name)},"shellPID":null,""" +
+                """"cwd":${project.basePath?.let { quote(it) } ?: "null"}}""")
+        }
         // **The selected tab, not the first one.** `terminalWidgets` is a set in
         // no useful order, and Victor presses the key while looking at one
         // particular tab. The content manager is the only thing that knows which.
@@ -295,6 +325,14 @@ class RelayTerminalService : Disposable {
     private fun state(exchange: HttpExchange) {
         val id = idParam(exchange)
             ?: return respond(exchange, 400, """{"ok":false,"error":"expected ?id=N"}""")
+        chats[id]?.let { chat ->
+            if (liveInput(chat) == null) {
+                chats.remove(id)
+                return respond(exchange, 404, """{"ok":false,"error":"that chat is gone"}""")
+            }
+            return respond(exchange, 200,
+                """{"ok":true,"kind":"chat","cwd":${chat.project.basePath?.let { quote(it) } ?: "null"}}""")
+        }
         val ref = bound[id]
             ?: return respond(exchange, 404, """{"ok":false,"error":"that terminal is gone"}""")
         if (ref.widget !in TerminalToolWindowManager.getInstance(ref.project).terminalWidgets) {
@@ -318,6 +356,20 @@ class RelayTerminalService : Disposable {
             ?.let { unescapeJson(it) }
         if (id == null || line.isNullOrEmpty()) {
             return respond(exchange, 400, """{"ok":false,"error":"expected {id, line}"}""")
+        }
+        chats[id]?.let { chat ->
+            val input = liveInput(chat) ?: run {
+                chats.remove(id)
+                return respond(exchange, 404, """{"ok":false,"error":"that chat is gone"}""")
+            }
+            // **Appended, never replacing**: a draft he left in the box stays, the
+            // words follow it — as typing into a terminal's prompt would.
+            val doc = input.document
+            val draft = doc.getText(0, doc.length)
+            doc.insertString(doc.length, if (draft.isBlank() || draft.endsWith(" ") || draft.endsWith("\n")) line else " $line", null)
+            input.caretPosition = doc.length
+            if (Regex(""""submit"\s*:\s*false""").find(body) == null) submitChat(input, input.text)
+            return respond(exchange, 200, """{"ok":true,"name":${quote(chat.name)}}""")
         }
         val ref = bound[id]
             ?: return respond(exchange, 404, """{"ok":false,"error":"that terminal is gone"}""")
@@ -362,6 +414,78 @@ class RelayTerminalService : Disposable {
             if (submit) submitAfterPaste(widget, tty, line)
         }
         respond(exchange, 200, """{"ok":true,"name":${quote(ref.name)}}""")
+    }
+
+    /**
+     * The chat input holding the keyboard, if that is what holds it: an editable,
+     * **multi-line** text component inside a tool window other than the terminal.
+     * Multi-line, because a tool window's single-line fields are searches and
+     * filters, and a prompt box is never one line by design. No assistant is named:
+     * the shape is the test, so any chat built on a Swing text area qualifies.
+     */
+    private fun chatAt(project: Project, owner: java.awt.Component?): Triple<String, javax.swing.text.JTextComponent, String>? {
+        val input = owner as? javax.swing.text.JTextComponent ?: return null
+        if (!input.isEditable || input is javax.swing.JTextField) return null
+        val manager = com.intellij.openapi.wm.ToolWindowManager.getInstance(project)
+        val window = manager.toolWindowIds.asSequence().mapNotNull { manager.getToolWindow(it) }
+            .firstOrNull { javax.swing.SwingUtilities.isDescendingFrom(input, it.component) } ?: return null
+        if (window.id == "Terminal") return null
+        return Triple(window.id, input, window.stripeTitle.ifBlank { window.id })
+    }
+
+    private fun anyChat(project: Project): Triple<String, javax.swing.text.JTextComponent, String>? {
+        val manager = com.intellij.openapi.wm.ToolWindowManager.getInstance(project)
+        return manager.toolWindowIds.asSequence().mapNotNull { manager.getToolWindow(it) }
+            .filter { it.id != "Terminal" && it.isVisible }
+            .mapNotNull { w ->
+                com.intellij.util.ui.UIUtil.uiTraverser(w.component).filter(javax.swing.text.JTextComponent::class.java)
+                    .firstOrNull { it.isShowing && it.isEditable && it !is javax.swing.JTextField }
+                    ?.let { Triple(w.id, it, w.stripeTitle.ifBlank { w.id }) }
+            }.firstOrNull()
+    }
+
+    /** The bound input if it is still on screen, else the chat's current one: the
+     *  first editable multi-line text component showing in the same tool window. */
+    private fun liveInput(chat: ChatRef): javax.swing.text.JTextComponent? {
+        if (chat.project.isDisposed) return null
+        if (chat.input.isShowing) return chat.input
+        val window = com.intellij.openapi.wm.ToolWindowManager.getInstance(chat.project).getToolWindow(chat.toolWindowId)
+            ?: return null
+        val found = com.intellij.util.ui.UIUtil.uiTraverser(window.component).filter(javax.swing.text.JTextComponent::class.java)
+            .firstOrNull { it.isShowing && it.isEditable && it !is javax.swing.JTextField }
+        // A chat whose tool window is hidden still has its input, off screen: keep the old one.
+        return found?.also { chat.input = it } ?: chat.input.takeIf { it.isDisplayable }
+    }
+
+    /**
+     * **Enter, pressed on that field and nowhere else** — the field's own key
+     * binding for Enter, run directly. A synthetic key event would go through the
+     * IDE's dispatcher, which routes by *focus*, and the point is that the IDE need
+     * not be in front. The binding is what the chat put there for Enter (its
+     * submit), found through the field's input map as Swing itself would.
+     *
+     * 0.3 s after the text, because a chat may gate submit on state it derives
+     * from the text (non-empty, not busy) a beat after the document changes.
+     */
+    private fun submitChat(input: javax.swing.text.JTextComponent, line: String) {
+        val exec = AppExecutorUtil.getAppScheduledExecutorService()
+        fun press() {
+            val enter = javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_ENTER, 0)
+            val key = input.getInputMap(javax.swing.JComponent.WHEN_FOCUSED).get(enter)
+                ?: input.getInputMap(javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(enter)
+            val action = key?.let { input.actionMap.get(it) }
+            if (action == null) {
+                log.warn("chat input ${input.javaClass.name} has no Enter binding — the words wait in the box")
+                return
+            }
+            action.actionPerformed(java.awt.event.ActionEvent(input, java.awt.event.ActionEvent.ACTION_PERFORMED, key.toString()))
+        }
+        val edt = com.intellij.openapi.application.ApplicationManager.getApplication()
+        exec.schedule({ edt.invokeLater { press() } }, 300, TimeUnit.MILLISECONDS)
+        // Not pressed again: a chat that keeps its text after submitting would send it twice.
+        exec.schedule({ edt.invokeLater {
+            if (input.text.trim() == line.trim()) log.warn("chat input still holds the words 1 s after Enter — not submitted?")
+        } }, 1000, TimeUnit.MILLISECONDS)
     }
 
     /** The project whose window holds the keyboard, not simply the first open.

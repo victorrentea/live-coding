@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.0.42 - 2026-11-03
+
+### Added
+
+- Walkie Talkie bridge: a bind made while the caret is in an AI chat's prompt box (a multi-line text field in any tool window but the terminal) binds that chat. Later dictations are typed into it and submitted with the field's own Enter binding, without the IDE in front.
+
 ## 1.0.41 - 2026-10-28
 
 ### Changed
