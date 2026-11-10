@@ -98,6 +98,8 @@
                   fieldName="INSTANCE"
                   patterns="*.drawio.png"/>
         <notificationGroup id="Live-Coding" displayType="BALLOON"/>
+        <!-- Cmd+click / ⌥Space / ⌘[ inside the Quick Definition popup. See QuickDefinitionNavigation. -->
+        <editorFactoryListener implementation="com.github.victorrentea.livecoding.ux.quickdef.QuickDefinitionEditorListener"/>
 
         <codeInsight.inlayProvider language="JAVA" implementationClass="com.github.victorrentea.livecoding.complexity.CognitiveComplexityInlineHintsProvider"/>
 

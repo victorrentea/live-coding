@@ -29,6 +29,7 @@ I am using it every week in the workshops and talks I deliver. More about me on 
   - Geek (`Ctrl-Alt-9`/`Command-Option-9`)
   - Clear (`Ctrl-Alt-0`/`Command-Option-0`)
 - **Chapter Title** toolbar button to set the current section title
+- **Navigable Quick Definition popup** (`⌥Space` / `Ctrl+Shift+I`): `Cmd+click` (`Ctrl+click`) a token inside the popup to jump to its declaration; press the Quick Definition shortcut again on a token to see *its* definition in the same popup, and Back (`⌘[` / `Ctrl+Alt+←`) to return. Out of the box the popup is plain text you can only read.
 - **Open `*.drawio.png` in draw.io**: a draw.io-exported PNG carries the diagram inside the image, so the IDE can only ever show you a read-only picture of it. These files now open straight in the draw.io Desktop app when you double-click them, instead of in the image viewer. Ordinary `.png` files are untouched.
 - **Live LLM Token Count** in the status bar: Clawd + how many tokens the open file costs an LLM, updated as you type (with a selection: `selection / file`). Click it to toggle **token highlighting** — alternating background stripes over every token, so your audience can see where the tokenizer splits the code. The model family is set in *Settings › Tools › Live-Coding*: GPT-5/GPT-4o and GPT-4/3.5 use OpenAI's exact vocabularies, bundled offline (your code never leaves the IDE); Claude and Gemini are calibrated estimates, marked `~` in the tooltip, since those vocabularies aren't public.
 ### Refactoring Aid

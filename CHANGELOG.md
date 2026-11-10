@@ -4,6 +4,15 @@
 
 ## Unreleased
 
+## 1.0.43 - 2026-11-10
+
+### Added
+
+- **Navigable Quick Definition popup** (`⌥Space` / `Ctrl+Shift+I`). Inside the popup:
+  - `Cmd+click` (`Ctrl+click`) a token jumps to its declaration and closes the popup; holding `Cmd` underlines the link.
+  - The Quick Definition shortcut again, on the token under the caret, shows *its* definition in the same popup.
+  - The Back shortcut (`⌘[` / `Ctrl+Alt+←`) returns to the previous definition.
+
 ## 1.0.42 - 2026-11-03
 
 ### Added
