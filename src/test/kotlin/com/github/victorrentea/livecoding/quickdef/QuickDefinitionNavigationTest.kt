@@ -6,13 +6,18 @@ import com.intellij.codeInsight.hint.ImplementationViewComponent
 import com.intellij.codeInsight.hint.PsiImplementationViewElement
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.impl.NonBlockingReadActionImpl
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.EditorKind
 import com.intellij.psi.PsiMethod
 import com.intellij.testFramework.PlatformTestUtil
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import org.jetbrains.concurrency.Promise
+import java.awt.event.InputEvent
+import java.awt.event.MouseEvent
 import javax.swing.SwingUtilities
 
 class QuickDefinitionNavigationTest : LightJavaCodeInsightFixtureTestCase() {
@@ -86,6 +91,31 @@ class QuickDefinitionNavigationTest : LightJavaCodeInsightFixtureTestCase() {
         assertTrue(navigation.back())
         assertEquals(method("Order", "place"), (view.elements.single() as PsiImplementationViewElement).getPsiElement())
         assertFalse(navigation.back())
+    }
+
+    fun testCmdClickInPopupNavigatesToTheDeclaration() {
+        myFixture.editor.caretModel.moveToOffset(0)
+        cmdClick(popupOffsetOf("validate();"))
+        NonBlockingReadActionImpl.waitForAsyncTaskCompletion()
+        PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+        val validate = method("Order", "validate")
+        val editor = FileEditorManager.getInstance(project).selectedTextEditor!!
+        assertTrue(
+            "caret at ${editor.caretModel.offset}, expected inside ${validate.textRange}",
+            validate.textRange.containsOffset(editor.caretModel.offset)
+        )
+    }
+
+    /** What a real Cmd+click (Ctrl+click off Mac) delivers to the editor: press, release, click. */
+    private fun cmdClick(popupOffset: Int) {
+        val point = popup.offsetToXY(popupOffset).apply { translate(2, 2) }
+        val modifier = if (SystemInfo.isMac) InputEvent.META_DOWN_MASK else InputEvent.CTRL_DOWN_MASK
+        val component = popup.contentComponent
+        for (id in listOf(MouseEvent.MOUSE_PRESSED, MouseEvent.MOUSE_RELEASED, MouseEvent.MOUSE_CLICKED)) {
+            component.dispatchEvent(
+                MouseEvent(component, id, System.currentTimeMillis(), modifier, point.x, point.y, 1, false, MouseEvent.BUTTON1)
+            )
+        }
     }
 
     fun testWhitespaceResolvesToNothing() {

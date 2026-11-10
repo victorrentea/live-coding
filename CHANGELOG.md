@@ -4,6 +4,12 @@
 
 ## Unreleased
 
+## 1.0.44 - 2026-11-10
+
+### Fixed
+
+- `Cmd+click` in the Quick Definition popup did nothing (the link underlined, but no jump): the editor stops reporting the click once its press is consumed, so the jump now happens on the press.
+
 ## 1.0.43 - 2026-11-10
 
 ### Added

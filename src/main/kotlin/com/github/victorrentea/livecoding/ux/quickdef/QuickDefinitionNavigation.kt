@@ -80,14 +80,11 @@ internal class QuickDefinitionNavigation(private val editor: Editor, private val
 
     // ---------------------------------------------------------------- Cmd+click: go to declaration
 
+    // Acts on press, consumed: once a press is consumed the editor no longer reports the click.
     override fun mousePressed(e: EditorMouseEvent) {
-        if (isNavigationClick(e.mouseEvent) && view() != null) e.consume() // no caret move / selection
-    }
-
-    override fun mouseClicked(e: EditorMouseEvent) {
         if (!isNavigationClick(e.mouseEvent)) return
         val view = view() ?: return
-        e.consume()
+        e.consume() // no caret move / selection
         clearHover()
         inBackground(view, e.offset, { spot, targets ->
             spot to targets.firstNotNullOfOrNull { EditSourceUtil.getDescriptor(it) }
