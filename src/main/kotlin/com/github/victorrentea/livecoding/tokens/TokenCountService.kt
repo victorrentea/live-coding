@@ -85,21 +85,25 @@ class TokenCountService(private val project: Project) : Disposable {
         }
         // Snapshot on the EDT; everything below runs against these immutable copies.
         val text = editor.document.immutableCharSequence.toString()
-        val selection = editor.selectionModel.selectedText
+        val selection = editor.selectionModel.selectedText?.takeIf { it.isNotEmpty() }
+        val selectionStart = editor.selectionModel.selectionStart
         val family = family
-        val wantHighlight = highlightTokens && text.length <= TokenCounter.MAX_CHARS_FOR_BOUNDARIES
+        // Only a selection gets striped: a whole file of alternating tokens is a zebra nobody can
+        // read. Select all to see the whole file's tokens.
+        val wantHighlight = highlightTokens && selection != null &&
+            selection.length <= TokenCounter.MAX_CHARS_FOR_BOUNDARIES
         val modificationStamp = editor.document.modificationStamp
 
         ApplicationManager.getApplication().executeOnPooledThread {
-            val tokenization = if (wantHighlight) TokenCounter.tokenize(text, family) else null
-            val total = tokenization?.count ?: TokenCounter.count(text, family)
-            val selected = selection?.takeIf { it.isNotEmpty() }?.let { TokenCounter.count(it, family) }
+            val total = TokenCounter.count(text, family)
+            val tokenization = if (wantHighlight) TokenCounter.tokenize(selection!!, family) else null
+            val selected = tokenization?.count ?: selection?.let { TokenCounter.count(it, family) }
             ApplicationManager.getApplication().invokeLater({
                 if (project.isDisposed || editor.isDisposed) return@invokeLater
                 // A newer edit already landed - its own update is on the way, don't paint stale ranges.
                 if (editor.document.modificationStamp != modificationStamp) return@invokeLater
                 publish(total, selected, family)
-                if (wantHighlight && tokenization != null) TokenHighlighter.apply(editor, tokenization)
+                if (tokenization != null) TokenHighlighter.apply(editor, tokenization, selectionStart)
                 else TokenHighlighter.clear(editor)
             }, project.disposed)
         }
@@ -130,7 +134,7 @@ class TokenCountService(private val project: Project) : Disposable {
     companion object {
         private const val TYPING_DELAY_MS = 400
         private const val CLICK_HINT =
-            "Click to toggle token-boundary highlighting in the editor. Model: Settings \u203a Tools \u203a Live-Coding."
+            "Click to toggle token-boundary highlighting of the selected text. Model: Settings \u203a Tools \u203a Live-Coding."
 
         fun getInstance(project: Project): TokenCountService = project.getService(TokenCountService::class.java)
     }

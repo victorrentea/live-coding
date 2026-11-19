@@ -7,24 +7,38 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea
 import com.intellij.openapi.editor.markup.RangeHighlighter
 import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.util.Key
-import com.intellij.ui.JBColor
 import java.awt.Color
 
 /**
- * Paints alternating background stripes over each token, so an audience can *see* where the model
- * splits the code. Only the background is set, so syntax colouring stays intact.
+ * Paints alternating stripes over each token of the selection, so an audience can *see* where the
+ * model splits the code.
+ *
+ * Same palette as the VS Code twin, in every theme: pastel blue / amber with near-black text. Dark
+ * stripes under the theme's own syntax colours were unreadable, so the stripes set the text colour
+ * too. They sit above the selection layer, otherwise the selection background would hide them -
+ * and the selection is the only place they are ever painted.
  */
 object TokenHighlighter {
     private val OURS = Key.create<List<RangeHighlighter>>("LiveCoding.TokenHighlighters")
 
+    private val TEXT = Color(0x1F, 0x1F, 0x1F)
     private val EVEN = TextAttributes().apply {
-        backgroundColor = JBColor(Color(0xD3, 0xE2, 0xFF), Color(0x2C, 0x3B, 0x55))
+        backgroundColor = Color(0xB8, 0xD4, 0xFF)
+        foregroundColor = TEXT
     }
     private val ODD = TextAttributes().apply {
-        backgroundColor = JBColor(Color(0xFF, 0xE3, 0xB8), Color(0x4B, 0x3B, 0x22))
+        backgroundColor = Color(0xFF, 0xE0, 0xA6)
+        foregroundColor = TEXT
     }
 
-    fun apply(editor: Editor, tokenization: Tokenization) {
+    /** Above [HighlighterLayer.SELECTION], so the selection background doesn't paint over the stripes. */
+    const val LAYER = HighlighterLayer.SELECTION + 1
+
+    /**
+     * Stripes [tokenization], which was computed over the document text starting at [baseOffset]
+     * (the selection start), so its offsets are shifted by that much.
+     */
+    fun apply(editor: Editor, tokenization: Tokenization, baseOffset: Int = 0) {
         clear(editor)
         val starts = tokenization.starts
         if (starts.isEmpty()) return
@@ -35,8 +49,8 @@ object TokenHighlighter {
             val end = if (k + 1 < starts.size) starts[k + 1] else tokenization.end
             if (end <= start) continue // token boundary fell inside a multi-byte character
             added += markup.addRangeHighlighter(
-                start, end,
-                HighlighterLayer.ADDITIONAL_SYNTAX,
+                baseOffset + start, baseOffset + end,
+                LAYER,
                 if (k % 2 == 0) EVEN else ODD,
                 HighlighterTargetArea.EXACT_RANGE
             )

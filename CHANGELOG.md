@@ -4,6 +4,15 @@
 
 ## Unreleased
 
+## 1.0.45 - 2026-11-19
+
+### Changed
+
+- **Token highlighting stripes only the selected text.** With nothing selected the editor stays clean
+  (the status bar still counts the whole file); select all to see the whole file's tokens.
+- The stripes use the same palette as the VS Code twin in every theme - pastel blue / amber with
+  near-black text - and are painted above the selection, which used to hide them.
+
 ## 1.0.44 - 2026-11-10
 
 ### Fixed
