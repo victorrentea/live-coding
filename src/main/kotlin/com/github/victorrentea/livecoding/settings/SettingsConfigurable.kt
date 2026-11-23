@@ -24,6 +24,7 @@ class SettingsConfigurable: Configurable {
         if (mySettingsComponent!!.addonReportUrl != settings.addonReportUrl) return true
         if (mySettingsComponent!!.tokenizerFamily != settings.tokenizerFamily) return true
         if (mySettingsComponent!!.highlightTokens != settings.highlightTokens) return true
+        if (mySettingsComponent!!.autoReloadFromDisk != settings.autoReloadFromDisk) return true
         return false
     }
 
@@ -36,6 +37,7 @@ class SettingsConfigurable: Configurable {
         settings.addonReportUrl = mySettingsComponent!!.addonReportUrl
         settings.tokenizerFamily = mySettingsComponent!!.tokenizerFamily
         settings.highlightTokens = mySettingsComponent!!.highlightTokens
+        settings.autoReloadFromDisk = mySettingsComponent!!.autoReloadFromDisk
         // The status bar and the editor stripes must follow the new settings right away.
         ProjectManager.getInstance().openProjects.forEach { TokenCountService.getInstance(it).refresh() }
         if (!settings.highlightTokens) TokenHighlighter.clearAll()
@@ -55,6 +57,7 @@ class SettingsConfigurable: Configurable {
         mySettingsComponent!!.addonReportUrl = settings.addonReportUrl
         mySettingsComponent!!.tokenizerFamily = settings.tokenizerFamily
         mySettingsComponent!!.highlightTokens = settings.highlightTokens
+        mySettingsComponent!!.autoReloadFromDisk = settings.autoReloadFromDisk
     }
     override fun getPreferredFocusedComponent(): JComponent {
         return mySettingsComponent!!.getPreferredFocusedComponent();

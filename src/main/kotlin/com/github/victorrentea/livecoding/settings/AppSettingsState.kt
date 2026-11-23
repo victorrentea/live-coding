@@ -33,6 +33,9 @@ class AppSettingsState : PersistentStateComponent<AppSettingsState> {
     var tokenizerFamily = TokenizerFamily.GPT
     var highlightTokens = false
 
+    /** Reload files changed on disk within about a second (see AutoReloadFromDiskService). */
+    var autoReloadFromDisk = true
+
     var unzippedImagedPaths = mutableMapOf<BackgroundImage, String>()
 
     init {

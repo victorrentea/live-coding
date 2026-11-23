@@ -91,6 +91,9 @@
              it lands in the terminal tab it was pointed at instead of wherever
              the caret happens to be. See RelayTerminalService. -->
         <postStartupActivity implementation="com.github.victorrentea.livecoding.relay.RelayTerminalStarter"/>
+        <!-- Reloads files changed on disk (by an agent, a build, git) within a second, without
+             waiting for the IDE frame to be activated. See AutoReloadFromDiskService. -->
+        <postStartupActivity implementation="com.github.victorrentea.livecoding.autoreload.AutoReloadFromDiskStarter"/>
         <!-- A *.drawio.png carries the diagram inside the PNG, so the image viewer can only
              show it. Type it natively so opening one hands it to draw.io Desktop instead. -->
         <fileType name="Draw.io PNG"

@@ -4,6 +4,17 @@
 
 ## Unreleased
 
+## 1.0.46 - 2026-11-23
+
+### Added
+
+- **Auto-reload from disk.** Files changed outside the editor (an AI agent in a terminal, a build, git)
+  show up within about a second, with no click, even while the IDE keeps the focus or sits in the
+  background. The IDE's file watcher only marks changed files; the scan that reloads them normally
+  waits for the window to be activated. The plugin now starts that scan every second - it visits only
+  the marked files, so an idle tick costs next to nothing. On by default; switch it off in
+  *Settings › Tools › Live-Coding*.
+
 ## 1.0.45 - 2026-11-19
 
 ### Changed

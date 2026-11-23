@@ -26,6 +26,7 @@ class AppSettingsComponent {
         renderer = SimpleListCellRenderer.create("") { "${it.displayName} - ${it.note}" }
     }
     private val highlightTokensCheckbox = JBCheckBox()
+    private val autoReloadFromDiskCheckbox = JBCheckBox()
 
     var staticImports: List<String>
         get() = staticImportsTextArea.text.lines()
@@ -66,12 +67,19 @@ class AppSettingsComponent {
             highlightTokensCheckbox.isSelected = newValue
         }
 
+    var autoReloadFromDisk: Boolean
+        get() = autoReloadFromDiskCheckbox.isSelected
+        set(newValue) {
+            autoReloadFromDiskCheckbox.isSelected = newValue
+        }
+
     init {
         panel = FormBuilder.createFormBuilder()
             .addLabeledComponent(JBLabel("Show test results splash: "), showTestResultsSplashCheckbox)
             .addLabeledComponent(JBLabel("Play test results sounds: "), playTestResultsSoundCheckbox)
             .addLabeledComponent(JBLabel("Report open file to add-on: "), reportOpenFileToAddonCheckbox)
             .addLabeledComponent(JBLabel("Add-on report URL: "), addonReportUrlField)
+            .addLabeledComponent(JBLabel("Reload files changed on disk within a second: "), autoReloadFromDiskCheckbox)
             .addSeparator()
             .addLabeledComponent(JBLabel("Count tokens for: "), tokenizerFamilyCombo)
             .addLabeledComponent(JBLabel("Highlight token boundaries in the editor: "), highlightTokensCheckbox)
